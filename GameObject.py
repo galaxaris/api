@@ -1,5 +1,5 @@
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pygame import Vector2
 from api.Utils.Texture import Texture
 
@@ -8,8 +8,6 @@ class GameObjectProperties:
     SOLID: bool = False
     FIXED_POSITION: bool = False
 
-def generate_uuid() -> int:
-    return uuid.uuid4().int
 
 '''
 :param id: Unique identifier for the game object
@@ -25,7 +23,7 @@ def generate_uuid() -> int:
 '''
 @dataclass()
 class GameObject:
-    id: int
+    _id: int = field(init=False)
     name: str
     type: str
     position: Vector2
@@ -35,8 +33,8 @@ class GameObject:
     tags: list[str]
     properties: GameObjectProperties
     def __post_init__(self):
-        if not self.id:
-            self.id = generate_uuid()
+        if not self._id:
+            self._id = uuid.uuid4().int
     def activate(self):
         self.is_active = True
     def deactivate(self):
