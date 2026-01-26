@@ -8,10 +8,7 @@ from api.GameObject import GameObject
 
 class UI(GameObject):
     visible: bool
-    @override
-    def __post_init__(self):
-        super().__post_init__()
-        self.properties.FIXED_POSITION = True
+    super().properties.FIXED_POSITION = True
     def show(self):
         self.visible = True
     def hide(self):

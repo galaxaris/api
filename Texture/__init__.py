@@ -1,14 +1,10 @@
 from dataclasses import dataclass
-from enum import Enum
+from api.Utils.AssetPath import AssetPath
 
-class TextureProvider(Enum):
-    GLOBAL = 1
-    BUNDLED = 2
 
 @dataclass()
 class Texture:
-    file_path: str
-    provided_by: TextureProvider
+    path: AssetPath
     opacity: int
     def load(self):
         # Placeholder for texture loading logic

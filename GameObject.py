@@ -1,13 +1,16 @@
 import uuid
 from dataclasses import dataclass, field
 from pygame import Vector2
-from api.Utils.Texture import Texture
+
+from api.Event import Event
+from api.Texture import Texture
+from api.Utils.Tag import Tag
+
 
 @dataclass()
 class GameObjectProperties:
     SOLID: bool = False
     FIXED_POSITION: bool = False
-
 
 '''
 :param id: Unique identifier for the game object
@@ -23,18 +26,16 @@ class GameObjectProperties:
 '''
 @dataclass()
 class GameObject:
-    _id: int = field(init=False)
+    _id: int = field(default=uuid.uuid4().int, init=False)
     name: str
     type: str
     position: Vector2
     rotation: int
     is_active: bool
     texture: Texture
-    tags: list[str]
+    tags: list[Tag]
     properties: GameObjectProperties
-    def __post_init__(self):
-        if not self._id:
-            self._id = uuid.uuid4().int
+    events: list[Event]
     def activate(self):
         self.is_active = True
     def deactivate(self):
