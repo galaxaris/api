@@ -11,6 +11,7 @@ from api.Utils.Tag import Tag
 class GameObjectProperties:
     SOLID: bool = False
     FIXED_POSITION: bool = False
+    BREAKABLE: bool = False
 
 '''
 :param id: Unique identifier for the game object
