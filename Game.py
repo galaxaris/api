@@ -1,6 +1,6 @@
 import pygame as pg
 
-from api.Scene import Scene
+from api import Scene
 
 
 class Game:
@@ -14,6 +14,7 @@ class Game:
     FPS: int
     def __init__(self, width, height, name, FPS):
         pg.init()
+        pg.mixer.init()
         self.render = pg.display.set_mode((width, height), pg.SCALED | pg.RESIZABLE)
         self.screen = Scene(width, height)
         pg.display.set_caption(name)
