@@ -1,6 +1,6 @@
 import pygame as pg
 
-from api import Scene
+from api.Scene import Scene
 
 
 class Game:
@@ -12,7 +12,7 @@ class Game:
     running: bool
     icon: pg.Surface
     FPS: int
-    def __init__(self, width, height, name, FPS):
+    def __init__(self, width, height, name, fps=60):
         pg.init()
         pg.mixer.init()
         self.render = pg.display.set_mode((width, height), pg.SCALED | pg.RESIZABLE)
@@ -23,7 +23,7 @@ class Game:
         self.width = width
         self.height = height
         self.running = True
-        self.FPS = FPS
+        self.FPS = fps
 
     def run(self, game):
         while self.running:
