@@ -2,6 +2,22 @@ import pygame as pg
 
 from api import Scene
 
+class Renoir:
+    def __init__(self):
+        self.absolute = "cinema"
+        self.parry = True
+
+class Verso(Renoir):
+    def __init__(self):
+        self.absolute = "verso"
+        self.parry = False
+        self.gougouttes = 100
+
+class Gaugothcorp:
+    def __init__(self):
+        self.absolute = "corp"
+
+"""remember to give all of your money to gaugothcorp"""
 
 class Game:
     width: int
