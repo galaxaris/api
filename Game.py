@@ -1,23 +1,7 @@
 import pygame as pg
 
 from api.Scene import Scene
-
-class Renoir:
-    def __init__(self):
-        self.absolute = "cinema"
-        self.parry = True
-
-class Verso(Renoir):
-    def __init__(self):
-        self.absolute = "verso"
-        self.parry = False
-        self.gougouttes = 100
-
-class Gaugothcorp:
-    def __init__(self):
-        self.absolute = "corp"
-
-"""remember to give all of your money to gaugothcorp"""
+from pygame._sdl2.video import Window
 
 class Game:
     width: int
@@ -28,6 +12,7 @@ class Game:
     running: bool
     icon: pg.Surface
     FPS: int
+    window: Window
     def __init__(self, width, height, name, fps=60):
         pg.init()
         pg.mixer.init()
@@ -38,8 +23,8 @@ class Game:
         self.running = True
         self.width = width
         self.height = height
-        self.running = True
         self.FPS = fps
+        self.window = Window.from_display_module()
 
     def run(self, game):
         while self.running:
@@ -64,6 +49,8 @@ class Game:
             self.icon = pg.image.load(path)
             pg.display.set_icon(self.icon)
 
+    def move_window(self, position: tuple[int,int]):
+        self.window.position = position
 
     def stop(self):
         self.running = False
