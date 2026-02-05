@@ -12,11 +12,12 @@ class Game:
     running: bool
     icon: pg.Surface
     FPS: int
+    flags: int
     window: Window
-    def __init__(self, width, height, name, fps=60):
+    def __init__(self, width, height, name, flags, fps=60):
         pg.init()
         pg.mixer.init()
-        self.render = pg.display.set_mode((width, height), pg.SCALED | pg.RESIZABLE)
+        self.render = pg.display.set_mode((width, height), flags)
         self.screen = Scene(width, height)
         pg.display.set_caption(name)
         self.clock = pg.time.Clock()
@@ -24,6 +25,7 @@ class Game:
         self.width = width
         self.height = height
         self.FPS = fps
+        self.flags = flags
         self.window = Window.from_display_module()
 
     def run(self, game):
