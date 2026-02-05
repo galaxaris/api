@@ -4,6 +4,8 @@ from api.Scene import Scene
 from pygame._sdl2.video import Window
 
 class Game:
+    window_width: int
+    window_height: int
     width: int
     height: int
     name: str
@@ -14,10 +16,10 @@ class Game:
     FPS: int
     flags: int
     window: Window
-    def __init__(self, width, height, name, flags, fps=60):
+    def __init__(self, window_width, window_height, width, height, name, flags, fps=60):
         pg.init()
         pg.mixer.init()
-        self.render = pg.display.set_mode((width, height), flags)
+        self.render = pg.display.set_mode((window_width, window_height), flags)
         self.screen = Scene(width, height)
         pg.display.set_caption(name)
         self.clock = pg.time.Clock()
@@ -53,6 +55,9 @@ class Game:
 
     def move_window(self, position: tuple[int,int]):
         self.window.position = position
+
+    def resize_window(self, size: tuple[int, int]):
+        self.window.size = size
 
     def stop(self):
         self.running = False
