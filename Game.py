@@ -41,7 +41,7 @@ class Game:
                         pg.display.toggle_fullscreen()
 
             self.screen.fill((0, 0, 0))
-            game()
+            game(self)
 
             pg.transform.scale(self.screen, self.render.get_size(), self.render)
             pg.display.update()
