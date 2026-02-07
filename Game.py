@@ -16,6 +16,7 @@ class Game:
     FPS: int
     flags: int
     window: Window
+    bound_functions: dict
     def __init__(self, window_width, window_height, width, height, name, flags, fps=60):
         pg.init()
         pg.mixer.init()
@@ -29,6 +30,7 @@ class Game:
         self.FPS = fps
         self.flags = flags
         self.window = Window.from_display_module()
+        self.bound_functions = {}
 
     def run(self, game):
         while self.running:
@@ -36,9 +38,12 @@ class Game:
                 if event.type == pg.QUIT:
                     self.running = False
 
-                if event.type == pg.KEYDOWN:
+                elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_F11:
                         pg.display.toggle_fullscreen()
+
+                for func in self.bound_functions.get(event.type, []):
+                    func(event)
 
             self.screen.fill((0, 0, 0))
 
