@@ -58,7 +58,7 @@ class Game:
         self.window.position = position
 
     def resize_window(self, size: tuple[int, int]):
-        self.window.size = size
+        self.render = pg.display.set_mode(size, self.flags)
 
     def stop(self):
         self.running = False
