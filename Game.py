@@ -1,4 +1,5 @@
 import pygame as pg
+from typing import Callable, List, Dict, Any
 
 from api.Scene import Scene
 from pygame._sdl2.video import Window
@@ -16,7 +17,7 @@ class Game:
     FPS: int
     flags: int
     window: Window
-    bound_functions: dict
+    bound_functions: Dict[int, List[Callable]]
     def __init__(self, window_width, window_height, width, height, name, flags, fps=60):
         pg.init()
         pg.mixer.init()
@@ -64,6 +65,11 @@ class Game:
 
     def resize_window(self, size: tuple[int, int]):
         self.render = pg.display.set_mode(size, self.flags)
+
+    def bind(self, event_type: int, func: Callable[[pg.event.Event], None]):
+        if event_type not in self.bound_functions:
+            self.bound_functions[event_type] = []
+        self.bound_functions[event_type].append(func)
 
     def stop(self):
         self.running = False
