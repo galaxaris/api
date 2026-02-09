@@ -82,6 +82,3 @@ class Game:
 
     def stop(self):
         self.running = False
-
-    def move_window(self, position: tuple[int, int]):
-        self.Window.position += position

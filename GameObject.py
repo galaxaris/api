@@ -29,6 +29,10 @@ class GameObject(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(texture.image, (self.width, self.height))
         self.rect = self.image.get_rect(topleft=(self.x, self.y))
 
+    def set_surface(self, surface:pygame.Surface):
+        self.image = surface
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+
     def set_position(self, x: int, y: int):
         self.x = x
         self.y = y
