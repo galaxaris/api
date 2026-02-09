@@ -15,7 +15,7 @@ class Game:
     height: int
     name: str
     clock: pg.time.Clock
-    screen: pg.Surface
+    screen: Scene
     running: bool
     icon: pg.Surface
     FPS: int
@@ -51,10 +51,12 @@ class Game:
                 for func in self.bound_functions.get(event.type, []):
                     func(event)
 
-            self.screen.fill((0, 0, 0))
 
+
+            #Double access to the same class !Not recommended
             game(self)
 
+            self.screen.draw(self.render)
             pg.transform.scale(self.screen, self.render.get_size(), self.render)
             pg.display.update()
             self.clock.tick(self.FPS)
