@@ -1,4 +1,8 @@
 import pygame as pg
+from pygame._sdl2.video import Window
+
+from api import Scene
+
 from typing import Callable, List, Dict, Any
 
 from api.Scene import Scene
@@ -24,6 +28,7 @@ class Game:
         self.render = pg.display.set_mode((window_width, window_height), flags)
         self.screen = Scene(width, height)
         pg.display.set_caption(name)
+        self.Window = Window.from_display_module()
         self.clock = pg.time.Clock()
         self.running = True
         self.width = width
@@ -73,3 +78,6 @@ class Game:
 
     def stop(self):
         self.running = False
+
+    def move_window(self, position: tuple[int, int]):
+        self.Window.position += position
