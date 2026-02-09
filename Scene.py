@@ -5,20 +5,19 @@ from api.environment.Background import Background
 
 
 class Scene(pg.Surface):
-    def __init__(self, width: int, height: int):
-        super().__init__((width, height))
-        self.width = width
-        self.height = height
+    def __init__(self, size: tuple[int, int]):
+        super().__init__(size)
+        self.size = pg.Vector2(size)
         self.background: Optional[Background] = None
         self.layers: Dict[str, List[GameObject]] = {}
         self.layer_order: List[str] = []
         self.layer_surfaces: Dict[str, pg.Surface] = {}
-        self.default_surface = pg.Surface((width, height), pg.SRCALPHA).convert_alpha()
+        self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
 
     def __ensure_layer(self, layer_name: str):
         if layer_name not in self.layers:
             self.layers[layer_name] = []
-            surf = pg.Surface((self.width, self.height), pg.SRCALPHA).convert_alpha()
+            surf = pg.Surface(self.size, pg.SRCALPHA).convert_alpha()
             self.layer_surfaces[layer_name] = surf
             if layer_name == "default":
                 self.layer_order.insert(0, layer_name)
@@ -46,8 +45,6 @@ class Scene(pg.Surface):
         if self.background:
             self.background.draw(self)
 
-
-
         for name in self.layer_order:
             layer_surf = self.layer_surfaces[name]
             layer_surf.fill((0, 0, 0, 0))
@@ -61,8 +58,6 @@ class Scene(pg.Surface):
         screen.blit(self, (0, 0))
 
         #Reset surface layers to avoid drawing artifacts
-
-
 
     def clear(self):
         for layer in self.layers:

@@ -1,48 +1,42 @@
-import pygame
+import pygame as pg
 
 from api.assets.Animation import Animation
 from api.assets.Texture import Texture
 
-class GameObject(pygame.sprite.Sprite):
-    x: int
-    y: int
-    width: int
-    height: int
-    rect: pygame.Rect
-    image: pygame.Surface
+class GameObject(pg.sprite.Sprite):
+    pos: pg.Vector2
+    size: pg.Vector2
+    rect: pg.Rect
+    image: pg.Surface
     animation: Animation | None
     direction: str = "right"
     id: int
-    def __init__(self, x: int, y: int, width: int, height: int):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] | pg.Vector2):
         super().__init__()
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.image = pygame.Surface((width, height), pygame.SRCALPHA, 32)
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.pos = pg.Vector2(pos)
+        self.size = pg.Vector2(size)
+        self.image = pg.Surface(size, pg.SRCALPHA, 32)
+        self.rect = self.image.get_rect(topleft=pos)
         self.animation = None
         self.id = id(self)
         self.direction = "right"
 
     def set_texture(self, texture:Texture):
-        self.image = pygame.transform.scale(texture.image, (self.width, self.height))
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.image = pg.transform.scale(texture.image, self.size)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
-    def set_surface(self, surface:pygame.Surface):
+    def set_surface(self, surface:pg.Surface):
         self.image = surface
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        self.rect = self.image.get_rect(topleft=self.pos)
 
-    def set_position(self, x: int, y: int):
-        self.x = x
-        self.y = y
-        self.rect.topleft = (x, y)
+    def set_position(self, pos: tuple[int, int] | pg.Vector2):
+        self.pos = pg.Vector2(pos)
+        self.rect.topleft = pos
 
-    def set_size(self, width: int, height: int):
-        self.width = width
-        self.height = height
-        self.image = pygame.transform.scale(self.image, (width, height))
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+    def set_size(self, size: tuple[int, int] | pg.Vector2):
+        self.size = pg.Vector2(size)
+        self.image = pg.transform.scale(self.image, size)
+        self.rect = self.image.get_rect(topleft=self.pos)
 
     def set_color(self, color: tuple[int, int, int]):
         self.image.fill(color)
@@ -52,13 +46,13 @@ class GameObject(pygame.sprite.Sprite):
 
     def update(self):
         if self.animation:
-            self.image = pygame.transform.scale(self.animation.get_frame(self.direction), (self.width, self.height))
-            self.rect = self.image.get_rect(topleft=(self.x, self.y))
+            self.image = pg.transform.scale(self.animation.get_frame(self.direction), self.size)
+            self.rect = self.image.get_rect(topleft=self.pos)
 
     def set_direction(self, direction: str):
         if direction in ["left", "right"]:
             self.direction = direction
 
-    def draw(self, surface: pygame.Surface):
+    def draw(self, surface: pg.Surface):
         self.update()
         surface.blit(self.image, self.rect)
