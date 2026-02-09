@@ -50,8 +50,8 @@ class Game:
 
             #Double access to the same class !Not recommended
             game(self)
-
             self.screen.draw(self.render)
+
             pg.transform.scale(self.screen, self.render.get_size(), self.render)
             pg.display.update()
             self.clock.tick(self.FPS)
@@ -61,6 +61,8 @@ class Game:
         if path.endswith(".png") or path.endswith(".jpg"):
             self.icon = pg.image.load(path)
             pg.display.set_icon(self.icon)
+
+
 
     def move_window(self, position: tuple[int,int]):
         self.window.position = position
