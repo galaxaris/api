@@ -27,7 +27,6 @@ class Game:
         pg.mixer.init()
         self.render = pg.display.set_mode(size, flags)
         self.screen = Scene(size if render_size is None else render_size)
-        self.set_min_max_size(min_size=size if render_size is not None else render_size)
         pg.display.set_caption(name)
         self.Window = Window.from_display_module()
         self.clock = pg.time.Clock()
@@ -90,12 +89,6 @@ class Game:
         if path.endswith(".png") or path.endswith(".jpg"):
             self.icon = pg.image.load(path)
             pg.display.set_icon(self.icon)
-
-    def set_min_max_size(self, min_size: tuple[int, int] = None, max_size: tuple[int, int] = None):
-        if min_size is not None:
-            self.window.minimum_size = min_size
-        if max_size is not None:
-            self.window.maximum_size = max_size
 
     def move_window(self, position: tuple[int,int] | pg.Vector2):
         self.window.position = position
