@@ -22,7 +22,7 @@ class Game:
     flags: int
     window: Window
     bound_functions: Dict[int, List[Callable]]
-    def __init__(self, size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, render_size: tuple[int, int] | pg.Vector2=None):
+    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60):
         pg.init()
         pg.mixer.init()
         self.render = pg.display.set_mode(size, flags)
@@ -55,30 +55,10 @@ class Game:
             self.screen.draw(self.render)
 
             self.render.fill((0, 0, 0))
-
-            if self.render.get_flags() & pg.FULLSCREEN:
-                pg.transform.scale(self.screen, self.render.get_size(), self.render) #we handle the fullscreen case apart because it breaks things up
-            else:
-                new_size = self.scaled_size()
-                pg.transform.scale(self.screen, new_size.size, self.render.subsurface(new_size))
-
+            pg.transform.scale(self.screen, self.render.get_size(), self.render)
             pg.display.update()
             self.clock.tick(self.FPS)
         pg.quit()
-
-    def scaled_size(self) -> pg.Rect:
-        win_w, win_h = self.render.get_size()
-
-        screen_w, screen_h = self.screen.get_size()
-
-        scale = max(1, min(win_w // screen_w, win_h // screen_h))
-
-        new_size = pg.Vector2(min(screen_w * scale,win_w ), min(screen_h * scale, win_h))
-
-        pos_x = int(self.render.get_width() - new_size.x) // 2
-        pos_y = int(self.render.get_height() - new_size.y) // 2
-
-        return pg.Rect(pos_x, pos_y, new_size.x, new_size.y)
 
     def get_current_monitor_size(self):
         index = self.window.display_index
