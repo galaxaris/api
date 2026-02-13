@@ -51,7 +51,7 @@ class Game:
                     func(event)
 
             #Double access to the same class !Not recommended
-            game(self)
+            game()
             self.screen.draw(self.render)
 
             self.render.fill((0, 0, 0))

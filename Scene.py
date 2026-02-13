@@ -43,7 +43,7 @@ class Scene(pg.Surface):
         self.fill((0, 0, 0))
 
         if self.background:
-            self.background.draw(self)
+            self.background.draw()
 
         for name in self.layer_order:
             layer_surf = self.layer_surfaces[name]

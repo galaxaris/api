@@ -8,4 +8,4 @@ class Texture(pg.Surface):
     def __init__(self, path:str, resource:Resource) :
         self.path = path
         self.image = resource.image(path)
-    
+        super().__init__(self.image.get_size())
