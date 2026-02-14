@@ -1,17 +1,21 @@
 import pygame as pg
 from typing import Dict, List, Optional
 from api.GameObject import GameObject
+from api.engine.GameCamera import GameCamera
 from api.environment.Background import Background
+from api.environment.Parallax import ParallaxBackground
 
 
 class Scene(pg.Surface):
     def __init__(self, size: tuple[int, int]):
         super().__init__(size)
         self.size = pg.Vector2(size)
-        self.background: Optional[Background] = None
         self.layers: Dict[str, List[GameObject]] = {}
         self.layer_order: List[str] = []
         self.layer_surfaces: Dict[str, pg.Surface] = {}
+        self.camera = GameCamera((0, 0))
+        self.background: Optional[Background | ParallaxBackground] = None
+        size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
 
     def __ensure_layer(self, layer_name: str):
@@ -23,6 +27,10 @@ class Scene(pg.Surface):
                 self.layer_order.insert(0, layer_name)
             else:
                 self.layer_order.append(layer_name)
+
+    def add_surface(self, surface: pg.Surface, layer: str = "default"):
+        self.__ensure_layer(layer)
+        self.layer_surfaces[layer].blit(surface, (0, 0))
 
     def add(self, game_object: GameObject, layer: str = "default"):
         self.__ensure_layer(layer)
@@ -39,26 +47,39 @@ class Scene(pg.Surface):
             self.layer_order.remove(layer)
         self.layer_order.insert(max(0, min(index, len(self.layer_order))), layer)
 
+    def set_background(self, p_bg: Background | ParallaxBackground):
+        self.background = p_bg
+
     def draw(self, screen: pg.Surface):
         self.fill((0, 0, 0))
 
         if self.background:
-            self.background.draw()
+            if isinstance(self.background, Background):
+                self.set_layer(0, "_background")
+                self.layer_surfaces["_background"].blit(self.background.draw(), (0, 0))
+            elif isinstance(self.background, ParallaxBackground):
+                self.set_layer(0, "background")
+                self.background.draw(self, self.camera.position, layer="background")
 
         for name in self.layer_order:
             layer_surf = self.layer_surfaces[name]
-            layer_surf.fill((0, 0, 0, 0))
 
-            for obj in self.layers[name]:
-                obj.draw(layer_surf)
+            if not "_" in name:
+                layer_surf.fill((0, 0, 0, 0))
+                for obj in self.layers[name]:
+                    obj.draw(layer_surf)
 
-            self.blit(layer_surf, (0, 0))
+            #TODO: Check error with camera and player, because the player needs to be freezed
+
+            if "#" in name:
+                self.blit(layer_surf, (0 - self.camera.position.x, 0 - self.camera.position.y))
+            else:
+                self.blit(layer_surf, (0, 0))
 
         self.blit(self.default_surface, (0, 0))
         screen.blit(self, (0, 0))
 
-        #Reset surface layers to avoid drawing artifacts
-
     def clear(self):
         for layer in self.layers:
             self.layers[layer].clear()
+

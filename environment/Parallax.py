@@ -1,5 +1,4 @@
 import pygame as pg
-from api.Scene import Scene
 from api.GameObject import GameObject
 from api.assets.Texture import Texture
 
@@ -13,9 +12,8 @@ class ParallaxImage(GameObject):
         self.coordinates = pg.Vector2(coordinates)
 
 class ParallaxBackground:
-    def __init__(self, layer: str, render_size: pg.Vector2 | tuple[int, int]):
+    def __init__(self, render_size: pg.Vector2 | tuple[int, int]):
         self.group = []
-        self.layer = layer
         self.render_size = pg.Vector2(render_size)
 
     def add(self, parallax: ParallaxImage):
@@ -30,7 +28,7 @@ class ParallaxBackground:
 
         self.group.sort(key=lambda p: p.speed.x)
 
-    def draw(self, screen: Scene, camera_offset: pg.Vector2 | tuple[float, float]):
+    def draw(self, screen, camera_offset: pg.Vector2 | tuple[float, float], layer: str = "background"):
         camera_offset = pg.Vector2(camera_offset)
 
         for parallax in self.group:
@@ -38,4 +36,4 @@ class ParallaxBackground:
             x = -int(camera_offset.x*parallax.speed.x%parallax.size.x) + parallax.coordinates.x*parallax.size.x
             y = -int(camera_offset.y*parallax.speed.y%parallax.size.y) + parallax.coordinates.y*parallax.size.y
             parallax.set_position((x, y))
-            screen.add(parallax, self.layer)
+            screen.add(parallax, layer)

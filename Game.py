@@ -1,11 +1,10 @@
 import pygame as pg
-from pygame._sdl2.video import Window
 
-from api import Scene
+from api.engine import Scene
 
-from typing import Callable, List, Dict, Any
+from typing import Callable, List, Dict
 
-from api.Scene import Scene
+from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 
 class Game:
