@@ -2,7 +2,6 @@ from enum import Enum
 from os.path import join
 import pygame as pg
 from pygame import Surface
-import pygame
 from pygame.mixer import Sound
 
 

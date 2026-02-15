@@ -15,6 +15,7 @@ class Character(GameObject):
     jump: bool
     fall: bool
     gravity: Optional[float]
+    collided_objs : list[tuple[GameObject, str]]
     def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
         super().__init__(pos, size)
         self.vel = pg.Vector2(0, 0)
@@ -22,6 +23,7 @@ class Character(GameObject):
         self.fall = False
         self.animations = {}
         self.gravity = None
+        self.collided_objs = []
         self.add_tag("entity")
 
     def add_animation(self, name: str, animation: Animation):
@@ -36,24 +38,40 @@ class Character(GameObject):
         self.fall = False
 
     def hit_head(self):
-        self.fall = False
+        self.jump = False
+        self.fall = True
         self.vel.y = 0
 
-    def update(self):
-        super().update()
-        self.mask = pg.mask.from_surface(Surface(self.image.get_size(), pg.SRCALPHA, 32))
-        self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
+    def update(self, others):
+        super().update(others)
 
-        objects = get_collided_objects(self, "solid")
-        for obj in objects:
-            if obj:
-                if self.vel.y > 0:
-                    self.rect.bottom = obj.rect.top
-                    self.land()
-                elif self.vel.y < 0:
-                    self.rect.top = obj.rect.bottom
-                    self.hit_head()
+        #Correct jump state if character is on the ground
 
+        dx = self.vel.x
+        dy = self.vel.y
 
-        if self.gravity is not None and self.fall:
+        self.collided_objs = get_collided_objects(self, "solid", others, dx, dy)
+        is_collide = False
+
+        if self.vel.y == 0 and self.jump:
+            self.fall = True
+
+        for obj in self.collided_objs:
+            if obj[1] == "bottom":
+                self.land()
+                is_collide = True
+                dy = 0
+            elif obj[1] == "top":
+                self.hit_head()
+                is_collide = True
+                dy = 0
+            if obj[1] in ("left", "right"):
+                dx = 0
+
+        if not is_collide:
+            self.fall = True
+
+        if self.gravity and self.fall:
             self.vel.y += self.gravity
+
+        self.set_position((self.pos.x + dx, self.pos.y + dy))

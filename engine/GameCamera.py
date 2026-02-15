@@ -20,7 +20,7 @@ class GameCamera:
         self.focused_object = game_object
         self.update()
 
-    def set_offset(self, offset: tuple[int, int] | pg.Vector2):
+    def set_offset(self, offset: tuple[int, int] | tuple[float, float] | pg.Vector2):
         self.offset = pg.Vector2(offset)
         self.update()
 

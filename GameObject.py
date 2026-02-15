@@ -1,9 +1,12 @@
+import os
 from typing import Optional
 
 import pygame as pg
 
 from api.assets.Animation import Animation
 from api.assets.Texture import Texture
+from api.utils import Debug
+
 
 class GameObject(pg.sprite.Sprite):
     pos: pg.Vector2
@@ -21,11 +24,11 @@ class GameObject(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         self.animation = None
         self.id = id(self)
-        self.mask = None
         self.tags = set()
         self.direction = "right"
 
     def set_texture(self, texture:Texture):
+        self.animation = None
         self.image = pg.transform.scale(texture.image, self.size)
         self.rect = self.image.get_rect(topleft=self.pos)
 
@@ -54,7 +57,7 @@ class GameObject(pg.sprite.Sprite):
     def remove_tag(self, tag: str):
         self.tags.discard(tag)
 
-    def update(self):
+    def update(self, others):
         if self.animation:
             self.image = pg.transform.scale(self.animation.get_frame(self.direction), self.size)
             self.rect = self.image.get_rect(topleft=self.pos)
@@ -63,6 +66,12 @@ class GameObject(pg.sprite.Sprite):
         if direction in ["left", "right"]:
             self.direction = direction
 
-    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
-        self.update()
+    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0), game_objects=None):
+        self.update(game_objects)
+
+        # Draw a red rectangle around the object for debugging
         surface.blit(self.image, self.pos - offset)
+
+        #DEBUG
+        if Debug.is_element_enabled("colliders") and "debug" not in self.tags:
+            pg.draw.rect(surface, (255, 0, 0), self.rect.move(-offset.x, -offset.y), 1)

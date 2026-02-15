@@ -13,7 +13,8 @@ class Scene(pg.Surface):
         self.layers: Dict[str, List[GameObject]] = {}
         self.layer_order: List[str] = []
         self.layer_surfaces: Dict[str, pg.Surface] = {}
-        self.camera = GameCamera((0, 0))
+        self.game_objects: List[GameObject] = []
+        self.camera : GameCamera = GameCamera((0, 0))
         self.background: Optional[Background | ParallaxBackground] = None
         size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
@@ -36,10 +37,12 @@ class Scene(pg.Surface):
         self.__ensure_layer(layer)
         if game_object.id not in [obj.id for obj in self.layers[layer]]:
             self.layers[layer].append(game_object)
+            self.game_objects.append(game_object)
 
     def remove(self, game_object: GameObject, layer: str = "default"):
         if layer in self.layers and game_object in self.layers[layer]:
             self.layers[layer].remove(game_object)
+            self.game_objects.remove(game_object)
 
     def set_layer(self,  index: int, layer: str):
         self.__ensure_layer(layer)
@@ -72,13 +75,16 @@ class Scene(pg.Surface):
                 layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
-                    obj.draw(layer_surf)
+                    others_objects = [o for o in self.game_objects if o.id != obj.id]
+                    obj.draw(layer_surf, game_objects=others_objects)
                 self.blit(layer_surf, (0, 0))
             else:
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
+                    others_objects = [o for o in self.game_objects if o.id != obj.id]
                     if -100 < relative_pos.x < self.size.x + 100:
-                        obj.draw(self, offset=self.camera.position)
+                        obj.draw(self, offset=self.camera.position, game_objects=others_objects)
+
 
         self.blit(self.default_surface, (0, 0))
         screen.blit(self, (0, 0))
@@ -86,4 +92,6 @@ class Scene(pg.Surface):
     def clear(self):
         for layer in self.layers:
             self.layers[layer].clear()
+
+
 
