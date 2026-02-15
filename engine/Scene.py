@@ -62,7 +62,6 @@ class Scene(pg.Surface):
                 self.background.draw(self, self.camera.position, layer="background")
 
         for name in self.layer_order:
-
             if "_" in name:
                 layer_surf = self.layer_surfaces[name]
                 if "#" in name:

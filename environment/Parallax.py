@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame as pg
 from api.GameObject import GameObject
 from api.assets.Texture import Texture
@@ -12,9 +14,12 @@ class ParallaxImage(GameObject):
         self.coordinates = pg.Vector2(coordinates)
 
 class ParallaxBackground:
-    def __init__(self, render_size: pg.Vector2 | tuple[int, int]):
+    def __init__(self, render_size: pg.Vector2 | tuple[int, int], parallax_images: Optional[list[ParallaxImage]]):
         self.group = []
         self.render_size = pg.Vector2(render_size)
+        if len(parallax_images) > 0:
+            for parallax in parallax_images:
+                self.add(parallax)
 
     def add(self, parallax: ParallaxImage):
         for j in range(max(2, int(self.render_size.y // parallax.size.y + 1))):

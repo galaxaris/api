@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame as pg
 
 from api.assets.Animation import Animation
@@ -8,7 +10,7 @@ class GameObject(pg.sprite.Sprite):
     size: pg.Vector2
     rect: pg.Rect
     image: pg.Surface
-    animation: Animation | None
+    animation: Optional[Animation]
     direction: str = "right"
     id: int
     def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] | pg.Vector2):
@@ -19,6 +21,8 @@ class GameObject(pg.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
         self.animation = None
         self.id = id(self)
+        self.mask = None
+        self.tags = set()
         self.direction = "right"
 
     def set_texture(self, texture:Texture):
@@ -29,7 +33,7 @@ class GameObject(pg.sprite.Sprite):
         self.image = surface
         self.rect = self.image.get_rect(topleft=self.pos)
 
-    def set_position(self, pos: tuple[int, int] | pg.Vector2):
+    def set_position(self, pos: tuple[int, int] | tuple[float, float] | pg.Vector2):
         self.pos = pg.Vector2(pos)
         self.rect.topleft = pos
 
@@ -43,6 +47,12 @@ class GameObject(pg.sprite.Sprite):
 
     def set_animation(self, animation: Animation):
         self.animation = animation
+
+    def add_tag(self, tag: str):
+        self.tags.add(tag)
+
+    def remove_tag(self, tag: str):
+        self.tags.discard(tag)
 
     def update(self):
         if self.animation:
