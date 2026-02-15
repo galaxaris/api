@@ -6,7 +6,7 @@ from typing import Callable, List, Dict
 
 from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
-
+from pygame._sdl2 import controller
 from api.utils import Debug
 from api.utils.DebugElement import DebugElement
 
@@ -30,6 +30,8 @@ class Game:
         pg.init()
         pg.mixer.init()
         pg.font.init()
+        pg.joystick.init()
+        controller.init()
         self.render = pg.display.set_mode(size, flags)
         self.screen = Scene(size if render_size is None else render_size)
         pg.display.set_caption(name)
@@ -59,10 +61,8 @@ class Game:
                 for func in self.bound_functions.get(event.type, []):
                     func(event)
 
-            #Double access to the same class !Not recommended
+
             game()
-
-
 
             self.screen.draw(self.render)
 
@@ -70,7 +70,6 @@ class Game:
 
             pg.transform.scale(self.screen, self.render.get_size(), self.render)
 
-            # Debug Elements in HQ
             self.print_debug()
 
             pg.display.update()
