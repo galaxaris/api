@@ -62,19 +62,24 @@ class Scene(pg.Surface):
                 self.background.draw(self, self.camera.position, layer="background")
 
         for name in self.layer_order:
-            layer_surf = self.layer_surfaces[name]
 
-            if not "_" in name:
+            if "_" in name:
+                layer_surf = self.layer_surfaces[name]
+                if "#" in name:
+                    self.blit(layer_surf, pg.Vector2(0, 0) - self.camera.position)
+                else:
+                    self.blit(layer_surf, pg.Vector2(0, 0))
+            elif "#" not in name:
+                layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
                     obj.draw(layer_surf)
-
-            #TODO: Check error with camera and player, because the player needs to be freezed
-
-            if "#" in name:
-                self.blit(layer_surf, (0 - self.camera.position.x, 0 - self.camera.position.y))
-            else:
                 self.blit(layer_surf, (0, 0))
+            else:
+                for obj in self.layers[name]:
+                    relative_pos = obj.pos - self.camera.position
+                    if -100 < relative_pos.x < self.size.x + 100:
+                        obj.draw(self, offset=self.camera.position)
 
         self.blit(self.default_surface, (0, 0))
         screen.blit(self, (0, 0))

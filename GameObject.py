@@ -53,6 +53,6 @@ class GameObject(pg.sprite.Sprite):
         if direction in ["left", "right"]:
             self.direction = direction
 
-    def draw(self, surface: pg.Surface):
+    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
         self.update()
-        surface.blit(self.image, self.rect)
+        surface.blit(self.image, self.pos - offset)
