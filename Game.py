@@ -115,9 +115,12 @@ class Game:
 
             debug_y_left = 5
             debug_y_right = 5
+
             for debug_info in self.debug_list:
                 debug_y = debug_y_left if debug_info[1] == "left" else debug_y_right
+
                 debug_el = DebugElement((0, 0), debug_info[2], debug_info[0], "aptos")
+
                 debug_x = 5 if debug_info[1] == "left" else self.render.get_width() - debug_el.size[0] - 5
                 debug_el.set_position((debug_x, debug_y))
                 debug_el.draw(self.render)

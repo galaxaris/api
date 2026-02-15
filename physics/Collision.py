@@ -10,11 +10,12 @@ def get_collided_objects(obj: GameObject, tag: str, others: list[GameObject], dx
 
     future_rect = obj.rect.move(dx, dy)
 
-    for other in others:
-        if obj.id != other.id and (tag is None or tag in other.tags):
-            if future_rect.colliderect(other.rect):
-                direction = get_collision_direction(future_rect, other.rect)
-                collided_objects.append((other, direction))
+    targets = [o for o in others if o.id != obj.id and (tag is None or tag in o.tags)]
+
+    for other in targets:
+        if future_rect.colliderect(other.rect):
+            direction = get_collision_direction(future_rect, other.rect)
+            collided_objects.append((other, direction))
 
     return collided_objects
 

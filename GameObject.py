@@ -20,7 +20,7 @@ class GameObject(pg.sprite.Sprite):
         super().__init__()
         self.pos = pg.Vector2(pos)
         self.size = pg.Vector2(size)
-        self.image = pg.Surface(size, pg.SRCALPHA, 32)
+        self.image = pg.Surface(size, pg.SRCALPHA, 32).convert_alpha()
         self.rect = self.image.get_rect(topleft=pos)
         self.animation = None
         self.id = id(self)
@@ -44,12 +44,14 @@ class GameObject(pg.sprite.Sprite):
         self.size = pg.Vector2(size)
         self.image = pg.transform.scale(self.image, size)
         self.rect = self.image.get_rect(topleft=self.pos)
+        self.animation.calculate_frame_size(self.size)
 
     def set_color(self, color: tuple[int, int, int]):
         self.image.fill(color)
 
     def set_animation(self, animation: Animation):
         self.animation = animation
+        self.animation.calculate_frame_size(self.size)
 
     def add_tag(self, tag: str):
         self.tags.add(tag)
@@ -59,7 +61,7 @@ class GameObject(pg.sprite.Sprite):
 
     def update(self, others):
         if self.animation:
-            self.image = pg.transform.scale(self.animation.get_frame(self.direction), self.size)
+            self.image = self.animation.get_frame(self.direction)
             self.rect = self.image.get_rect(topleft=self.pos)
 
     def set_direction(self, direction: str):

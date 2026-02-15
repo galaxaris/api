@@ -40,3 +40,9 @@ class Animation:
 
         frames = self.frames_left if direction == "left" else self.frames_right
         return frames[self.animation_count]
+
+    def calculate_frame_size(self, size: tuple[int, int] | pg.Vector2):
+        self.width = size[0] // self.frame_count
+        self.height = size[1]
+        self.frames_right = [pg.transform.scale(frame_right, size) for frame_right in self.frames_right]
+        self.frames_left = [pg.transform.scale(frame_left, size) for frame_left in self.frames_left]

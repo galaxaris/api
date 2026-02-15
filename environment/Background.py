@@ -6,7 +6,7 @@ class Background:
     def __init__(self, texture: Texture, repeat: bool = True, size: tuple[int, int] | None = None):
         self.image : Texture = texture.image
         self.repeat : bool = repeat
-        self.surface : pg.Surface = pg.Surface(size if size else self.image.get_size(), pg.SRCALPHA, 32)
+        self.surface : pg.Surface = pg.Surface(size if size else self.image.get_size(), pg.SRCALPHA, 32).convert_alpha()
 
         if repeat:
             if size is None:
