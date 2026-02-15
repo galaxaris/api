@@ -9,7 +9,7 @@ import pygame as pg
 from api.physics.Collision import get_collided_objects
 
 
-class Character(GameObject):
+class Entity(GameObject):
     animations: dict[str, Animation]
     vel: pg.Vector2
     jump: bool
@@ -38,40 +38,38 @@ class Character(GameObject):
         self.fall = False
 
     def hit_head(self):
+        self.vel.y = 0
         self.jump = False
         self.fall = True
-        self.vel.y = 0
+
 
     def update(self, others):
         super().update(others)
 
-        #Correct jump state if character is on the ground
-
-        dx = self.vel.x
-        dy = self.vel.y
-
-        self.collided_objs = get_collided_objects(self, "solid", others, dx, dy)
-        is_collide = False
-
-        if self.vel.y == 0 and self.jump:
-            self.fall = True
+        self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x, self.vel.y)
+        on_ground = False
 
         for obj in self.collided_objs:
-            if obj[1] == "bottom":
+            if obj[1] == "top":
                 self.land()
-                is_collide = True
-                dy = 0
-            elif obj[1] == "top":
+                on_ground = True
+            elif obj[1] == "bottom":
                 self.hit_head()
-                is_collide = True
-                dy = 0
-            if obj[1] in ("left", "right"):
-                dx = 0
+            if obj[1] == "left":
+                self.vel.x = 0
+                if self.direction == "left":
+                    self.vel.x = -0.1
+            elif obj[1] == "right":
+                self.vel.x = 0
+                if self.direction == "right":
+                    self.vel.x = 0.1
 
-        if not is_collide:
+        if not on_ground:
             self.fall = True
+        else:
+            self.fall = False
 
         if self.gravity and self.fall:
             self.vel.y += self.gravity
 
-        self.set_position((self.pos.x + dx, self.pos.y + dy))
+        self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))

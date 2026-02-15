@@ -8,6 +8,7 @@ class ParallaxImage(GameObject):
     speed = pg.Vector2 | tuple[float, float]
     def __init__(self, speed: pg.Vector2 | tuple[float, float], texture: Texture, coordinates: tuple[int, int] = (0, 0)):
         super().__init__((0, 0), texture.get_size())
+        self.add_tag("dont_debug")
         self.speed = pg.Vector2(speed)
         self.texture = texture
         self.set_texture(texture)
