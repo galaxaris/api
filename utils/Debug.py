@@ -2,7 +2,8 @@ import os
 
 debug_elements = {
     "colliders": False,
-    "debug_info": False
+    "debug_info": False,
+    "freecam": False
 }
 
 def set_active(enabled: bool):
@@ -14,3 +15,4 @@ def toggle(element: str):
 
 def is_element_enabled(element: str):
     return debug_elements.get(element, False)
+

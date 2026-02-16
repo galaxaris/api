@@ -1,5 +1,30 @@
 # TODO for API
 
+- Collision : 
+  - Empecher les clips entre les objets
+- UI 
+  - TextBox
+  - Menu
+  - Dialogue
+  - HUD
+
+Entity :
+  - Player improvements  
+  - Enemy improvements
+
+Objects :
+  - GraplingHook
+  - WaterGun
+
+Environment :
+  - Physics
+  - Solid
+  - InOut
+  - Trap
+
+# Plan
+
+
 ## Engine
 
 - Level.py :

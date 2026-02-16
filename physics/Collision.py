@@ -7,7 +7,7 @@ from api.GameObject import GameObject
 def get_collided_objects(obj: GameObject, tag: str, others: list[GameObject], dx: float, dy: float) -> list[tuple[GameObject, str]]:
     collided_objects = []
 
-
+    # TODO: Remake collision to avoid clipping
     future_rect = obj.rect.move(dx, dy)
 
     targets = [o for o in others if o.id != obj.id and (tag is None or tag in o.tags)]

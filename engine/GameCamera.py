@@ -3,6 +3,9 @@ from typing import Optional
 import pygame as pg
 
 from api.GameObject import GameObject
+from api.utils import Debug
+from api.utils.Inputs import get_inputs
+
 
 class GameCamera:
     def __init__(self, position: tuple[int, int]):
@@ -11,6 +14,7 @@ class GameCamera:
         self.position : pg.Vector2 = pg.Vector2(position)
         self.offset : pg.Vector2  = pg.Vector2(0, 0)
         self.focused_object : Optional[GameObject] = None
+        self.camera_mode = "Free"
 
     def move(self, dx: float, dy: float):
         self.position.x += dx
@@ -28,8 +32,28 @@ class GameCamera:
         self.limit_topleft = pg.Vector2(topleft)
         self.limit_bottomright = pg.Vector2(bottomright)
 
+    def set_position(self, position: tuple[int, int] | tuple[float, float] | pg.Vector2):
+        self.position = pg.Vector2(position)
+        self.update()
+
+
     def update(self):
-        if self.focused_object and hasattr(self.focused_object, 'pos'):
+
+        if Debug.is_element_enabled("freecam"):
+            self.camera_mode = "Freecam"
+            inputs = get_inputs()
+            boost = 5 if inputs["boost"] else 0
+
+            if inputs["right"]:
+                self.move(5+boost, 0)
+            if inputs["left"]:
+                self.move(-5-boost, 0)
+            if inputs["down"]:
+                self.move(0, 5+boost)
+            if inputs["up"]:
+                self.move(0, -5-boost)
+
+        elif self.focused_object and hasattr(self.focused_object, 'pos'):
             if self.limit_topleft and self.limit_bottomright:
                 target_x = max(self.limit_topleft.x, min(self.focused_object.pos.x - self.offset.x, self.limit_bottomright.x))
                 target_y = max(self.limit_topleft.y, min(self.focused_object.pos.y - self.offset.y, self.limit_bottomright.y))
@@ -37,6 +61,6 @@ class GameCamera:
                 target_x = self.focused_object.pos.x - self.offset.x
                 target_y = self.focused_object.pos.y - self.offset.y
 
-
+            self.camera_mode = self.focused_object.__class__.__name__
             self.position.x = target_x
             self.position.y = target_y

@@ -58,9 +58,15 @@ class Game:
                     if event.key == pg.K_F12:
                         self.enable_debug()
 
+                    if event.key == pg.K_F8:
+                        if self.screen:
+                            if self.screen.camera:
+                                Debug.toggle("freecam")
+
                 for func in self.bound_functions.get(event.type, []):
                     func(event)
 
+            self.register_debug()
 
             game()
 
@@ -70,7 +76,7 @@ class Game:
 
             pg.transform.scale(self.screen, self.render.get_size(), self.render)
 
-            self.print_debug()
+            self.launch_debug()
 
             pg.display.update()
             self.clock.tick(self.FPS)
@@ -108,10 +114,9 @@ class Game:
     def stop(self):
         self.running = False
 
-    def print_debug(self):
-        if Debug.is_element_enabled("debug_info"):
-            self.debug_list.insert(0, ("Omicronde API - Galaxaris", "left", 32))
+    def launch_debug(self):
 
+        if Debug.is_element_enabled("debug_info"):
             debug_y_left = 5
             debug_y_right = 5
 
@@ -129,3 +134,40 @@ class Game:
                 else:
                     debug_y_right += debug_el.size[1] + 5
             self.debug_list.clear()
+
+    def register_debug(self):
+        self.debug("Omicronde API - Galaxaris", "left", 32)
+        self.debug(f"FPS : {int(self.clock.get_fps())}", "left")
+
+        if self.screen:
+            screen = self.screen
+            if screen.camera:
+                self.debug(f"Camera : {int(screen.camera.position.x)} | {int(screen.camera.position.y)} - {screen.camera.camera_mode}", "left")
+        
+        keys_pressed = pg.key.get_pressed()
+        active_keys = [pg.key.name(i) for i in range(len(keys_pressed)) if keys_pressed[i]]
+        self.debug("Keys : " + ", ".join(active_keys), "left", 22)
+
+        if self.screen:
+            screen = self.screen
+            self.debug(f"GameObjects : {int(len(screen.game_objects))}", "left", 22)
+
+            if screen.layer_order:
+                self.debug(f"Layers :", "left", 22)
+                for i, layer in enumerate(screen.layer_order):
+                    self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", 22)
+
+    def register_debug_entity(self, entity):
+        self.debug(f"Entity : {entity.__class__.__name__}", "right")
+        self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right")
+
+        if entity:
+            self.debug("Jump : " + ("True" if entity.jump else "False"), "right")
+            self.debug("Fall : " + ("True" if entity.fall else "False"), "right")
+            self.debug("Boost : " + ("True" if entity.boost else "False"), "right")
+            self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
+
+        if entity.collided_objs:
+            self.debug("Collisions :", "right")
+            for collision in entity.collided_objs:
+                self.debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", 22)

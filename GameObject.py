@@ -71,7 +71,9 @@ class GameObject(pg.sprite.Sprite):
     def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0), game_objects=None):
         self.update(game_objects)
 
-        # Draw a red rectangle around the object for debugging
+        if not self.animation and self.direction == "left":
+            self.image = pg.transform.flip(self.image, True, False)
+
         surface.blit(self.image, self.pos - offset)
 
         #DEBUG

@@ -6,18 +6,22 @@ from api.GameObject import GameObject
 from api.assets.Animation import Animation
 import pygame as pg
 
+from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
+from api.utils import Debug
 
 
 class Entity(GameObject):
-    animations: dict[str, Animation]
+    animations: dict[str, Animation | Texture]
     vel: pg.Vector2
     jump: bool
     fall: bool
+    boost: bool
     gravity: Optional[float]
     collided_objs : list[tuple[GameObject, str]]
     def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
         super().__init__(pos, size)
+        self.boost = False
         self.vel = pg.Vector2(0, 0)
         self.jump = False
         self.fall = False
@@ -28,6 +32,10 @@ class Entity(GameObject):
 
     def add_animation(self, name: str, animation: Animation):
         self.animations[name] = animation
+
+    def bind_animations(self, animation_names: dict[str, Animation | Texture]):
+        for name in animation_names:
+            self.animations[name] = animation_names[name]
 
     def set_gravity(self, gravity: float):
         self.gravity = gravity
@@ -40,12 +48,11 @@ class Entity(GameObject):
     def hit_head(self):
         self.vel.y = 0
         self.jump = False
-        self.fall = True
 
 
     def update(self, others):
         super().update(others)
-
+        self.update_sprite()
         self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x, self.vel.y)
         on_ground = False
 
@@ -73,3 +80,24 @@ class Entity(GameObject):
             self.vel.y += self.gravity
 
         self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
+
+    def update_sprite(self):
+        if self.vel.y > 0:
+            self.set_sprite("fall")
+        elif self.vel.y < 0:
+            self.set_sprite("jump")
+        elif self.vel.x != 0:
+            if self.boost:
+                self.set_sprite("run_fast")
+            else:
+                self.set_sprite("run")
+        else:
+            self.set_sprite("idle")
+
+    def set_sprite(self, name: str):
+        if name in self.animations:
+            anim = self.animations[name]
+            if isinstance(anim, Animation):
+                self.set_animation(anim)
+            elif isinstance(anim, Texture):
+                self.set_texture(anim)
