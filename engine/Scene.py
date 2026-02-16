@@ -82,7 +82,7 @@ class Scene(pg.Surface):
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
                     others_objects = [o for o in self.game_objects if o.id != obj.id]
-                    if -100 < relative_pos.x < self.size.x + 100:
+                    if -self.size.x - 100 < relative_pos.x < self.size.x + 100:
                         obj.draw(self, offset=self.camera.position, game_objects=others_objects)
 
 

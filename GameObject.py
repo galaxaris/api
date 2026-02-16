@@ -8,7 +8,7 @@ from api.assets.Texture import Texture
 from api.utils import Debug
 
 
-class GameObject(pg.sprite.Sprite):
+class GameObject:
     pos: pg.Vector2
     size: pg.Vector2
     rect: pg.Rect

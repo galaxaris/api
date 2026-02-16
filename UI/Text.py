@@ -1,4 +1,5 @@
 from api.UI import UIElement
+from api.utils.Fonts import get_font
 import pygame as pg
 
 class Text(UIElement):
@@ -15,6 +16,6 @@ class Text(UIElement):
 
     def set_text(self, text: str):
         self.text = text
-        self.image = pg.font.SysFont(self.font, self.size_text).render(self.text, False, self.color)
+        self.image = get_font(self.font, self.size_text).render(self.text, False, self.color)
         self.rect = self.image.get_rect(topleft=self.pos)
         self.size = self.image.get_size()

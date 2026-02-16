@@ -35,6 +35,8 @@ class Player(Entity):
                 if self.vel.x > -(self.max_velocity + boost_val):
                     self.vel.x -= self.acceleration
                     self.set_direction("left")
+                elif self.vel.x < -(self.max_velocity + boost_val):
+                    self.vel.x = -self.max_velocity
             else:
                 if self.vel.x < 0:
                     self.vel.x += self.resistance
