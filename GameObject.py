@@ -77,5 +77,5 @@ class GameObject:
         surface.blit(self.image, self.pos - offset)
 
         #DEBUG
-        if Debug.is_element_enabled("colliders") and "debug" not in self.tags and "dont_debug" not in self.tags:
+        if Debug.is_enabled("colliders") and "debug" not in self.tags and "dont_debug" not in self.tags:
             pg.draw.rect(surface, (255, 0, 0), self.rect.move(-offset.x, -offset.y), 1)

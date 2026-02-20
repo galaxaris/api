@@ -8,7 +8,7 @@ INPUTS = {
     "jump": [pg.K_SPACE],
     "boost": [pg.K_LSHIFT, pg.K_RCTRL],
     "up": [pg.K_UP, pg.K_z],
-    "down": [pg.K_DOWN, pg.K_s]
+    "down": [pg.K_DOWN, pg.K_s],
 }
 
 _controllers = {}
@@ -32,5 +32,6 @@ def get_inputs():
 
         if joy.get_button(0): current_state["jump"] = True
         if joy.get_axis(5) > 10000: current_state["boost"] = True
+
 
     return current_state

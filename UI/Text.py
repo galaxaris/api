@@ -1,4 +1,4 @@
-from api.UI import UIElement
+from api.UI.UI import UIElement
 from api.utils.Fonts import get_font
 import pygame as pg
 

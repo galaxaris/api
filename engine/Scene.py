@@ -1,6 +1,7 @@
 import pygame as pg
 from typing import Dict, List, Optional
 from api.GameObject import GameObject
+from api.UI.UI import GameUI
 from api.engine.GameCamera import GameCamera
 from api.environment.Background import Background
 from api.environment.Parallax import ParallaxBackground
@@ -16,6 +17,7 @@ class Scene(pg.Surface):
         self.game_objects: List[GameObject] = []
         self.camera : GameCamera = GameCamera((0, 0))
         self.background: Optional[Background | ParallaxBackground] = None
+        self.UI = GameUI(size)
         size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
 
@@ -61,8 +63,13 @@ class Scene(pg.Surface):
                 self.set_layer(0, "_background")
                 self.layer_surfaces["_background"].blit(self.background.draw(), (0, 0))
             elif isinstance(self.background, ParallaxBackground):
-                self.set_layer(0, "background")
+                self.set_layer(0, "_background")
                 self.background.draw(self, self.camera.position, layer="background")
+
+        if self.UI:
+            self.set_layer(len(self.layer_order), "_UI")
+            self.layer_surfaces["_UI"].fill((0, 0, 0, 0))
+            self.UI.draw(self.layer_surfaces["_UI"])
 
         for name in self.layer_order:
             if "_" in name:

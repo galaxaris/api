@@ -30,6 +30,7 @@ class Entity(GameObject):
         self.collided_objs = []
         self.add_tag("entity")
 
+
     def add_animation(self, name: str, animation: Animation):
         self.animations[name] = animation
 
@@ -57,16 +58,16 @@ class Entity(GameObject):
         on_ground = False
 
         for obj in self.collided_objs:
-            if obj[1] == "top":
+            if obj[1] == "top" and obj[1] not in ["left", "right"]:
                 self.land()
                 on_ground = True
-            elif obj[1] == "bottom":
+            if obj[1] == "bottom":
                 self.hit_head()
             if obj[1] == "left":
                 self.vel.x = 0
                 if self.direction == "left":
                     self.vel.x = -0.1
-            elif obj[1] == "right":
+            if obj[1] == "right":
                 self.vel.x = 0
                 if self.direction == "right":
                     self.vel.x = 0.1
@@ -78,6 +79,23 @@ class Entity(GameObject):
 
         if self.gravity and self.fall:
             self.vel.y += self.gravity
+
+        if self.vel.x != 0 and self.collided_objs:
+            for obj in self.collided_objs:
+                if obj[1] in ["left", "right"]:
+                    if obj[1] == "left":
+                        self.set_position((obj[0].rect.left - self.rect.width, self.pos.y))
+                    else:
+                        self.set_position((obj[0].rect.right, self.pos.y))
+
+        if self.vel.y != 0 and self.collided_objs:
+            for obj in self.collided_objs:
+                if obj[1] in ["top", "bottom"]:
+                    if obj[1] == "top":
+                        self.set_position((self.pos.x, obj[0].rect.top - self.rect.height))
+                    else:
+                        self.set_position((self.pos.x, obj[0].rect.bottom))
+                    break
 
         self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
 

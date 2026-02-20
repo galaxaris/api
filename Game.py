@@ -116,7 +116,7 @@ class Game:
 
     def launch_debug(self):
 
-        if Debug.is_element_enabled("debug_info"):
+        if Debug.is_enabled("debug_info"):
             debug_y_left = 5
             debug_y_right = 5
 
@@ -155,7 +155,10 @@ class Game:
             if screen.layer_order:
                 self.debug(f"Layers :", "left", 22)
                 for i, layer in enumerate(screen.layer_order):
-                    self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", 22)
+                    if "_" not in layer:
+                        self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", 22)
+                    else:
+                        self.debug(f"{i} : {layer}", "left", 22)
 
     def register_debug_entity(self, entity):
         self.debug(f"Entity : {entity.__class__.__name__}", "right")

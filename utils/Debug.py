@@ -13,6 +13,6 @@ def toggle(element: str):
     if element in debug_elements:
         debug_elements[element] = not debug_elements[element]
 
-def is_element_enabled(element: str):
+def is_enabled(element: str):
     return debug_elements.get(element, False)
 

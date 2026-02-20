@@ -1,4 +1,4 @@
-from api.utils import Debug
+from api.utils import Debug, State
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
@@ -18,7 +18,7 @@ class Player(Entity):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
-        if not Debug.is_element_enabled("freecam"):
+        if not Debug.is_enabled("freecam") and State.is_enabled("player_control"):
             if inputs["right"]:
                 if self.vel.x < (self.max_velocity + boost_val):
                     self.vel.x += self.acceleration
@@ -54,10 +54,10 @@ class Player(Entity):
             else:
                 self.boost = False
 
-        if Debug.is_element_enabled("freecam"):
+        if Debug.is_enabled("freecam"):
             self.vel.x = 0
             self.vel.y = 0
             self.update_sprite()
         else:
-
             super().update(others)
+

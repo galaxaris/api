@@ -8,8 +8,9 @@ def get_font(name: str, size: int, custom: bool = False) -> Font:
         return font_generated[(name, size)]
     else:
         print("Add font", name, size)
-        if custom:
-            font_generated[(name, size)] = Font(name, size)
+        if "**/" in name:
+            path = name.split("**/")[1]
+            font_generated[(name, size)] = pg.font.Font(path, size)
         else:
             font_generated[(name, size)] = pg.font.SysFont(name, size)
         return font_generated[(name, size)]
