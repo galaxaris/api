@@ -8,7 +8,8 @@ INPUTS = {
     "jump": [pg.K_SPACE],
     "boost": [pg.K_LSHIFT, pg.K_RCTRL],
     "up": [pg.K_UP, pg.K_z],
-    "down": [pg.K_DOWN, pg.K_s]
+    "down": [pg.K_DOWN, pg.K_s],
+    "shoot": [pg.K_h],
 }
 
 _controllers = {}
