@@ -1,7 +1,6 @@
 import pygame as pg
 from pygame._sdl2 import controller
 
-# Standard mapping for keys
 INPUTS = {
     "right": [pg.K_RIGHT, pg.K_d],
     "left": [pg.K_LEFT, pg.K_q],
@@ -10,28 +9,97 @@ INPUTS = {
     "up": [pg.K_UP, pg.K_z],
     "down": [pg.K_DOWN, pg.K_s],
     "shoot": [pg.K_h],
+    "interact": [pg.K_e]
+}
+
+CONTROLLER_INPUTS = {
+    "right": [("axis", pg.CONTROLLER_AXIS_LEFTX, 16000)],
+    "left": [("axis", pg.CONTROLLER_AXIS_LEFTX, -16000)],
+    "up": [("axis", pg.CONTROLLER_AXIS_LEFTY, -16000)],
+    "down": [("axis", pg.CONTROLLER_AXIS_LEFTY, 16000)],
+    "jump": [("button", pg.CONTROLLER_BUTTON_A)],  # Xbox A / PS Cross
+    "boost": [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
+    "interact": [("button", pg.CONTROLLER_BUTTON_B)]  # Xbox X / PS Square
 }
 
 _controllers = {}
+
+# Friendly name maps for UI
+BRAND_MAPS = {
+    "xbox": {
+        pg.CONTROLLER_BUTTON_A: "A", pg.CONTROLLER_BUTTON_B: "B",
+        pg.CONTROLLER_BUTTON_X: "X", pg.CONTROLLER_BUTTON_Y: "Y",
+        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "RT", pg.CONTROLLER_AXIS_TRIGGERLEFT: "LT"
+    },
+    "ps": {
+        pg.CONTROLLER_BUTTON_A: "Cross", pg.CONTROLLER_BUTTON_B: "Circle",
+        pg.CONTROLLER_BUTTON_X: "Square", pg.CONTROLLER_BUTTON_Y: "Triangle",
+        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "R2", pg.CONTROLLER_AXIS_TRIGGERLEFT: "L2"
+    }
+}
+
+
+def get_controller_brand(joy):
+    name = joy.name.lower()
+    if any(x in name for x in ["playstation", "dualshock", "dualsense", "ps4", "ps5"]):
+        return "ps"
+    return "xbox"
+
 
 def get_inputs():
     pg_keys = pg.key.get_pressed()
     current_state = {action: any(pg_keys[key] for key in keys) for action, keys in INPUTS.items()}
 
-    for i in range(controller.get_count()):
-        if i not in _controllers:
-            con = controller.Controller(i)
-            _controllers[i] = con
+
+    if controller.get_count() > len(_controllers):
+        for i in range(controller.get_count()):
+            if i not in _controllers:
+                _controllers[i] = controller.Controller(i)
 
     if _controllers:
-        joy = _controllers[0]
-        if joy.get_axis(0) > 16000: current_state["right"] = True
-        elif joy.get_axis(0) < -16000: current_state["left"] = True
+        joy = _controllers[0]  # Focus on primary player
+        for action, inputs in CONTROLLER_INPUTS.items():
+            for input_data in inputs:
+                input_type = input_data[0]
 
-        if joy.get_axis(1) < -16000: current_state["up"] = True
-        elif joy.get_axis(1) > 16000: current_state["down"] = True
+                if input_type == "button":
+                    btn_index = input_data[1]
+                    if joy.get_button(btn_index):
+                        current_state[action] = True
 
-        if joy.get_button(0): current_state["jump"] = True
-        if joy.get_axis(5) > 10000: current_state["boost"] = True
-
+                elif input_type == "axis":
+                    axis_index, threshold = input_data[1], input_data[2]
+                    val = joy.get_axis(axis_index)
+                    if (0 > threshold > val) or (0 < threshold < val):
+                        current_state[action] = True
     return current_state
+
+
+def get_str_input(selected_input: str) -> str:
+    if _controllers:
+        joy = _controllers[0]
+        brand = get_controller_brand(joy)
+        mapping = BRAND_MAPS.get(brand, BRAND_MAPS["xbox"])
+
+        if selected_input in CONTROLLER_INPUTS:
+            input_data = CONTROLLER_INPUTS[selected_input][0]
+            input_type, index = input_data[0], input_data[1]
+
+            if input_type == "button":
+                return mapping.get(index, f"Btn {index}")
+            elif input_type == "axis":
+                if index in [pg.CONTROLLER_AXIS_TRIGGERRIGHT, pg.CONTROLLER_AXIS_TRIGGERLEFT]:
+                    return mapping.get(index, "Trigger")
+                return "Stick"
+
+    # Fallback to Keyboard
+    if selected_input in INPUTS:
+        return pg.key.name(INPUTS[selected_input][0]).upper()
+
+    return "None"
+
+def get_hint_input(selected_input: str)->str:
+   if _controllers:
+        return "(" + get_str_input(selected_input) + ")"
+   else:
+        return "[" + get_str_input(selected_input) + "]"

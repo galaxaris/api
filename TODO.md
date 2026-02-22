@@ -33,10 +33,6 @@ Environment :
 
 ## Environment
 
-- Physics.py :
-  - Ajouter un système de collision plus robuste (ex: collision pixel-perfect, gestion des collisions complexes)
-  - Implémenter un système de forces (gravité, frottement, etc.)
-
 - Solid.py (GameObject) :
   - Ajouter des propriétés physiques 
   - Gérer les interactions avec d'autres objets
@@ -48,8 +44,7 @@ Environment :
 - Trap.py (GameObject) :
   - Ajouter des propriétés de piège (ex: dégâts, activation, etc.)
   - Gérer les interactions avec le joueur et les ennemis
-  
-- 
+
    
 ## Assets
 
@@ -63,10 +58,6 @@ Environment :
   - Ajouter des animations pour les états (hover, click)
   - Permettre la personnalisation des styles (couleurs, polices, etc.)
   
-- Text.py :
-  - Ajouter la possibilité d'afficher du texte multi-ligne
-  - Permettre la personnalisation des styles (couleurs, polices, etc.)
-
 - TextBox.py :
   - Ajouter la possibilité d'afficher du texte multi-ligne
   - Fond personnalisable (couleur, image, etc.)

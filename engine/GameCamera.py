@@ -39,7 +39,7 @@ class GameCamera:
 
     def update(self):
 
-        if Debug.is_element_enabled("freecam"):
+        if Debug.is_enabled("freecam"):
             self.camera_mode = "Freecam"
             inputs = get_inputs()
             boost = 5 if inputs["boost"] else 0

@@ -1,4 +1,4 @@
-from api.utils import Debug
+from api.utils import Debug, State
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
@@ -25,7 +25,7 @@ class Player(Entity):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
-        if not Debug.is_element_enabled("freecam"):
+        if not Debug.is_enabled("freecam") and State.is_enabled("player_control"):
 
             if inputs["shoot"]:
                 self.vel.x = 0
@@ -85,13 +85,13 @@ class Player(Entity):
 
 
 
-        if Debug.is_element_enabled("freecam"):
+        if Debug.is_enabled("freecam"):
             self.vel.x = 0
             self.vel.y = 0
             self.update_sprite()
         else:
-
             super().update(others)
+
 
     def draw(self, surface, offset = pg.Vector2(0, 0), game_objects = None):
         super().draw(surface, offset, game_objects)
