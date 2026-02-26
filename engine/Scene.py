@@ -58,6 +58,8 @@ class Scene(pg.Surface):
     def draw(self, screen: pg.Surface):
         self.fill((0, 0, 0))
 
+        self.camera.update()
+
         if self.background:
             if isinstance(self.background, Background):
                 self.set_layer(0, "_background")
@@ -71,6 +73,7 @@ class Scene(pg.Surface):
             self.layer_surfaces["_UI"].fill((0, 0, 0, 0))
             self.UI.update()
             self.UI.draw(self.layer_surfaces["_UI"])
+
 
         for name in self.layer_order:
             if "_" in name:
