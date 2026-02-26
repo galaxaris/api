@@ -77,7 +77,7 @@ class TextBox(UIElement):
             text_surface.blit(line, (0, line_y))
             line_y += line.get_height() + 5
 
-        close_text = f"Appuyer sur {Inputs.get_hint_input("interact").upper()} pour {self.goal}"
+        close_text = f"Appuyer sur {Inputs.get_hint_input('interact').upper()} pour {self.goal}"
         close_surface = get_font(self.font, 14).render(close_text, False, (177, 177, 177))
         text_surface.blit(close_surface, (0, line_y))
 
