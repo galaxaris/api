@@ -25,22 +25,21 @@ class Player(Entity):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
-        if not Debug.is_enabled("freecam") and State.is_enabled("player_control"):
-
-            if inputs["shoot"]:
+        if not Debug.is_enabled("freecam"):
+            if inputs["shoot"] and State.is_enabled("player_control"):
                 self.vel.x = 0
 
                 if inputs["up"]:
-                    self.shot_angle += 1
-
-                if inputs["down"]:
-                    self.shot_angle -= 1
-
-                if inputs["right"]:
                     self.shot_speed += 1
 
-                if inputs["left"]:
+                if inputs["down"]:
                     self.shot_speed -= 1
+
+                if inputs["right"]:
+                    self.shot_angle += 1
+
+                if inputs["left"]:
+                    self.shot_angle -= 1
 
                 self.active_trajectory = Trajectory(self.pos, self.shot_angle, self.shot_speed, self.gravity)
                 self.active_trajectory.get_trajectory_coordinates(self.pos, self.shot_angle, self.shot_speed, self.gravity)
@@ -48,7 +47,7 @@ class Player(Entity):
             else:
                 self.active_trajectory = None
 
-                if inputs["right"]:
+                if inputs["right"] and State.is_enabled("player_control"):
                     if self.vel.x < (self.max_velocity + boost_val):
                         self.vel.x += self.acceleration
                         self.set_direction("right")
@@ -60,7 +59,7 @@ class Player(Entity):
                         if self.vel.x < 0:
                             self.vel.x = 0
 
-                if inputs["left"]:
+                if inputs["left"] and State.is_enabled("player_control"):
                     if self.vel.x > -(self.max_velocity + boost_val):
                         self.vel.x -= self.acceleration
                         self.set_direction("left")
@@ -72,13 +71,13 @@ class Player(Entity):
                         if self.vel.x > 0:
                             self.vel.x = 0
 
-                if inputs["jump"] and self.jump == False:
+                if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
                     gravity = self.gravity if self.gravity else 1
                     self.vel.y += -self.acceleration * max(1,gravity) * self.force
                     self.jump = True
 
 
-                if inputs["boost"]:
+                if inputs["boost"] and State.is_enabled("player_control"):
                     self.boost = True
                 else:
                     self.boost = False

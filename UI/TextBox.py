@@ -29,16 +29,18 @@ class TextBox(UIElement):
     closable : bool
     font : str
     def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left", texture: Texture = None, closable: bool = True, goal = "fermer"):
+        super().__init__((0, 0), (0, 0))
         self.title = process_title(title, font)
         self.font = font
         self.text = process_text(self.font, text)
         self.image_side = image_side
-        self.goal = goal
         self.closable = closable
-        super().__init__((0, 0), (0, 0))
+        self.goal = goal
         self.image = None
         self.set_image(texture, image_side)
-        self.add_tag("textbox")
+        self.add_tag("ui_textbox")
+        self.add_tag("ui_block")
+        self.add_tag("ui_closable")
 
     def set_text(self, font , *text):
         self.text = process_text(font, text)

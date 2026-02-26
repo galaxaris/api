@@ -2,11 +2,15 @@ import os
 
 state_elements = {
     "player_control": True,
+    "in_menu": False
 }
 
-def toggle(element: str):
+def toggle(element: str, state = None):
     if element in state_elements:
-        state_elements[element] = not state_elements[element]
+        if state is not None:
+            state_elements[element] = state
+        else:
+            state_elements[element] = not state_elements[element]
 
 def is_enabled(element: str):
     return state_elements.get(element, False)

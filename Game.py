@@ -33,7 +33,7 @@ class Game:
         pg.joystick.init()
         controller.init()
         self.render = pg.display.set_mode(size, flags)
-        self.screen = Scene(size if render_size is None else render_size)
+        self.scene = Scene(size if render_size is None else render_size)
         pg.display.set_caption(name)
         self.Window = Window.from_display_module()
         self.clock = pg.time.Clock()
@@ -59,8 +59,8 @@ class Game:
                         self.enable_debug()
 
                     if event.key == pg.K_F8:
-                        if self.screen:
-                            if self.screen.camera:
+                        if self.scene:
+                            if self.scene.camera:
                                 Debug.toggle("freecam")
 
                 for func in self.bound_functions.get(event.type, []):
@@ -70,11 +70,11 @@ class Game:
 
             game()
 
-            self.screen.draw(self.render)
+            self.scene.draw(self.render)
 
             self.render.fill((0, 0, 0))
 
-            pg.transform.scale(self.screen, self.render.get_size(), self.render)
+            pg.transform.scale(self.scene, self.render.get_size(), self.render)
 
             self.launch_debug()
 
@@ -139,8 +139,8 @@ class Game:
         self.debug("Omicronde API - Galaxaris", "left", 32)
         self.debug(f"FPS : {int(self.clock.get_fps())}", "left")
 
-        if self.screen:
-            screen = self.screen
+        if self.scene:
+            screen = self.scene
             if screen.camera:
                 self.debug(f"Camera : {int(screen.camera.position.x)} | {int(screen.camera.position.y)} - {screen.camera.camera_mode}", "left")
         
@@ -148,8 +148,8 @@ class Game:
         active_keys = [pg.key.name(i) for i in range(len(keys_pressed)) if keys_pressed[i]]
         self.debug("Keys : " + ", ".join(active_keys), "left", 22)
 
-        if self.screen:
-            screen = self.screen
+        if self.scene:
+            screen = self.scene
             self.debug(f"GameObjects : {int(len(screen.game_objects))}", "left", 22)
 
             if screen.layer_order:
@@ -169,6 +169,9 @@ class Game:
             self.debug("Fall : " + ("True" if entity.fall else "False"), "right")
             self.debug("Boost : " + ("True" if entity.boost else "False"), "right")
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
+
+            if hasattr(entity, "active_trajectory") and entity.active_trajectory:
+                self.debug(f"Trajectory : Angle {entity.active_trajectory.shot_angle} | Speed {entity.active_trajectory.shot_speed}", "right")
 
         if entity.collided_objs:
             self.debug("Collisions :", "right")

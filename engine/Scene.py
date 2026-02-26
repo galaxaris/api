@@ -69,6 +69,7 @@ class Scene(pg.Surface):
         if self.UI:
             self.set_layer(len(self.layer_order), "_UI")
             self.layer_surfaces["_UI"].fill((0, 0, 0, 0))
+            self.UI.update()
             self.UI.draw(self.layer_surfaces["_UI"])
 
         for name in self.layer_order:

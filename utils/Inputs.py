@@ -8,7 +8,7 @@ INPUTS = {
     "boost": [pg.K_LSHIFT, pg.K_RCTRL],
     "up": [pg.K_UP, pg.K_z],
     "down": [pg.K_DOWN, pg.K_s],
-    "shoot": [pg.K_h],
+    "shoot": [pg.K_f],
     "interact": [pg.K_e]
 }
 
@@ -17,9 +17,10 @@ CONTROLLER_INPUTS = {
     "left": [("axis", pg.CONTROLLER_AXIS_LEFTX, -16000)],
     "up": [("axis", pg.CONTROLLER_AXIS_LEFTY, -16000)],
     "down": [("axis", pg.CONTROLLER_AXIS_LEFTY, 16000)],
-    "jump": [("button", pg.CONTROLLER_BUTTON_A)],  # Xbox A / PS Cross
+    "jump": [("button", pg.CONTROLLER_BUTTON_A)],
     "boost": [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
-    "interact": [("button", pg.CONTROLLER_BUTTON_B)]  # Xbox X / PS Square
+    "interact": [("button", pg.CONTROLLER_BUTTON_B)],
+    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER, 10000)]
 }
 
 _controllers = {}
@@ -29,12 +30,14 @@ BRAND_MAPS = {
     "xbox": {
         pg.CONTROLLER_BUTTON_A: "A", pg.CONTROLLER_BUTTON_B: "B",
         pg.CONTROLLER_BUTTON_X: "X", pg.CONTROLLER_BUTTON_Y: "Y",
-        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "RT", pg.CONTROLLER_AXIS_TRIGGERLEFT: "LT"
+        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "RT", pg.CONTROLLER_AXIS_TRIGGERLEFT: "LT",
+        pg.CONTROLLER_BUTTON_RIGHTSHOULDER: "RB", pg.CONTROLLER_BUTTON_LEFTSHOULDER: "LB"
     },
     "ps": {
         pg.CONTROLLER_BUTTON_A: "Cross", pg.CONTROLLER_BUTTON_B: "Circle",
         pg.CONTROLLER_BUTTON_X: "Square", pg.CONTROLLER_BUTTON_Y: "Triangle",
-        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "R2", pg.CONTROLLER_AXIS_TRIGGERLEFT: "L2"
+        pg.CONTROLLER_AXIS_TRIGGERRIGHT: "R2", pg.CONTROLLER_AXIS_TRIGGERLEFT: "L2",
+        pg.CONTROLLER_BUTTON_RIGHTSHOULDER: "R1", pg.CONTROLLER_BUTTON_LEFTSHOULDER: "L1"
     }
 }
 
@@ -56,6 +59,9 @@ def get_inputs():
             if i not in _controllers:
                 _controllers[i] = controller.Controller(i)
 
+    if controller.get_count() == 0:
+        _controllers.clear()
+
     if _controllers:
         joy = _controllers[0]  # Focus on primary player
         for action, inputs in CONTROLLER_INPUTS.items():
@@ -74,6 +80,14 @@ def get_inputs():
                         current_state[action] = True
     return current_state
 
+def get_once_inputs():
+    current_state = get_inputs()
+    if not hasattr(get_once_inputs, "previous_state"):
+        get_once_inputs.previous_state = {action: False for action in current_state}
+
+    once_state = {action: current_state[action] and not get_once_inputs.previous_state[action] for action in current_state}
+    get_once_inputs.previous_state = current_state
+    return once_state
 
 def get_str_input(selected_input: str) -> str:
     if _controllers:
@@ -99,7 +113,7 @@ def get_str_input(selected_input: str) -> str:
     return "None"
 
 def get_hint_input(selected_input: str)->str:
-   if _controllers:
+   if len(_controllers) > 0:
         return "(" + get_str_input(selected_input) + ")"
    else:
         return "[" + get_str_input(selected_input) + "]"
