@@ -2,7 +2,7 @@ import math
 import pygame
 import random
 
-from api.entity.Interfaces import AimState
+from api.physics.AimState import AimState
 from api.utils.Constants import OFFSET_X, OFFSET_Y
 
 

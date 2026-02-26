@@ -1,8 +1,7 @@
 import pygame
 
 from api.items.Item import Item
-from api.engine import Scene
-from api.entity.Interfaces import AimState
+from api.physics.AimState import AimState
 from api.physics.Trajectory import Trajectory
 
 class Weapon(Item):

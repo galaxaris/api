@@ -1,7 +1,6 @@
 from api.engine import Scene
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_ANGLE, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
-from api.items.Weapon import Weapon
-from api.entity.Interfaces import AimState
+from api.physics.AimState import AimState
 from api.utils import Debug, State
 
 from api.entity.Entity import Entity

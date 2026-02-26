@@ -1,49 +1,91 @@
 from typing import Optional
-
 import pygame as pg
 from pygame.surface import Surface
 
-from api.UI.UI import UIElement
+from api.UI.GameUI import UIElement
 from api.assets.Texture import Texture
 from api.utils.Fonts import get_font
 from api.utils import Inputs
 
 
-#Color process [COLOR(R,V,B)][/COLOR]
-def process_text(font, args) -> list[Surface]:
+def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
+    """
+    Découpe le texte en plusieurs lignes pour qu'elles ne dépassent pas max_width.
+    Respecte les retours à la ligne manuels (\n).
+    """
     text_content = []
-    for line in args:
-        if line:
-            text_surface = get_font(font, 14).render(line, False, (255, 255, 255))
-            text_content.append(text_surface)
+    font = get_font(font_name, 14)
+    space_width = font.size(' ')[0]
+
+    # On sépare d'abord par les paragraphes manuels
+    paragraphs = text.split("\n")
+
+    for paragraph in paragraphs:
+        words = paragraph.split(' ')
+        current_line_words = []
+        current_line_width = 0
+
+        for word in words:
+            # Calcul de la largeur du mot
+            word_width = font.size(word)[0]
+
+            # Si le mot dépasse la largeur max, on valide la ligne actuelle et on recommence
+            if current_line_width + word_width > max_width:
+                if current_line_words:
+                    line_text = " ".join(current_line_words)
+                    text_content.append(font.render(line_text, False, (255, 255, 255)))
+
+                current_line_words = [word]
+                current_line_width = word_width + space_width
+            else:
+                current_line_words.append(word)
+                current_line_width += word_width + space_width
+
+        # On ajoute la dernière ligne du paragraphe
+        if current_line_words:
+            line_text = " ".join(current_line_words)
+            text_content.append(font.render(line_text, False, (255, 255, 255)))
+
     return text_content
 
+
 def process_title(title: str, font: str) -> Surface:
-    return get_font(font, 32).render(title, False, (255, 255, 255))
+    return get_font(font, 30).render(title, False, (255, 255, 255))
+
 
 class TextBox(UIElement):
-    title : Surface
-    text : list[Surface]
-    image : Optional[Surface]
-    image_side : str
-    closable : bool
-    font : str
-    def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left", texture: Texture = None, closable: bool = True, goal = "fermer"):
+    title_surface: Surface
+    text_surfaces: list[Surface]
+    image: Optional[Surface]
+    image_side: str
+    closable: bool
+    font: str
+    raw_text: str
+    goal: str
+
+    def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left",
+                 texture: Texture = None, closable: bool = True, goal="fermer"):
         super().__init__((0, 0), (0, 0))
-        self.title = process_title(title, font)
+        self.raw_text = text
         self.font = font
-        self.text = process_text(self.font, text)
+        self.title_surface = process_title(title, font)
         self.image_side = image_side
         self.closable = closable
         self.goal = goal
         self.image = None
-        self.set_image(texture, image_side)
+        self.text_surfaces = []  # Sera généré au premier draw selon la largeur disponible
+
+        if texture:
+            self.set_image(texture, image_side)
+
         self.add_tag("ui_textbox")
         self.add_tag("ui_block")
         self.add_tag("ui_closable")
 
-    def set_text(self, font , *text):
-        self.text = process_text(font, text)
+    def set_text(self, text: str, font: str = None):
+        if font: self.font = font
+        self.raw_text = text
+        self.text_surfaces = []  # Reset pour forcer le recalcul au prochain draw
 
     def set_image(self, texture: Texture, image_side: str = "left"):
         if texture:
@@ -51,45 +93,57 @@ class TextBox(UIElement):
             self.image_side = image_side
         else:
             self.image = None
+        self.text_surfaces = []  # Reset car l'espace disponible pour le texte change
 
     def set_title(self, title: str, font: str):
-        self.title = process_title(title, font)
+        self.title_surface = process_title(title, font)
 
-    def draw(self, surface: pg.Surface, offset = (0,0), game_objects = None):
-        margin = 10
-        width = surface.get_width() - margin*2
-        height = surface.get_height()//3
-
-        text_box = pg.Surface((width, height), pg.SRCALPHA, 32).convert_alpha()
-        IMAGE_SIZE = (height - margin*2, height - margin*2)
-        if self.image.get_size() != IMAGE_SIZE:
-            self.image = pg.transform.scale(self.image, IMAGE_SIZE)
-        text_box.fill((0, 0, 0, 200))
-
-        text_surface = pg.Surface((width - margin*2, height - margin*2), pg.SRCALPHA, 32).convert_alpha()
-        text_surface.fill((0, 0, 0, 0))
-
-        text_surface.blit(self.title, (0, 0))
-        line_y = self.title.get_height() + 5
+    def draw(self, surface: pg.Surface, offset=(0, 0), game_objects=None):
+        margin = 15
+        width = surface.get_width() - margin * 2
+        height = surface.get_height() // 3
 
 
-        for line in self.text:
-            text_surface.blit(line, (0, line_y))
-            line_y += line.get_height() + 5
-
-        close_text = f"Appuyer sur {Inputs.get_hint_input('interact').upper()} pour {self.goal}"
-        close_surface = get_font(self.font, 14).render(close_text, False, (177, 177, 177))
-        text_surface.blit(close_surface, (0, line_y))
+        image_size_px = height - margin * 2
+        image_area_width = image_size_px + margin if self.image else 0
 
 
+        max_text_width = width - image_area_width - margin * 2
+
+        if not self.text_surfaces:
+            self.text_surfaces = process_text(self.font, self.raw_text, max_text_width)
+
+        text_box_bg = pg.Surface((width, height), pg.SRCALPHA, 32).convert_alpha()
+        text_box_bg.fill((0, 0, 0, 220))
+
+        content_surface = pg.Surface((max_text_width, height - margin * 2), pg.SRCALPHA, 32).convert_alpha()
+
+        content_surface.blit(self.title_surface, (0, 0))
+        line_y = self.title_surface.get_height() + 4
+
+        for line in self.text_surfaces:
+            content_surface.blit(line, (0, line_y))
+            line_y += line.get_height() + 4
+
+
+        hint_text = Inputs.get_hint_input("interact")
+        hint_surface = get_font(self.font, 16).render(hint_text, False, (180, 180, 180))
+        content_surface.blit(hint_surface, (content_surface.get_width() - hint_surface.get_width(), content_surface.get_height() - hint_surface.get_height()))
+
+        # 6. Assemblage final (Image + Contenu)
         if self.image:
-            if self.image_side == "left":
-                text_box.blit(text_surface, (self.image.get_width() + margin*2, margin))
-                text_box.blit(self.image, (margin, margin))
-            else:
-                text_box.blit(text_surface, (margin, margin))
-                text_box.blit(self.image, (width - self.image.get_width() - margin, margin))
-        else:
-            text_box.blit(text_surface, (margin, margin))
+            # Redimensionnement de l'image si nécessaire
+            if self.image.get_size() != (image_size_px, image_size_px):
+                self.image = pg.transform.scale(self.image, (image_size_px, image_size_px))
 
-        surface.blit(text_box, (self.pos.x + margin, surface.get_height() - height - margin))
+            if self.image_side == "left":
+                text_box_bg.blit(self.image, (margin, margin))
+                text_box_bg.blit(content_surface, (image_area_width + margin, margin))
+            else:
+                text_box_bg.blit(content_surface, (margin, margin))
+                text_box_bg.blit(self.image, (width - image_size_px - margin, margin))
+        else:
+            text_box_bg.blit(content_surface, (margin, margin))
+
+        # 7. Affichage sur l'écran principal (en bas)
+        surface.blit(text_box_bg, (margin, surface.get_height() - height - margin))

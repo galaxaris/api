@@ -1,7 +1,7 @@
 import pygame as pg
 from typing import Dict, List, Optional
 from api.GameObject import GameObject
-from api.UI.UI import GameUI
+from api.UI.GameUI import GameUI
 from api.engine.GameCamera import GameCamera
 from api.environment.Background import Background
 from api.environment.Parallax import ParallaxBackground
