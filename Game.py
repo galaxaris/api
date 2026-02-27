@@ -1,3 +1,5 @@
+import math
+
 import pygame as pg
 
 from api.engine import Scene
@@ -174,8 +176,8 @@ class Game:
             self.debug("Boost : " + ("True" if entity.boost else "False"), "right")
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
 
-            """if hasattr(entity, "active_trajectory") and entity.active_trajectory:
-                self.debug(f"Trajectory : Angle {entity.active_trajectory.shot_angle} | Speed {entity.active_trajectory.shot_speed}", "right")"""
+            if hasattr(entity, "active_trajectory") and entity.active_trajectory:
+                self.debug(f"Trajectory : Angle {int(entity.active_trajectory.angle_radians * 100)} | Speed {entity.active_trajectory.shot_speed}", "right")
 
         if entity.collided_objs:
             self.debug("Collisions :", "right")

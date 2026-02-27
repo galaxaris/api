@@ -30,15 +30,17 @@ class Player(Entity):
 
         if not Debug.is_enabled("freecam"):
 
-            if inputs["shoot"]:
+            if inputs["aim"] and State.is_enabled("player_control"):
                 self.vel.x = 0
 
-                mouse_x, mouse_y = pg.mouse.get_pos()
+                mouse_x, mouse_y = Inputs.get_mouse()
 
                 if mouse_x - self.pos.x < 0:
                     self.set_direction("left")
-
                 else:
+                    self.set_direction("right")
+
+                if mouse_x == 0 and mouse_y == 0:
                     self.set_direction("right")
 
                 if Inputs.MOUSE_SCROLL > 0 and self.shot_speed < MAX_SHOT_SPEED:
@@ -51,45 +53,44 @@ class Player(Entity):
 
                 self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()
-
             else:
                 self.active_trajectory = None
                 self.shot_speed = DEFAULT_SHOT_SPEED
 
-                if inputs["right"] and State.is_enabled("player_control"):
-                    if self.vel.x < (self.max_velocity + boost_val):
-                        self.vel.x += self.acceleration
-                        self.set_direction("right")
-                    elif self.vel.x > (self.max_velocity + boost_val):
-                        self.vel.x = self.max_velocity
-                else:
-                    if self.vel.x > 0:
-                        self.vel.x -= self.resistance
-                        if self.vel.x < 0:
-                            self.vel.x = 0
-
-                if inputs["left"] and State.is_enabled("player_control"):
-                    if self.vel.x > -(self.max_velocity + boost_val):
-                        self.vel.x -= self.acceleration
-                        self.set_direction("left")
-                    elif self.vel.x < -(self.max_velocity + boost_val):
-                        self.vel.x = -self.max_velocity
-                else:
+            if inputs["right"] and State.is_enabled("player_control"):
+                if self.vel.x < (self.max_velocity + boost_val):
+                    self.vel.x += self.acceleration
+                    self.set_direction("right")
+                elif self.vel.x > (self.max_velocity + boost_val):
+                    self.vel.x = self.max_velocity
+            else:
+                if self.vel.x > 0:
+                    self.vel.x -= self.resistance
                     if self.vel.x < 0:
-                        self.vel.x += self.resistance
-                        if self.vel.x > 0:
-                            self.vel.x = 0
+                        self.vel.x = 0
 
-                if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
-                    gravity = self.gravity if self.gravity else 1
-                    self.vel.y += -self.acceleration * max(1,gravity) * self.force
-                    self.jump = True
+            if inputs["left"] and State.is_enabled("player_control"):
+                if self.vel.x > -(self.max_velocity + boost_val):
+                    self.vel.x -= self.acceleration
+                    self.set_direction("left")
+                elif self.vel.x < -(self.max_velocity + boost_val):
+                    self.vel.x = -self.max_velocity
+            else:
+                if self.vel.x < 0:
+                    self.vel.x += self.resistance
+                    if self.vel.x > 0:
+                        self.vel.x = 0
+
+            if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
+                gravity = self.gravity if self.gravity else 1
+                self.vel.y += -self.acceleration * max(1,gravity) * self.force
+                self.jump = True
 
 
-                if inputs["boost"] and State.is_enabled("player_control"):
-                    self.boost = True
-                else:
-                    self.boost = False
+            if inputs["boost"] and State.is_enabled("player_control"):
+                self.boost = True
+            else:
+                self.boost = False
 
 
 

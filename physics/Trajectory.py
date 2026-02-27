@@ -12,6 +12,7 @@ class Trajectory:
     shot_speed : int
     gravity: float
     def __init__(self, player_pos: pygame.Vector2, shot_speed: int, gravity: float, mouse_pos: pygame.Vector2):
+        self.angle_radians = None
         self.entity_pos = player_pos
         self.shot_speed = shot_speed
         self.gravity = gravity
@@ -28,11 +29,14 @@ class Trajectory:
 
         dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.entity_screen_pos
 
-        angle_radians = math.atan2(-dy, dx)
 
+        self.angle_radians = math.atan2(-dy, dx)
 
-        vx = self.shot_speed * math.cos(angle_radians)
-        vy = -self.shot_speed * math.sin(angle_radians)
+        if self.mouse_pos == (0, 0):
+            self.angle_radians = 0
+
+        vx = self.shot_speed * math.cos(self.angle_radians)
+        vy = -self.shot_speed * math.sin(self.angle_radians)
 
         for i in range(50):
             self.trajectory_coordinates.append(self.entity_screen_pos + i*pygame.Vector2(vx, vy))

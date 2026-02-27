@@ -12,7 +12,8 @@ INPUTS = {
     "boost": [pg.K_LSHIFT, pg.K_RCTRL],
     "up": [pg.K_UP, pg.K_z],
     "down": [pg.K_DOWN, pg.K_s],
-    "shoot": [pg.K_f],
+    "aim": ["MOUSE_RIGHT"],
+    "shoot": ["MOUSE_LEFT"],
     "interact": [pg.K_e]
 }
 
@@ -24,7 +25,8 @@ CONTROLLER_INPUTS = {
     "jump": [("button", pg.CONTROLLER_BUTTON_A)],
     "boost": [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
     "interact": [("button", pg.CONTROLLER_BUTTON_B)],
-    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER, 10000)]
+    "aim": [("axis", pg.CONTROLLER_AXIS_TRIGGERLEFT, 10000)],
+    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)]
 }
 
 _EDITOR_KEYS = {}
@@ -65,10 +67,23 @@ def get_inputs():
     pg_keys = {}
     if os.environ.get("EDITOR") == "1":
         pg_keys = _EDITOR_KEYS
-        current_state = {action: any(pg_keys.get(key, False) for key in keys) for action, keys in INPUTS.items()}
+        current_state = {action: any(pg_keys.get(key, False) for key in keys if isinstance(key, int)) for action, keys in INPUTS.items()}
     else:
         pg_keys = pg.key.get_pressed()
-        current_state = {action: any(pg_keys[key] for key in keys) for action, keys in INPUTS.items()}
+        mouse_pressed = pg.mouse.get_pressed()
+        current_state = {action: any(pg_keys[key] for key in keys if isinstance(key, int)) for action, keys in INPUTS.items()}
+        for action, keys in INPUTS.items():
+            is_active = False
+            for key in keys:
+                if key == "MOUSE_LEFT":
+                    if mouse_pressed[0]:  # 0 is Left Click
+                        is_active = True
+                elif key == "MOUSE_RIGHT":
+                    if mouse_pressed[2]:  # 2 is Right Click
+                        is_active = True
+                elif pg_keys[key]:  # Standard keyboard check
+                    is_active = True
+            current_state[action] = is_active
 
 
     if controller.get_count() > len(_controllers):
@@ -123,6 +138,14 @@ def get_str_input(selected_input: str) -> str:
                     return mapping.get(index, "Trigger")
                 return "Stick"
 
+        if selected_input in INPUTS:
+            primary_key = INPUTS[selected_input][0]
+            if primary_key == "MOUSE_LEFT":
+                return "L-CLICK"
+            if primary_key == "MOUSE_RIGHT":
+                return "R-CLICK"
+            return pg.key.name(primary_key).upper()
+
     # Fallback to Keyboard
     if selected_input in INPUTS:
         return pg.key.name(INPUTS[selected_input][0]).upper()
@@ -134,3 +157,17 @@ def get_hint_input(selected_input: str)->str:
         return "(" + get_str_input(selected_input) + ")"
    else:
         return "[" + get_str_input(selected_input) + "]"
+
+
+def get_mouse():
+    if not _controllers:
+        return pg.mouse.get_pos()
+    else:
+        axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
+        axis_y = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTY)
+        deadzone = 0.2
+        if abs(axis_x) < deadzone:
+            axis_x = 0
+        if abs(axis_y) < deadzone:
+            axis_y = 0
+        return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
