@@ -1,14 +1,12 @@
 from api.GameObject import GameObject
 from api.physics.Trajectory import Trajectory
-from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_ANGLE, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
-from api.utils import Debug, State
+from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
+from api.utils import Debug, State, Inputs
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
 
-from api.engine.GameCamera import GameCamera
 
-import math
 import pygame as pg
 
 class Player(Entity):
@@ -37,11 +35,19 @@ class Player(Entity):
 
                 mouse_x, mouse_y = pg.mouse.get_pos()
 
-                if inputs["right"]:
-                    self.shot_speed += 1
+                if mouse_x - self.pos.x < 0:
+                    self.set_direction("left")
 
-                if inputs["left"]:
-                    self.shot_speed -= 1
+                else:
+                    self.set_direction("right")
+
+                if Inputs.MOUSE_SCROLL > 0 and self.shot_speed < MAX_SHOT_SPEED:
+                    self.shot_speed += Inputs.MOUSE_SCROLL
+                    Inputs.MOUSE_SCROLL = 0
+
+                elif Inputs.MOUSE_SCROLL < 0 and self.shot_speed > MIN_SHOT_SPEED:
+                    self.shot_speed += Inputs.MOUSE_SCROLL
+                    Inputs.MOUSE_SCROLL = 0
 
                 self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()

@@ -23,7 +23,7 @@ class Trajectory:
     def build_trajectory_coordinates(self):
         self.trajectory_coordinates.clear()
         cam_pos = GlobalVariables.get_variable("cam_pos")
-        self.entity_screen_pos = self.entity_pos - cam_pos + pygame.Vector2(32, 16)
+        self.entity_screen_pos = self.entity_pos - cam_pos
 
 
         dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.entity_screen_pos
@@ -45,7 +45,7 @@ class Trajectory:
             point_x = point[0]
             point_y = point[1]
 
-            colour_choices = ["red", "blue", "green", "yellow", "cyan", "magenta"]
+            colour_choices = ["white", "yellow"]
             pygame.draw.circle(surface, random.choice(colour_choices), (int(point_x), int(point_y)), 2)
 
             pygame.draw.circle(surface, "green", (self.entity_pos[0], self.entity_pos[1]), 5)
