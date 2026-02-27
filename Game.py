@@ -150,7 +150,7 @@ class Game:
 
     def register_debug(self):
         self.debug("Omicronde API - Galaxaris", "left", 32)
-        self.debug(f"FPS : {int(self.clock.get_fps())}", "left")
+        self.debug(f"FPS : {int(self.clock.get_fps())} | Render t : {self.clock.get_rawtime()} ms", "left")
 
         if self.scene:
             screen = self.scene
