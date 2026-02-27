@@ -7,7 +7,7 @@ from typing import Callable, List, Dict
 from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
-from api.utils import Debug
+from api.utils import Debug, GlobalVariables
 from api.utils.DebugElement import DebugElement
 
 
@@ -75,6 +75,8 @@ class Game:
             self.render.fill((0, 0, 0))
 
             pg.transform.scale(self.scene, self.render.get_size(), self.render)
+
+            GlobalVariables.set_variable("scale_ratio", self.render.get_size()[0] / self.scene.get_size()[0])
 
             self.launch_debug()
 
@@ -170,8 +172,8 @@ class Game:
             self.debug("Boost : " + ("True" if entity.boost else "False"), "right")
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
 
-            if hasattr(entity, "active_trajectory") and entity.active_trajectory:
-                self.debug(f"Trajectory : Angle {entity.active_trajectory.shot_angle} | Speed {entity.active_trajectory.shot_speed}", "right")
+            """if hasattr(entity, "active_trajectory") and entity.active_trajectory:
+                self.debug(f"Trajectory : Angle {entity.active_trajectory.shot_angle} | Speed {entity.active_trajectory.shot_speed}", "right")"""
 
         if entity.collided_objs:
             self.debug("Collisions :", "right")

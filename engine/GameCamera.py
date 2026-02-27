@@ -3,7 +3,7 @@ from typing import Optional
 import pygame as pg
 
 from api.GameObject import GameObject
-from api.utils import Debug
+from api.utils import Debug, GlobalVariables
 from api.utils.Inputs import get_inputs
 
 
@@ -72,3 +72,5 @@ class GameCamera:
                 self.position = self.freecam_old.copy()
                 self.freecam_old = None
             self.camera_mode = "Free"
+
+        GlobalVariables.set_variable("cam_pos", self.position)

@@ -1,13 +1,14 @@
-from api.engine import Scene
+from api.GameObject import GameObject
 from api.physics.Trajectory import Trajectory
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_ANGLE, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
-from api.items.Weapon import Weapon
-from api.entity.Interfaces import AimState
 from api.utils import Debug, State
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
 
+from api.engine.GameCamera import GameCamera
+
+import math
 import pygame as pg
 
 class Player(Entity):
@@ -21,13 +22,10 @@ class Player(Entity):
         self.add_tag("player")
         self.active_trajectory = None
         self.set_direction(direction)
-        self.shot_angle = DEFAULT_SHOT_ANGLE
         self.shot_speed = DEFAULT_SHOT_SPEED
         self.gravity = DEFAULT_GRAVITY
-        # self.scene = scene
-        #self.weapon = Weapon()
 
-    def update(self, others):
+    def update(self, others: list[GameObject]):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
@@ -36,11 +34,7 @@ class Player(Entity):
             if inputs["shoot"]:
                 self.vel.x = 0
 
-                if inputs["up"]:
-                    self.shot_angle += 1
-
-                if inputs["down"]:
-                    self.shot_angle -= 1
+                mouse_x, mouse_y = pg.mouse.get_pos()
 
                 if inputs["right"]:
                     self.shot_speed += 1
@@ -48,12 +42,11 @@ class Player(Entity):
                 if inputs["left"]:
                     self.shot_speed -= 1
 
-                self.active_trajectory = Trajectory(self.pos, self.shot_angle, self.shot_speed, self.gravity)
-                self.active_trajectory.build_trajectory_coordinates(self.pos, self.shot_angle, self.shot_speed, self.gravity)
+                self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
+                self.active_trajectory.build_trajectory_coordinates()
 
             else:
                 self.active_trajectory = None
-                self.shot_angle = DEFAULT_SHOT_ANGLE
                 self.shot_speed = DEFAULT_SHOT_SPEED
 
                 if inputs["right"] and State.is_enabled("player_control"):
@@ -106,5 +99,5 @@ class Player(Entity):
         super().draw(surface, offset, game_objects)
 
         if self.active_trajectory:
-            self.active_trajectory.draw_trajectory(surface, offset)
+            self.active_trajectory.draw_trajectory(surface)
 
