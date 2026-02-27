@@ -159,8 +159,8 @@ def get_hint_input(selected_input: str)->str:
         return "[" + get_str_input(selected_input) + "]"
 
 
-def get_mouse():
-    if not _controllers:
+def get_mouse(forced=False):
+    if len(_controllers) == 0 or forced:
         return pg.mouse.get_pos()
     else:
         axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
@@ -171,3 +171,16 @@ def get_mouse():
         if abs(axis_y) < deadzone:
             axis_y = 0
         return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
+
+
+def get_key_pressed(param):
+    if param in INPUTS:
+        keys = INPUTS[param]
+        for key in keys:
+            if isinstance(key, int) and pg.key.get_pressed()[key]:
+                return key
+            elif key == "MOUSE_LEFT" and pg.mouse.get_pressed()[0]:
+                return key
+            elif key == "MOUSE_RIGHT" and pg.mouse.get_pressed()[2]:
+                return key
+    return None

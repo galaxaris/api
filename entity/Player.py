@@ -33,7 +33,7 @@ class Player(Entity):
             if inputs["aim"] and State.is_enabled("player_control"):
                 self.vel.x = 0
 
-                mouse_x, mouse_y = Inputs.get_mouse()
+                mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
 
                 if mouse_x - self.pos.x < 0:
                     self.set_direction("left")
