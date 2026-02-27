@@ -1,0 +1,99 @@
+from api.GameObject import GameObject
+from api.utils import State
+from api.utils.Inputs import get_once_inputs
+import pygame as pg
+
+class UIElement(GameObject):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], is_blocking: bool = False):
+        super().__init__(pos, size)
+        self.goal = None
+        self.add_tag("ui")
+
+class GameUI(pg.Surface):
+    elements: dict[str, UIElement]
+    enabled_elements: list[str]
+    size: pg.Vector2
+    active_textbox: tuple[str, UIElement] | None
+
+    # New tracking for Dialogs
+    active_dialog: tuple[str, list, int] | None  # (key, list_of_boxes, current_index)
+
+    def __init__(self, size: tuple[int, int]):
+        super().__init__(size, pg.SRCALPHA, 32)
+        self.convert_alpha()
+        self.elements = {}
+        self.enabled_elements = []
+        self.active_textbox = None
+        self.active_dialog = None
+        self.size = pg.Vector2(size)
+
+    def add(self, key: str, element: UIElement):
+        if key not in self.elements:
+            self.elements[key] = element
+
+    def show(self, key: str):
+        if key in self.elements and key not in self.enabled_elements:
+            element = self.elements[key]
+            self.enabled_elements.append(key)
+
+            # Handle Dialog Initialization
+            if "ui_dialog" in element.tags:
+                textboxes = element.get_dialogs()
+                if textboxes:
+                    self.active_dialog = (key, textboxes, 0)
+                    # The first textbox of the dialog becomes the active visual element
+                    self.active_textbox = (key, textboxes[0])
+
+            # Handle Single Textbox Initialization
+            elif "ui_textbox" in element.tags:
+                self.active_textbox = (key, element)
+
+    def hide(self, key: str):
+        if key in self.enabled_elements:
+            self.enabled_elements.remove(key)
+            if self.active_textbox and self.active_textbox[0] == key:
+                self.active_textbox = None
+            if self.active_dialog and self.active_dialog[0] == key:
+                self.active_dialog = None
+
+    def update(self):
+        inputs = get_once_inputs()
+        if not inputs["interact"] or State.is_enabled("in_menu"):
+            return
+
+        # Progression Logic
+        if self.active_dialog:
+            key, boxes, index = self.active_dialog
+            if index < len(boxes) - 1:
+                # Move to next box in dialog
+                new_index = index + 1
+                self.active_dialog = (key, boxes, new_index)
+                self.active_textbox = (key, boxes[new_index])
+            else:
+                # End of dialog reached
+                self.hide(key)
+                State.toggle("player_control", True)
+
+        elif self.active_textbox:
+            # Single Textbox Logic
+            key, element = self.active_textbox
+            if "ui_closable" in element.tags:
+                self.hide(key)
+                State.toggle("player_control", True)
+
+    def draw(self, surface: pg.Surface):
+        self.fill((0, 0, 0, 0))
+        for key in self.enabled_elements:
+            element = self.elements[key]
+
+            # If it's the active dialog/textbox, draw the specific current box
+            if self.active_textbox and key == self.active_textbox[0]:
+                self.active_textbox[1].draw(self)
+                if "ui_block" in self.active_textbox[1].tags:
+                    State.toggle("player_control", False)
+                continue
+
+            # Draw other non-dialog UI elements normally
+            element.draw(self)
+
+        surface.blit(self, (0, 0))
