@@ -1,3 +1,5 @@
+import os
+
 import pygame as pg
 from pygame._sdl2 import controller
 
@@ -23,7 +25,9 @@ CONTROLLER_INPUTS = {
     "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER, 10000)]
 }
 
+_EDITOR_KEYS = {}
 _controllers = {}
+
 
 # Friendly name maps for UI
 BRAND_MAPS = {
@@ -41,6 +45,11 @@ BRAND_MAPS = {
     }
 }
 
+def editor_edit_key(key,value):
+    _EDITOR_KEYS[key] = value
+
+def editor_release_key():
+    _EDITOR_KEYS = {}
 
 def get_controller_brand(joy):
     name = joy.name.lower()
@@ -50,8 +59,14 @@ def get_controller_brand(joy):
 
 
 def get_inputs():
-    pg_keys = pg.key.get_pressed()
-    current_state = {action: any(pg_keys[key] for key in keys) for action, keys in INPUTS.items()}
+    current_state = {}
+    pg_keys = {}
+    if os.environ.get("EDITOR") == "1":
+        pg_keys = _EDITOR_KEYS
+        current_state = {action: any(pg_keys.get(key, False) for key in keys) for action, keys in INPUTS.items()}
+    else:
+        pg_keys = pg.key.get_pressed()
+        current_state = {action: any(pg_keys[key] for key in keys) for action, keys in INPUTS.items()}
 
 
     if controller.get_count() > len(_controllers):
