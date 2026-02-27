@@ -35,14 +35,6 @@ class Player(Entity):
 
                 mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
 
-                if mouse_x - self.pos.x < 0:
-                    self.set_direction("left")
-                else:
-                    self.set_direction("right")
-
-                if mouse_x == 0 and mouse_y == 0:
-                    self.set_direction("right")
-
                 if Inputs.MOUSE_SCROLL > 0 and self.shot_speed < MAX_SHOT_SPEED:
                     self.shot_speed += Inputs.MOUSE_SCROLL
                     Inputs.MOUSE_SCROLL = 0
@@ -53,6 +45,12 @@ class Player(Entity):
 
                 self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()
+
+                if self.active_trajectory.trajectory_coordinates[-1][0] < self.pos[0]:
+                    self.set_direction("left")
+                else:
+                    self.set_direction("right")
+
             else:
                 self.active_trajectory = None
                 self.shot_speed = DEFAULT_SHOT_SPEED
