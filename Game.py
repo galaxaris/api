@@ -177,7 +177,7 @@ class Game:
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
 
             if hasattr(entity, "active_trajectory") and entity.active_trajectory:
-                self.debug(f"Trajectory : Angle {int(entity.active_trajectory.angle_radians * 100)} | Speed {entity.active_trajectory.shot_speed}", "right")
+                self.debug(f"Trajectory : Angle {round(entity.active_trajectory.angle_radians, 2)} rad | Speed {entity.active_trajectory.shot_speed}", "right")
 
         if entity.collided_objs:
             self.debug("Collisions :", "right")

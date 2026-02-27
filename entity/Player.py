@@ -33,7 +33,7 @@ class Player(Entity):
             if inputs["aim"] and State.is_enabled("player_control"):
                 self.vel.x = 0
 
-                mouse_x, mouse_y = Inputs.get_mouse()
+                mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
 
                 if Inputs.MOUSE_SCROLL > 0 and self.shot_speed < MAX_SHOT_SPEED:
                     self.shot_speed += Inputs.MOUSE_SCROLL

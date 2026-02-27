@@ -33,7 +33,7 @@ class Trajectory:
         self.angle_radians = math.atan2(-dy, dx)
 
         if self.mouse_pos == (0, 0):
-            self.angle_radians = 0
+            self.angle_radians = 1
 
         vx = self.shot_speed * math.cos(self.angle_radians)
         vy = -self.shot_speed * math.sin(self.angle_radians)
