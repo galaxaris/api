@@ -22,7 +22,7 @@ class Game:
     screen: Scene
     running: bool
     icon: pg.Surface
-    FPS: int
+    fps: int
     flags: int
     window: Window
     bound_functions: Dict[int, List[Callable]]
@@ -39,7 +39,8 @@ class Game:
         self.Window = Window.from_display_module()
         self.clock = pg.time.Clock()
         self.running = True
-        self.FPS = fps
+        self.locked_fps = True
+        self.fps = fps
         self.flags = flags
         self.debug_list : list[tuple[str, str, int]] = []
         self.window = Window.from_display_module()
@@ -52,6 +53,9 @@ class Game:
                     self.running = False
 
                 elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_F10:
+                        self.locked_fps = not self.locked_fps
+
                     if event.key == pg.K_F11:
                         pg.display.toggle_fullscreen()
                         self.window = Window.from_display_module()
@@ -85,7 +89,10 @@ class Game:
             self.launch_debug()
 
             pg.display.update()
-            self.clock.tick(self.FPS)
+            if self.locked_fps:
+                self.clock.tick(self.fps)
+            else:
+                self.clock.tick()
         pg.quit()
 
     def get_current_monitor_size(self):
