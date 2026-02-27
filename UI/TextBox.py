@@ -14,7 +14,7 @@ def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
     Respecte les retours à la ligne manuels (\n).
     """
     text_content = []
-    font = get_font(font_name, 14)
+    font = get_font(font_name, 16)
     space_width = font.size(' ')[0]
 
     # On sépare d'abord par les paragraphes manuels
@@ -50,7 +50,7 @@ def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
 
 
 def process_title(title: str, font: str) -> Surface:
-    return get_font(font, 30).render(title, False, (255, 255, 255))
+    return get_font(font, 32).render(title, False, (255, 255, 255))
 
 
 class TextBox(UIElement):
