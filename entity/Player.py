@@ -10,6 +10,7 @@ from api.utils.Inputs import get_inputs
 import pygame as pg
 
 class Player(Entity):
+    _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
         super().__init__(pos, size)
         self.max_velocity = max_velocity
