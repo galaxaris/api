@@ -7,9 +7,8 @@ from typing import Callable, List, Dict
 from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
-from api.utils import Debug, GlobalVariables
+from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
-
 
 class Game:
     window_width: int
@@ -62,6 +61,9 @@ class Game:
                         if self.scene:
                             if self.scene.camera:
                                 Debug.toggle("freecam")
+
+                if event.type == pg.MOUSEWHEEL:
+                    Inputs.MOUSE_SCROLL += event.y
 
                 for func in self.bound_functions.get(event.type, []):
                     func(event)

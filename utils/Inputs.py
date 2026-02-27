@@ -1,6 +1,8 @@
 import pygame as pg
 from pygame._sdl2 import controller
 
+MOUSE_SCROLL = 0
+
 INPUTS = {
     "right": [pg.K_RIGHT, pg.K_d],
     "left": [pg.K_LEFT, pg.K_q],
