@@ -1,28 +1,38 @@
 from api.GameObject import GameObject
+from api.utils.GlobalVariables import get_variable
 import pygame as pg
 
 class Trigger(GameObject):
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], 
-                 target_tags: list[str], actions: list[callable], actions_arg: list = None, once: bool = False):
+                 target_tags: list[str], callbacks: list[callable], once: bool = False):
         super().__init__(pos, size)
 
         self.add_tag("trigger")
         self.target_tags = target_tags
-        self.actions = actions
-        self.actions_arg = actions_arg
+        #"Callback" : fonction passée en paramètre d'une autre fonction, qui sera appelée plus tard.
+        #Python : méthode classique (sans args) : "nom_fonction", SANS les "()". Sinon fonction exécutée immédiatement. Son return est passé en param.
+        #Pour passer avec les arguments, on peut utiliser lambda ou partial : 
+        #== Lambda ==
+        # lambda: nom_fonction(arg1, arg2)
+        #== Partial (considéré comme légèrement plus opti)==
+        # from functools import partial
+        # partial(nom_fonction, arg1, arg2)
+        
+        self.callbacks = callbacks  #Les callbacks (callbacks) doivent déjà inclure leurs arguments (via partial ou lambda)
         self.once = once
+        self.objects_inside = set()  # Track objects already in trigger to avoid repeated activation
 
-    def add_action(self, action):
-        if not hasattr(self, "actions"):
-            self.actions = []
-        self.actions.append(action)
+    def add_callback(self, callback):
+        if not hasattr(self, "callbacks"):
+            self.callbacks = []
+        self.callbacks.append(callback)
 
-    def remove_action(self, action):
-        if action in self.actions:
-            self.actions.remove(action)
+    def remove_callback(self, callback):
+        if callback in self.callbacks:
+            self.callbacks.remove(callback)
         else:
-            print("== Warning: action does not exists in trigger ==")
+            print("== Warning: callback does not exists in trigger ==")
 
     def add_target_tag(self, tag):
         if not hasattr(self, "target_tags"):
@@ -38,32 +48,51 @@ class Trigger(GameObject):
     def remove_trigger(self):
         self.remove_tag("trigger")
 
-    def update(self, others):
-        super().update(others)
-        for obj in others:
-            if any(tag in obj.tags for tag in self.target_tags): #Checks if the object has any of the target tags
-                print(f"Trigger activated by object with tags: {obj.tags}")
-                for i, action in enumerate(self.actions):
-                    if self.actions_arg and i < len(self.actions_arg):
-                        print(f"Executing action {action.__name__} with argument {self.actions_arg[i]}")
-                        action(self.actions_arg[i]) #This precise line launches the action (with args)
-                    else:
-                        action() #This precise line launches the action
-                if self.once:
-                    self.remove_trigger()
+    def update(self):
+        super().update()
+        
+        # Récupérer tous les objets de la scène
+        game_objects = get_variable("game_objects")
+        
+        # Track current objects in trigger for this frame
+        current_objects = set()
+        
+        for obj in game_objects:
+            # Vérifier si l'objet a un des tags ciblés
+            if any(tag in obj.tags for tag in self.target_tags):
+                # Vérifier la collision réelle avec le trigger
+                if self.rect.colliderect(obj.rect):
+                    current_objects.add(obj.id)
+                    
+                    # Si l'objet vient d'entrer dans le trigger
+                    if obj.id not in self.objects_inside:
+                        # Exécuter toutes les callbacks (passer l'objet en paramètre)
+                        for callback in self.callbacks:
+                            try:
+                                callback(obj)
+                            except TypeError:
+                                # Si le callback ne prend pas de paramètre
+                                callback()
+                        
+                        if self.once:
+                            self.remove_trigger()
+                            return
+        
+        # Mettre à jour les objets qui sont sortis du trigger
+        self.objects_inside = current_objects
 
 
 class Trigger_KillBox(Trigger):
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], game: object, once: bool = False):
         self.game = game
-        super().__init__(pos, size, target_tags, [], None, once)
-
-    def update(self, others):
-        super().update(others)
-        for obj in others:
-            if any(tag in obj.tags for tag in self.target_tags):
-                if hasattr(obj, "kill"):
-                    obj.kill(self.game)
-                else:
-                    print("== Warning: object does not have a kill method ==")
+        
+        # Définir le callback de kill dans le constructeur
+        def kill_callback(obj):
+            if hasattr(obj, "kill"):
+                obj.kill(self.game)
+            else:
+                print(f"== Warning: object {obj} does not have a kill method ==")
+        
+        # Passer le callback au constructeur parent
+        super().__init__(pos, size, target_tags, [kill_callback], once)
