@@ -98,7 +98,7 @@ class TextBox(UIElement):
     def set_title(self, title: str, font: str):
         self.title_surface = process_title(title, font)
 
-    def draw(self, surface: pg.Surface, offset=(0, 0), game_objects=None):
+    def draw(self, surface: pg.Surface, offset=(0, 0)):
         margin = 15
         width = surface.get_width() - margin * 2
         height = surface.get_height() // 3

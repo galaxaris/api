@@ -7,5 +7,5 @@ class Solid(GameObject):
         super().__init__(pos, size)
         self.add_tag("solid")
 
-    def update(self, others):
-        super().update(others)
+    def update(self):
+        super().update()

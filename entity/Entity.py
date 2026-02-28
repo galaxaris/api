@@ -8,7 +8,7 @@ import pygame as pg
 
 from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
-from api.utils import Debug
+from api.utils import Debug, GlobalVariables
 
 
 class Entity(GameObject):
@@ -51,9 +51,10 @@ class Entity(GameObject):
         self.jump = False
 
 
-    def update(self, others):
-        super().update(others)
+    def update(self):
+        super().update()
         self.update_sprite()
+        others = [obj for obj in GlobalVariables.get_variable("game_objects") if obj.id != self.id]
         self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x, self.vel.y)
         on_ground = False
 

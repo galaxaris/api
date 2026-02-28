@@ -24,7 +24,7 @@ class Player(Entity):
         self.shot_speed = DEFAULT_SHOT_SPEED
         self.gravity = DEFAULT_GRAVITY
 
-    def update(self, others: list[GameObject]):
+    def update(self):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
@@ -97,12 +97,12 @@ class Player(Entity):
             self.vel.y = 0
             self.update_sprite()
         else:
-            super().update(others)
+            super().update()
 
 
-    def draw(self, surface, offset = pg.Vector2(0, 0), game_objects = None):
+    def draw(self, surface, offset = pg.Vector2(0, 0)):
 
-        super().draw(surface, offset, game_objects)
+        super().draw(surface, offset)
 
         if self.active_trajectory:
             self.active_trajectory.draw_trajectory(surface)

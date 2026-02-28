@@ -1,24 +1,17 @@
 # TODO for API
 
-- Collision : 
-  - Empecher les clips entre les objets
-- UI 
-  - TextBox
+- UI
   - Menu
-  - Dialogue
-  - HUD
 
 Entity :
   - Player improvements  
-  - Enemy improvements
+  - Enemy
 
 Objects :
   - GraplingHook
   - WaterGun
 
 Environment :
-  - Physics
-  - Solid
   - InOut
   - Trap
 
