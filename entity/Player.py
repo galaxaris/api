@@ -6,6 +6,8 @@ from api.utils import Debug, State, Inputs
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
 
+from api.Game import Game
+
 
 import pygame as pg
 
@@ -99,11 +101,13 @@ class Player(Entity):
         else:
             super().update(others)
 
-    def kill(self): #TODO: implement respawn system
+    def kill(self, game): #TODO: implement respawn system
+        print("Killed you ahah!")
         self.set_position((0, 0))
         self.vel = pg.Vector2(0, 0)
         self.set_position((0, 0))
         self.jump = False
+        game.stop() #Pour l'instant, on arrête le jeu, tout simplement.
 
     def draw(self, surface, offset = pg.Vector2(0, 0), game_objects = None):
 
