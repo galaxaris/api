@@ -26,6 +26,8 @@ class Player(Entity):
         self.shot_speed = DEFAULT_SHOT_SPEED
         self.gravity = DEFAULT_GRAVITY
 
+        self.start_pos = pos
+
     def update(self):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
@@ -101,13 +103,12 @@ class Player(Entity):
         else:
             super().update()
 
-    def kill(self, game): #TODO: implement respawn system
+    def kill(self, game): #Respawn the player at the starting position (for now)
         print("Killed you ahah!")
-        self.set_position((0, 0))
         self.vel = pg.Vector2(0, 0)
-        self.set_position((0, 0))
-        self.jump = False
-        game.stop() #Pour l'instant, on arrête le jeu, tout simplement.
+        #self.set_position(self.start_pos)
+        #for now, the player_position is redefined just after the player definition ==> to see with raph
+        self.set_position((310,410))
 
     def draw(self, surface, offset = pg.Vector2(0, 0)):
 

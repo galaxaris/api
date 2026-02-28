@@ -51,48 +51,51 @@ class Trigger(GameObject):
     def update(self):
         super().update()
         
-        # Récupérer tous les objets de la scène
+        #Récupérer tous les objets de la scène
         game_objects = get_variable("game_objects")
         
-        # Track current objects in trigger for this frame
+        #Track current objects in trigger for this frame
         current_objects = set()
         
         for obj in game_objects:
-            # Vérifier si l'objet a un des tags ciblés
+            #Vérifier si l'objet a un des tags ciblés
             if any(tag in obj.tags for tag in self.target_tags):
-                # Vérifier la collision réelle avec le trigger
+                #Vérifier la collision réelle avec le trigger
                 if self.rect.colliderect(obj.rect):
                     current_objects.add(obj.id)
                     
-                    # Si l'objet vient d'entrer dans le trigger
+                    #Si l'objet vient d'entrer dans le trigger
                     if obj.id not in self.objects_inside:
-                        # Exécuter toutes les callbacks (passer l'objet en paramètre)
+                        #Exécuter toutes les callbacks (passer l'objet en paramètre)
                         for callback in self.callbacks:
                             try:
                                 callback(obj)
                             except TypeError:
-                                # Si le callback ne prend pas de paramètre
+                                #Si le callback ne prend pas de paramètre
                                 callback()
                         
                         if self.once:
                             self.remove_trigger()
                             return
         
-        # Mettre à jour les objets qui sont sortis du trigger
+        #Mettre à jour les objets qui sont sortis du trigger
         self.objects_inside = current_objects
 
 
 class Trigger_KillBox(Trigger):
+    #TODO: WARNING: very long width GameObject are not well handled by the collision system... 
+    #(see in debug mode, for x > 1000px, killbox disappears & collision doesn't work anymore)
+
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], game: object, once: bool = False):
         self.game = game
         
-        # Définir le callback de kill dans le constructeur
+        #Définir le callback de kill dans le constructeur
         def kill_callback(obj):
             if hasattr(obj, "kill"):
                 obj.kill(self.game)
             else:
                 print(f"== Warning: object {obj} does not have a kill method ==")
         
-        # Passer le callback au constructeur parent
+        #Passer le callback au constructeur parent
         super().__init__(pos, size, target_tags, [kill_callback], once)
