@@ -1,5 +1,3 @@
-import math
-
 import pygame as pg
 
 from api.engine import Scene
@@ -42,7 +40,7 @@ class Game:
         self.locked_fps = True
         self.fps = fps
         self.flags = flags
-        self.debug_list : list[tuple[str, str, int]] = []
+        self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
         self.bound_functions = {}
 
@@ -116,8 +114,8 @@ class Game:
             self.bound_functions[event_type] = []
         self.bound_functions[event_type].append(func)
 
-    def debug(self, param, side: str = "left", size = 32):
-        self.debug_list.append((str(param), side, size))
+    def debug(self, param, side: str = "left", font = "arial", size = 32):
+        self.debug_list.append((str(param), side, font, size))
 
     def enable_debug(self):
         Debug.toggle("debug_info")
@@ -136,7 +134,7 @@ class Game:
             for debug_info in self.debug_list:
                 debug_y = debug_y_left if debug_info[1] == "left" else debug_y_right
 
-                debug_el = DebugElement((0, 0), debug_info[2], debug_info[0], "aptos")
+                debug_el = DebugElement((0, 0), debug_info[3], debug_info[0], debug_info[2])
 
                 debug_x = 5 if debug_info[1] == "left" else self.render.get_width() - debug_el.size[0] - 5
                 debug_el.set_position((debug_x, debug_y))
@@ -149,44 +147,44 @@ class Game:
             self.debug_list.clear()
 
     def register_debug(self):
-        self.debug("Omicronde API - Galaxaris", "left", 32)
-        self.debug(f"FPS : {int(self.clock.get_fps())} | Render t : {self.clock.get_rawtime()} ms", "left")
+        self.debug("Omicronde API - Galaxaris", "left", "**/assets/m6x11plus.ttf", 36)
+        self.debug(f"FPS : {int(self.clock.get_fps())} | Render t : {self.clock.get_rawtime()} ms", "left", "**/assets/m6x11.ttf", 32)
 
         if self.scene:
             screen = self.scene
             if screen.camera:
-                self.debug(f"Camera : {int(screen.camera.position.x)} | {int(screen.camera.position.y)} - {screen.camera.camera_mode}", "left")
+                self.debug(f"Camera : {int(screen.camera.position.x)} | {int(screen.camera.position.y)} - {screen.camera.camera_mode}", "left", "**/assets/m6x11.ttf", 32)
         
         keys_pressed = pg.key.get_pressed()
         active_keys = [pg.key.name(i) for i in range(len(keys_pressed)) if keys_pressed[i]]
-        self.debug("Keys : " + ", ".join(active_keys), "left", 22)
+        self.debug("Keys : " + ", ".join(active_keys), "left", "**/assets/m6x11.ttf", 32)
 
         if self.scene:
             screen = self.scene
-            self.debug(f"GameObjects : {int(len(screen.game_objects))}", "left", 22)
+            self.debug(f"GameObjects : {int(len(screen.game_objects))}", "left", "**/assets/m6x11.ttf", 32)
 
             if screen.layer_order:
-                self.debug(f"Layers :", "left", 22)
+                self.debug(f"Layers :", "left", "**/assets/m6x11.ttf", 32)
                 for i, layer in enumerate(screen.layer_order):
                     if "_" not in layer:
-                        self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", 22)
+                        self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", "**/assets/m6x11.ttf", 16)
                     else:
-                        self.debug(f"{i} : {layer}", "left", 22)
+                        self.debug(f"{i} : {layer}", "left", "**/assets/m6x11.ttf", 16)
 
     def register_debug_entity(self, entity):
-        self.debug(f"Entity : {entity.__class__.__name__}", "right")
-        self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right")
+        self.debug(f"Entity : {entity.__class__.__name__}", "right", "**/assets/m6x11.ttf", 32)
+        self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", "**/assets/m6x11.ttf", 32)
 
         if entity:
-            self.debug("Jump : " + ("True" if entity.jump else "False"), "right")
-            self.debug("Fall : " + ("True" if entity.fall else "False"), "right")
-            self.debug("Boost : " + ("True" if entity.boost else "False"), "right")
-            self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right")
+            self.debug("Jump : " + ("True" if entity.jump else "False"), "right", "**/assets/m6x11.ttf", 32)
+            self.debug("Fall : " + ("True" if entity.fall else "False"), "right", "**/assets/m6x11.ttf", 32)
+            self.debug("Boost : " + ("True" if entity.boost else "False"), "right", "**/assets/m6x11.ttf", 32)
+            self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", "**/assets/m6x11.ttf", 32)
 
             if hasattr(entity, "active_trajectory") and entity.active_trajectory:
-                self.debug(f"Trajectory : Angle {round(entity.active_trajectory.angle_radians, 2)} rad | Speed {entity.active_trajectory.shot_speed}", "right")
+                self.debug(f"Trajectory : Angle {round(entity.active_trajectory.angle_radians, 2)} rad | Speed {entity.active_trajectory.shot_speed}", "right", "**/assets/m6x11.ttf", 32)
 
         if entity.collided_objs:
-            self.debug("Collisions :", "right")
+            self.debug("Collisions :", "right", "**/assets/m6x11.ttf", 32)
             for collision in entity.collided_objs:
-                self.debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", 22)
+                self.debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", "**/assets/m6x11.ttf", 16)
