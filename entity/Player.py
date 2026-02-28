@@ -99,6 +99,11 @@ class Player(Entity):
         else:
             super().update()
 
+    def kill(self): #TODO: implement respawn system
+        self.set_position((0, 0))
+        self.vel = pg.Vector2(0, 0)
+        self.set_position((0, 0))
+        self.jump = False
 
     def draw(self, surface, offset = pg.Vector2(0, 0)):
 

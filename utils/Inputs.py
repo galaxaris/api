@@ -29,7 +29,7 @@ CONTROLLER_INPUTS = {
     "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)]
 }
 
-_EDITOR_KEYS = {}
+EDITOR_KEYS = {}
 _controllers = {}
 
 
@@ -50,10 +50,11 @@ BRAND_MAPS = {
 }
 
 def editor_edit_key(key,value):
-    _EDITOR_KEYS[key] = value
+    EDITOR_KEYS[key] = value
 
 def editor_release_key():
-    _EDITOR_KEYS = {}
+    global EDITOR_KEYS
+    EDITOR_KEYS = {}
 
 def get_controller_brand(joy):
     name = joy.name.lower()
@@ -66,7 +67,7 @@ def get_inputs():
     current_state = {}
     pg_keys = {}
     if os.environ.get("EDITOR") == "1":
-        pg_keys = _EDITOR_KEYS
+        pg_keys = EDITOR_KEYS
         current_state = {action: any(pg_keys.get(key, False) for key in keys if isinstance(key, int)) for action, keys in INPUTS.items()}
     else:
         pg_keys = pg.key.get_pressed()
