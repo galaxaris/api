@@ -59,7 +59,7 @@ class GameObject:
     def remove_tag(self, tag: str):
         self.tags.discard(tag)
 
-    def update(self, others):
+    def update(self):
         if self.animation:
             self.image = self.animation.get_frame(self.direction)
             self.rect = self.image.get_rect(topleft=self.pos)
@@ -68,8 +68,8 @@ class GameObject:
         if direction in ["left", "right"]:
             self.direction = direction
 
-    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0), game_objects=None):
-        self.update(game_objects)
+    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
+        self.update()
 
         if not self.animation and self.direction == "left":
             self.image = pg.transform.flip(self.image, True, False)

@@ -3,6 +3,7 @@ import pygame as pg
 global_vars = {
     "cam_pos": pg.Vector2(0, 0),
     "scale_ratio": 1,
+    "game_objects": []
 }
 
 def set_variable(key, value):
