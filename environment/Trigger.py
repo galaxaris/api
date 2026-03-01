@@ -21,7 +21,7 @@ class Trigger(GameObject):
         
         self.callbacks = callbacks  #Les callbacks (callbacks) doivent déjà inclure leurs arguments (via partial ou lambda)
         self.once = once
-        self.objects_inside = set()  # Track objects already in trigger to avoid repeated activation
+        self.objects_inside = set()  #Track objects already in trigger to avoid repeated activation
 
     def add_callback(self, callback):
         if not hasattr(self, "callbacks"):
@@ -47,6 +47,7 @@ class Trigger(GameObject):
 
     def remove_trigger(self):
         self.remove_tag("trigger")
+        self.callbacks = []
 
     def update(self):
         super().update()
@@ -71,15 +72,20 @@ class Trigger(GameObject):
                             try:
                                 callback(obj)
                             except TypeError:
-                                #Si le callback ne prend pas de paramètre
+                                #Si les paramètres ont déjà été passés via lambda ou partial
                                 callback()
                         
                         if self.once:
                             self.remove_trigger()
                             return
         
-        #Mettre à jour les objets qui sont sortis du trigger
-        self.objects_inside = current_objects
+        #Track objects that have exited the trigger
+        exited_objects = self.objects_inside - current_objects
+        for obj_id in exited_objects:
+            self.objects_inside.discard(obj_id)
+
+        #Add new objects to the tracking set
+        self.objects_inside.update(current_objects)
 
 
 class Trigger_KillBox(Trigger):
