@@ -103,8 +103,8 @@ class Player(Entity):
         else:
             super().update()
 
-    def kill(self, game): #Respawn the player at the starting position (for now)
-        print("Killed you ahah!")
+    def kill(self): #Respawn the player at the starting position (for now)
+        print("[Player] Player killed, respawning...")
         self.vel = pg.Vector2(0, 0)
         #self.set_position(self.start_pos)
         #for now, the player_position is redefined just after the player definition ==> to see with raph

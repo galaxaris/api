@@ -93,13 +93,12 @@ class Trigger_KillBox(Trigger):
     #(see in debug mode, for x > 1000px, killbox disappears & collision doesn't work anymore)
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], game: object, once: bool = False):
-        self.game = game
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False):
         
         #Définir le callback de kill dans le constructeur
         def kill_callback(obj):
             if hasattr(obj, "kill"):
-                obj.kill(self.game)
+                obj.kill()
             else:
                 print(f"== Warning: object {obj} does not have a kill method ==")
         
