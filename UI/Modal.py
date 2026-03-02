@@ -1,16 +1,14 @@
 from api.UI.GameUI import UIElement
 
 
-class Menu(UIElement):
-    def __init__(self, name, items, pos: tuple[int, int], size: tuple[int, int]):
+class Modal(UIElement):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
         super().__init__(pos, size)
-        self.name = name
-        self.items = items
-        self.pos = pos
-        self.size = size
+        self.elements: list[UIElement] = []
 
-    def add_item(self, item):
-        self.items.append(item)
+    def add_element(self, element: UIElement):
+        self.elements.append(element)
 
-    def remove_item(self, item):
-        self.items.remove(item)
+    def update(self):
+        for element in self.elements:
+            element.update()

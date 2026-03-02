@@ -6,6 +6,8 @@ from api.utils import Debug, State, Inputs
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
 
+from api.Game import Game
+
 
 import pygame as pg
 
@@ -24,7 +26,9 @@ class Player(Entity):
         self.shot_speed = DEFAULT_SHOT_SPEED
         self.gravity = DEFAULT_GRAVITY
 
-    def update(self, others: list[GameObject]):
+        self.start_pos = pos
+
+    def update(self):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
@@ -97,17 +101,18 @@ class Player(Entity):
             self.vel.y = 0
             self.update_sprite()
         else:
-            super().update(others)
+            super().update()
 
-    def kill(self): #TODO: implement respawn system
-        self.set_position((0, 0))
+    def kill(self): #Respawn the player at the starting position (for now)
+        print("[Player] Player killed, respawning...")
         self.vel = pg.Vector2(0, 0)
-        self.set_position((0, 0))
-        self.jump = False
+        #self.set_position(self.start_pos)
+        #for now, the player_position is redefined just after the player definition ==> to see with raph
+        self.set_position((310,410))
 
-    def draw(self, surface, offset = pg.Vector2(0, 0), game_objects = None):
+    def draw(self, surface, offset = pg.Vector2(0, 0)):
 
-        super().draw(surface, offset, game_objects)
+        super().draw(surface, offset)
 
         if self.active_trajectory:
             self.active_trajectory.draw_trajectory(surface)

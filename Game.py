@@ -55,8 +55,7 @@ class Game:
                         self.locked_fps = not self.locked_fps
 
                     if event.key == pg.K_F11:
-                        pg.display.toggle_fullscreen()
-                        self.window = Window.from_display_module()
+                        self.toggle_fullscreen()
 
                     if event.key == pg.K_F12:
                         self.enable_debug()
@@ -145,6 +144,15 @@ class Game:
                 else:
                     debug_y_right += debug_el.size[1] + 5
             self.debug_list.clear()
+
+    def toggle_fullscreen(self, mode: bool=None):
+        if mode is None: #we just want to switch the screen mode
+            pg.display.toggle_fullscreen()
+            self.window = Window.from_display_module()
+
+        elif pg.display.is_fullscreen() != mode: #we want to switch it only if it is not in the same state as the one we want
+            pg.display.toggle_fullscreen()
+            self.window = Window.from_display_module()
 
     def register_debug(self):
         self.debug("Omicronde API - Galaxaris", "left", "**/assets/m6x11plus.ttf", 36)

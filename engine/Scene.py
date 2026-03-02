@@ -5,6 +5,7 @@ from api.UI.GameUI import GameUI
 from api.engine.GameCamera import GameCamera
 from api.environment.Background import Background
 from api.environment.Parallax import ParallaxBackground
+from api.utils import GlobalVariables
 
 
 class Scene(pg.Surface):
@@ -57,6 +58,7 @@ class Scene(pg.Surface):
 
     def draw(self, screen: pg.Surface):
         self.fill((0, 0, 0))
+        GlobalVariables.set_variable("game_objects", self.game_objects)
 
         self.camera.update()
 
@@ -86,15 +88,13 @@ class Scene(pg.Surface):
                 layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
-                    others_objects = [o for o in self.game_objects if o.id != obj.id]
-                    obj.draw(layer_surf, game_objects=others_objects)
+                    obj.draw(layer_surf)
                 self.blit(layer_surf, (0, 0))
             else:
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
-                    others_objects = [o for o in self.game_objects if o.id != obj.id]
                     if -self.size.x - 100 < relative_pos.x < self.size.x + 100:
-                        obj.draw(self, offset=self.camera.position, game_objects=others_objects)
+                        obj.draw(self, offset=self.camera.position)
 
 
         self.blit(self.default_surface, (0, 0))
