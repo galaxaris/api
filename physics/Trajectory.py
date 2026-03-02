@@ -3,7 +3,7 @@ import pygame
 import random
 
 from api.utils import GlobalVariables
-from api.utils.Constants import OFFSET_X, OFFSET_Y
+
 
 
 class Trajectory:
@@ -26,9 +26,7 @@ class Trajectory:
         cam_pos = GlobalVariables.get_variable("cam_pos")
         self.entity_screen_pos = self.entity_pos - cam_pos
 
-
         dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.entity_screen_pos
-
 
         self.angle_radians = math.atan2(-dy, dx)
 
@@ -38,9 +36,28 @@ class Trajectory:
         vx = self.shot_speed * math.cos(self.angle_radians)
         vy = -self.shot_speed * math.sin(self.angle_radians)
 
+        virtual_traj = self.entity_screen_pos.copy()
+
+        #FIXME : the trajectory is not cancelled upon collision with gameobject
         for i in range(50):
-            self.trajectory_coordinates.append(self.entity_screen_pos + i*pygame.Vector2(vx, vy))
+            obstacles = GlobalVariables.get_variable("game_objects")
+            position = self.entity_screen_pos.copy()
+
+            virtual_point = pygame.Rect(virtual_traj.x, virtual_traj.y,  4, 4)
+
+            hit = False
+            for obstacle in obstacles:
+                if virtual_point.colliderect(obstacle.rect):
+                    hit = True
+                    break
+
+            if hit:
+                break
+
+            self.trajectory_coordinates.append(position + i*pygame.Vector2(vx, vy))
             vy += self.gravity
+
+            virtual_traj = position + i*pygame.Vector2(vx, vy)
 
     def draw_trajectory(self, surface):
 
@@ -52,4 +69,3 @@ class Trajectory:
             colour_choices = ["white", "yellow"]
             pygame.draw.circle(surface, random.choice(colour_choices), (int(point_x), int(point_y)), 2)
 
-            pygame.draw.circle(surface, "green", (self.entity_pos[0], self.entity_pos[1]), 5)
