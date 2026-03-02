@@ -62,7 +62,8 @@ class Player(Entity):
             if inputs["right"] and State.is_enabled("player_control"):
                 if self.vel.x < (self.max_velocity + boost_val):
                     self.vel.x += self.acceleration
-                    self.set_direction("right")
+                    if not inputs["aim"]:
+                        self.set_direction("right")
                 elif self.vel.x > (self.max_velocity + boost_val):
                     self.vel.x = self.max_velocity
             else:
@@ -74,7 +75,8 @@ class Player(Entity):
             if inputs["left"] and State.is_enabled("player_control"):
                 if self.vel.x > -(self.max_velocity + boost_val):
                     self.vel.x -= self.acceleration
-                    self.set_direction("left")
+                    if not inputs["aim"]:
+                        self.set_direction("left")
                 elif self.vel.x < -(self.max_velocity + boost_val):
                     self.vel.x = -self.max_velocity
             else:
