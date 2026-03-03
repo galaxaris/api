@@ -72,10 +72,12 @@ class Player(Entity):
                 self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()
 
-                if self.active_trajectory.trajectory_coordinates[-1][0] < self.pos[0]:
+                if self.active_trajectory.trajectory_coordinates and self.active_trajectory.trajectory_coordinates[-1][0] < self.pos[0]:
                     self.set_direction("left")
-                else:
+                elif self.active_trajectory.trajectory_coordinates and self.active_trajectory.trajectory_coordinates[-1][0] > self.pos[0]:
                     self.set_direction("right")
+                else :
+                    pass
 
             else:
                 self.active_trajectory = None
