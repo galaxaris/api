@@ -142,8 +142,7 @@ class Player(Entity):
         print("[Player] Player killed, respawning...")
         self.vel = pg.Vector2(0, 0)
         self.set_position(self.start_pos)
-        #for now, the player_position is redefined just after the player definition ==> to see with raph
-        #self.set_position((310,410))
+
 
     def draw(self, surface, offset = pg.Vector2(0, 0)):
         """

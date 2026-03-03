@@ -150,8 +150,6 @@ class Trigger_KillBox(Trigger):
     
     Uses a predefined callback (obj.kill())
     """
-    #TODO: WARNING: very long width GameObject are not well handled by the collision system... 
-    #(see in debug mode, for x > 1000px, killbox disappears & collision doesn't work anymore)
 
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False):
