@@ -1,3 +1,16 @@
+"""
+=== OMICRONDE API - GALAXARIS ===
+
+This module contains the main Game class of the Omicronde API.
+
+Authors : Galaxaris & Associates
+
+v. Beta (in development) -
+03/03/2026
+
+Copyright (c) 2026 Galaxaris & Associates. All rights reserved.
+"""
+
 import pygame as pg
 
 from api.engine import Scene
@@ -11,6 +24,9 @@ from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
 
 class Game:
+    """
+    Main class of the Omicronde API, responsible for managing the game loop, rendering, and window management.
+    """
     window_width: int
     window_height: int
     width: int
@@ -26,6 +42,15 @@ class Game:
     bound_functions: Dict[int, List[Callable]]
     debug_list: List[tuple[str, str, int]]
     def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60):
+        """
+        Initializes the game, creating the window and setting up the rendering surface and the scene
+        :param size: Size of the window, in pixels (width, height)
+        :param render_size: Size of the rendering surface, in pixels (render_width, render_height) -
+        this allows to scale the game to a certain resolution (intended for pixel art)
+        :param name: Name of the window
+        :param flags: Flags for the window, such as fullscreen, resizable, etc.
+        :param fps: Max Frame/sec rate (60fps is the default val)
+        """
         pg.init()
         pg.mixer.init()
         pg.font.init()
@@ -45,6 +70,11 @@ class Game:
         self.bound_functions = {}
 
     def run(self, game):
+        """
+        Runs the game loop, handling events, updating the scene, and rendering the game.
+        :param game: pg function to be called at each frame ==> should update the game state
+        :return:
+        """
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -93,38 +123,83 @@ class Game:
         pg.quit()
 
     def get_current_monitor_size(self):
+        """
+        Returns the current monitor size
+        :return: the current monitor size
+        """
         index = self.window.display_index
         modes = pg.display.list_modes(display=index)
         return modes[0]
 
     def set_icon(self, path: str):
+        """
+        Defines an icon for the game window
+        :param path: Path to the icon file
+        :return:
+        """
         if path.endswith(".png") or path.endswith(".jpg"):
             self.icon = pg.image.load(path)
             pg.display.set_icon(self.icon)
 
     def move_window(self, position: tuple[int,int] | pg.Vector2):
+        """
+        Moves the game window to a new position on the device screen
+        :param position: New position of the window (x, y)
+        :return:
+        """
         self.window.position = position
 
     def resize_window(self, size: tuple[int, int] | pg.Vector2):
+        """
+        Changes the size of the game window
+        :param size: New size of the window (width, height)
+        :return:
+        """
         self.render = pg.display.set_mode(size, self.flags)
 
     def bind(self, event_type: int, func: Callable[[pg.event.Event], None]):
+        """
+        Binds a function to an event type. Very useful for handling events in the game loop.
+        :param event_type: Event type to bind the function to.
+        :param func: Function to be called when the event is triggered.
+        :return:
+        """
         if event_type not in self.bound_functions:
             self.bound_functions[event_type] = []
         self.bound_functions[event_type].append(func)
 
     def debug(self, param, side: str = "left", font = "arial", size = 32):
+        """
+        Adds a debug information to be displayed on the screen.
+        :param param: The parameter to be displayed.
+        :param side: The screen side where it's displayed: "left" or "right".
+        :param font: The font to be used
+        :param size: Font size
+        :return:
+        """
         self.debug_list.append((str(param), side, font, size))
 
     def enable_debug(self):
+        """
+        Enabling debug mode.
+        :return:
+        """
         Debug.toggle("debug_info")
         Debug.toggle("colliders")
         self.debug_list = []
 
     def stop(self):
+        """
+        Stops the game loop: the window then closes and the program finishes.
+        :return:
+        """
         self.running = False
 
     def launch_debug(self):
+        """
+        Launches the debug mode
+        :return:
+        """
 
         if Debug.is_enabled("debug_info"):
             debug_y_left = 5
@@ -146,6 +221,11 @@ class Game:
             self.debug_list.clear()
 
     def toggle_fullscreen(self, mode: bool=None):
+        """
+        Toggles fullscreen mode on or off
+        :param mode: True for on, False or None for off
+        :return:
+        """
         if mode is None: #we just want to switch the screen mode
             pg.display.toggle_fullscreen()
             self.window = Window.from_display_module()
@@ -155,6 +235,10 @@ class Game:
             self.window = Window.from_display_module()
 
     def register_debug(self):
+        """
+        Registers debug information, and updates the debug information
+        :return:
+        """
         self.debug("Omicronde API - Galaxaris", "left", "**/assets/m6x11plus.ttf", 36)
         self.debug(f"FPS : {int(self.clock.get_fps())} | Render t : {self.clock.get_rawtime()} ms", "left", "**/assets/m6x11.ttf", 32)
 
@@ -180,6 +264,11 @@ class Game:
                         self.debug(f"{i} : {layer}", "left", "**/assets/m6x11.ttf", 16)
 
     def register_debug_entity(self, entity):
+        """
+        Registers debug information for an entity
+        :param entity: the target entity
+        :return:
+        """
         self.debug(f"Entity : {entity.__class__.__name__}", "right", "**/assets/m6x11.ttf", 32)
         self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", "**/assets/m6x11.ttf", 32)
 
