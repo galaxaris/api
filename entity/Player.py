@@ -1,3 +1,7 @@
+"""
+API's Player utilities
+"""
+
 from api.GameObject import GameObject
 from api.physics.Trajectory import Trajectory
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
@@ -12,8 +16,22 @@ from api.Game import Game
 import pygame as pg
 
 class Player(Entity):
+    """
+    Player class, based on Entity class. Contains all the player's attributes and methods.
+    """
+
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
+        """
+        Initializes the player with the given attributes.
+        :param pos: Player position
+        :param size: Player size
+        :param direction: Player direction
+        :param max_velocity: Player max velocity
+        :param acceleration: Player acceleration
+        :param resistance: Player resistance
+        :param force: Player force
+        """
         super().__init__(pos, size)
         self.max_velocity = max_velocity
         self.acceleration = acceleration
@@ -29,6 +47,10 @@ class Player(Entity):
         self.start_pos = pos
 
     def update(self):
+        """
+        Updates the player's position and velocity based on the inputs and the player's current state.
+        :return:
+        """
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
@@ -105,7 +127,12 @@ class Player(Entity):
         else:
             super().update()
 
-    def kill(self): #Respawn the player at the starting position (for now)
+    def kill(self):
+        """
+        Kills the player.
+        Working: the player is respawned at the starting position (temporarily)
+        :return:
+        """
         print("[Player] Player killed, respawning...")
         self.vel = pg.Vector2(0, 0)
         self.set_position(self.start_pos)
@@ -113,6 +140,12 @@ class Player(Entity):
         #self.set_position((310,410))
 
     def draw(self, surface, offset = pg.Vector2(0, 0)):
+        """
+        Draws the player on the given surface.
+        :param surface: Surface to draw on (usually the game's surface)
+        :param offset: Offset to apply to the player's position (for moving camera)
+        :return:
+        """
 
         super().draw(surface, offset)
 
