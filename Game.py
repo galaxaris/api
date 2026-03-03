@@ -44,6 +44,7 @@ class Game:
     def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
+
         :param size: Size of the window, in pixels (width, height)
         :param render_size: Size of the rendering surface, in pixels (render_width, render_height) -
         this allows to scale the game to a certain resolution (intended for pixel art)
@@ -72,6 +73,7 @@ class Game:
     def run(self, game):
         """
         Runs the game loop, handling events, updating the scene, and rendering the game.
+
         :param game: pg function to be called at each frame ==> should update the game state
         :return:
         """
@@ -125,6 +127,7 @@ class Game:
     def get_current_monitor_size(self):
         """
         Returns the current monitor size
+
         :return: the current monitor size
         """
         index = self.window.display_index
@@ -134,6 +137,7 @@ class Game:
     def set_icon(self, path: str):
         """
         Defines an icon for the game window
+
         :param path: Path to the icon file
         :return:
         """
@@ -144,6 +148,7 @@ class Game:
     def move_window(self, position: tuple[int,int] | pg.Vector2):
         """
         Moves the game window to a new position on the device screen
+
         :param position: New position of the window (x, y)
         :return:
         """
@@ -152,6 +157,7 @@ class Game:
     def resize_window(self, size: tuple[int, int] | pg.Vector2):
         """
         Changes the size of the game window
+
         :param size: New size of the window (width, height)
         :return:
         """
@@ -160,6 +166,7 @@ class Game:
     def bind(self, event_type: int, func: Callable[[pg.event.Event], None]):
         """
         Binds a function to an event type. Very useful for handling events in the game loop.
+
         :param event_type: Event type to bind the function to.
         :param func: Function to be called when the event is triggered.
         :return:
@@ -171,6 +178,7 @@ class Game:
     def debug(self, param, side: str = "left", font = "arial", size = 32):
         """
         Adds a debug information to be displayed on the screen.
+
         :param param: The parameter to be displayed.
         :param side: The screen side where it's displayed: "left" or "right".
         :param font: The font to be used
@@ -182,6 +190,7 @@ class Game:
     def enable_debug(self):
         """
         Enabling debug mode.
+
         :return:
         """
         Debug.toggle("debug_info")
@@ -191,6 +200,7 @@ class Game:
     def stop(self):
         """
         Stops the game loop: the window then closes and the program finishes.
+
         :return:
         """
         self.running = False
@@ -198,6 +208,7 @@ class Game:
     def launch_debug(self):
         """
         Launches the debug mode
+
         :return:
         """
 
@@ -223,6 +234,7 @@ class Game:
     def toggle_fullscreen(self, mode: bool=None):
         """
         Toggles fullscreen mode on or off
+
         :param mode: True for on, False or None for off
         :return:
         """
@@ -237,6 +249,7 @@ class Game:
     def register_debug(self):
         """
         Registers debug information, and updates the debug information
+
         :return:
         """
         self.debug("Omicronde API - Galaxaris", "left", "**/assets/m6x11plus.ttf", 36)
@@ -266,6 +279,7 @@ class Game:
     def register_debug_entity(self, entity):
         """
         Registers debug information for an entity
+        
         :param entity: the target entity
         :return:
         """

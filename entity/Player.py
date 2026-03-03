@@ -24,6 +24,7 @@ class Player(Entity):
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
         """
         Initializes the player with the given attributes.
+
         :param pos: Player position
         :param size: Player size
         :param direction: Player direction
@@ -49,6 +50,7 @@ class Player(Entity):
     def update(self):
         """
         Updates the player's position and velocity based on the inputs and the player's current state.
+
         :return:
         """
         inputs = get_inputs()
@@ -132,7 +134,9 @@ class Player(Entity):
     def kill(self):
         """
         Kills the player.
+
         Working: the player is respawned at the starting position (temporarily)
+
         :return:
         """
         print("[Player] Player killed, respawning...")
@@ -144,6 +148,7 @@ class Player(Entity):
     def draw(self, surface, offset = pg.Vector2(0, 0)):
         """
         Draws the player on the given surface.
+        
         :param surface: Surface to draw on (usually the game's surface)
         :param offset: Offset to apply to the player's position (for moving camera)
         :return:

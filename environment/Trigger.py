@@ -15,6 +15,7 @@ class Trigger(GameObject):
                  target_tags: list[str], callbacks: list[callable], once: bool = False):
         """
         Initializes the trigger with the given attributes.
+
         :param pos: Trigger position
         :param size: Trigger size
         :param target_tags: Tags of the objects (usually entities) that will trigger the trigger
@@ -41,6 +42,7 @@ class Trigger(GameObject):
     def add_callback(self, callback):
         """
         Adds a callback to the trigger.
+
         :param callback: Callback function to be executed when the trigger is activated
         :return:
         """
@@ -51,6 +53,7 @@ class Trigger(GameObject):
     def remove_callback(self, callback):
         """
         Removes a callback from the trigger. If the callback does not exist, a warning is printed.
+
         :param callback: Callback function to be removed
         :return:
         """
@@ -62,6 +65,7 @@ class Trigger(GameObject):
     def add_target_tag(self, tag):
         """
         Adds a target tag to the trigger.
+
         :param tag: Entity tag to be targeted
         :return:
         """
@@ -72,6 +76,7 @@ class Trigger(GameObject):
     def remove_target_tag(self, tag):
         """
         Removes a target tag from the trigger. If the tag does not exist, a warning is printed.
+
         :param tag:  Entity tag to be removed
         :return:
         """
@@ -83,6 +88,7 @@ class Trigger(GameObject):
     def remove_trigger(self):
         """
         Removes the trigger from the game. (TODO: for now, it's just a tag removal and callbacks reset, but it should be removed from the scene's game objects list to free memory)
+        
         :return:
         """
         self.remove_tag("trigger")
@@ -91,7 +97,9 @@ class Trigger(GameObject):
     def update(self):
         """
         Checks for collisions with target objects (tags) and executes callbacks if the trigger is activated.
+
         Also tracks objects currently inside the trigger to avoid repeated activations.
+
         :return:
         """
         super().update()
@@ -135,8 +143,11 @@ class Trigger(GameObject):
 class Trigger_KillBox(Trigger):
     """
     A specific class for creating a killBox.
+
     A killBox is a trigger that kills the targeted object when activated.
+
     Usage: kill the player when falling too much, traps, lava...
+    
     Uses a predefined callback (obj.kill())
     """
     #TODO: WARNING: very long width GameObject are not well handled by the collision system... 
@@ -146,6 +157,7 @@ class Trigger_KillBox(Trigger):
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False):
         """
         Initializes the trigger with the given attributes.
+
         :param pos: killBox position
         :param size: killBox size
         :param target_tags: killbox's target tags (usually "player"). Warning: the tags's entities must have a "kill()" method
@@ -156,6 +168,7 @@ class Trigger_KillBox(Trigger):
         def kill_callback(obj):
             """
             Calls the kill() method of the object if it has one, otherwise prints a warning.
+            
             :param obj: Object to be killed
             :return:
             """
