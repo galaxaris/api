@@ -17,7 +17,12 @@ INPUTS = {
     "aim": ["MOUSE_RIGHT"],
     "shoot": ["MOUSE_LEFT"],
     "interact": [pg.K_e],
-    "pause": [pg.K_ESCAPE]
+    "pause": [pg.K_ESCAPE],
+    "menu_up": [],
+    "menu_down": [],
+    "menu_left": [],
+    "menu_right": [],
+    "menu_select": [pg.K_RETURN]
 }
 
 CONTROLLER_INPUTS = {
@@ -30,7 +35,20 @@ CONTROLLER_INPUTS = {
     "interact": [("button", pg.CONTROLLER_BUTTON_B)],
     "aim": [("axis", pg.CONTROLLER_AXIS_TRIGGERLEFT, 10000)],
     "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)],
-    "pause": [("button", pg.CONTROLLER_BUTTON_START)]
+    "pause": [("button", pg.CONTROLLER_BUTTON_START)],
+    "menu_up": [("axis", pg.CONTROLLER_AXIS_LEFTY, -16000),
+                ("button", pg.CONTROLLER_BUTTON_DPAD_UP),
+                ("axis", pg.CONTROLLER_AXIS_RIGHTY, -16000)],
+    "menu_down": [("axis", pg.CONTROLLER_AXIS_LEFTY, 16000),
+                    ("button", pg.CONTROLLER_BUTTON_DPAD_DOWN),
+                    ("axis", pg.CONTROLLER_AXIS_RIGHTY, 16000)],
+    "menu_left": [("axis", pg.CONTROLLER_AXIS_LEFTX, -16000),
+                    ("button", pg.CONTROLLER_BUTTON_DPAD_LEFT),
+                    ("axis", pg.CONTROLLER_AXIS_RIGHTX, -16000)],
+    "menu_right": [("axis", pg.CONTROLLER_AXIS_LEFTX, 16000),
+                   ("button", pg.CONTROLLER_BUTTON_DPAD_RIGHT),
+                    ("axis", pg.CONTROLLER_AXIS_RIGHTX, 16000)],
+    "menu_select": [("button", pg.CONTROLLER_BUTTON_A)]
 }
 
 EDITOR_KEYS = {}
@@ -221,6 +239,9 @@ def get_key_pressed(param):
                 return key
     return None
 
+
+def is_controller_connected():
+    return len(_controllers) > 0
 
 def prevent_input(key):
     if _cached_once_state:
