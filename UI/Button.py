@@ -35,6 +35,7 @@ class Button(UIElement):
         else:
             #Mark a red border if no click texture is defined
             pg.draw.rect(self.image, color, self.image.get_rect(), 2)
+
             self.draw_text(color)
         if self.callback:
             self.callback(self)
@@ -71,10 +72,11 @@ class Button(UIElement):
 
     def update(self):
         super().update()
-        raw_mouse = Inputs.get_mouse() + self.menu_offset
+        raw_mouse = Inputs.get_mouse() - self.menu_offset
         ratio = GlobalVariables.get_variable("scale_ratio")
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
 
+        # FIXME: MOUSE PROBLEMS : not picking correctly, and click is not working well
         if Inputs.is_controller_connected():
             return
 
