@@ -10,6 +10,7 @@ class Button(UIElement):
         self.default_texture = None
         self.hover_texture = None
         self.click_texture = None
+        self.callback = None
         self.state = "default"
 
     def define_texture(self, default: Texture, hover: Texture, click: Texture):
@@ -18,6 +19,9 @@ class Button(UIElement):
         self.click_texture = click
         self.image = self.default_texture.image
         self.rect = self.image.get_rect(topleft=self.pos)
+
+    def set_callback(self, callback):
+        self.callback = callback
 
     def update(self):
         pass

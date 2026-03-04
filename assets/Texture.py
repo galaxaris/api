@@ -9,3 +9,7 @@ class Texture(pg.Surface):
         self.path = path
         self.image = resource.image(path)
         super().__init__(self.image.get_size())
+
+    def override_image(self, param):
+        self.image = param
+        self.blit(self.image, (0, 0))

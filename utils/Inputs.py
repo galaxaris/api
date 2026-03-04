@@ -3,6 +3,8 @@ import os
 import pygame as pg
 from pygame._sdl2 import controller
 
+from api.utils import GlobalVariables
+
 MOUSE_SCROLL = 0
 
 INPUTS = {
@@ -14,7 +16,8 @@ INPUTS = {
     "down": [pg.K_DOWN, pg.K_s],
     "aim": ["MOUSE_RIGHT"],
     "shoot": ["MOUSE_LEFT"],
-    "interact": [pg.K_e]
+    "interact": [pg.K_e],
+    "pause": [pg.K_ESCAPE]
 }
 
 CONTROLLER_INPUTS = {
@@ -26,7 +29,8 @@ CONTROLLER_INPUTS = {
     "boost": [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
     "interact": [("button", pg.CONTROLLER_BUTTON_B)],
     "aim": [("axis", pg.CONTROLLER_AXIS_TRIGGERLEFT, 10000)],
-    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)]
+    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)],
+    "pause": [("button", pg.CONTROLLER_BUTTON_START)]
 }
 
 EDITOR_KEYS = {}
@@ -113,14 +117,45 @@ def get_inputs():
                         current_state[action] = True
     return current_state
 
-def get_once_inputs():
-    current_state = get_inputs()
-    if not hasattr(get_once_inputs, "previous_state"):
-        get_once_inputs.previous_state = {action: False for action in current_state}
 
-    once_state = {action: current_state[action] and not get_once_inputs.previous_state[action] for action in current_state}
-    get_once_inputs.previous_state = current_state
-    return once_state
+_cached_once_state = {}
+_cached_current_state = {}
+
+
+def update_input_state():
+    """
+    Call this ONCE at the beginning of your game loop.
+    It calculates the state for the entire frame.
+    """
+    global _cached_once_state, _cached_current_state
+
+    # 1. Get what is currently held down
+    current_state = get_inputs()
+
+    # 2. Get what was held last frame
+    previous_inputs = GlobalVariables.get_variable("previous_inputs")
+    if previous_inputs is None:
+        previous_inputs = {action: False for action in current_state}
+
+    # 3. Calculate 'just pressed' (Once)
+    _cached_once_state = {
+        action: current_state[action] and not previous_inputs.get(action, False)
+        for action in current_state
+    }
+
+    # 4. Save for the next frame
+    _cached_current_state = current_state
+    GlobalVariables.set_variable("previous_inputs", current_state)
+
+
+def get_once_inputs():
+    """Returns the cached 'just pressed' states for this frame."""
+    return _cached_once_state
+
+
+def get_held_inputs():
+    """Returns the cached 'currently held' states for this frame."""
+    return _cached_current_state
 
 def get_str_input(selected_input: str) -> str:
     if _controllers:
@@ -185,3 +220,8 @@ def get_key_pressed(param):
             elif key == "MOUSE_RIGHT" and pg.mouse.get_pressed()[2]:
                 return key
     return None
+
+
+def prevent_input(key):
+    if _cached_once_state:
+        _cached_once_state[key] = False

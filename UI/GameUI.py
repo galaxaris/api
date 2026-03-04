@@ -17,6 +17,7 @@ class GameUI(pg.Surface):
 
     # New tracking for Dialogs
     active_dialog: tuple[str, list, int] | None  # (key, list_of_boxes, current_index)
+    active_menus: list[str]
 
     def __init__(self, size: tuple[int, int]):
         super().__init__(size, pg.SRCALPHA, 32)
@@ -26,6 +27,7 @@ class GameUI(pg.Surface):
         self.active_textbox = None
         self.active_dialog = None
         self.size = pg.Vector2(size)
+        self.active_menus = []
 
     def add(self, key: str, element: UIElement):
         if key not in self.elements:
@@ -45,8 +47,12 @@ class GameUI(pg.Surface):
                     self.active_textbox = (key, textboxes[0])
 
             # Handle Single Textbox Initialization
-            elif "ui_textbox" in element.tags:
+            if "ui_textbox" in element.tags:
                 self.active_textbox = (key, element)
+
+            if "ui_menu" in element.tags:
+                self.active_menus.append(key)
+
 
     def hide(self, key: str):
         if key in self.enabled_elements:
@@ -55,34 +61,48 @@ class GameUI(pg.Surface):
                 self.active_textbox = None
             if self.active_dialog and self.active_dialog[0] == key:
                 self.active_dialog = None
+            if key in self.active_menus:
+                self.active_menus.remove(key)
 
     def update(self):
         inputs = get_once_inputs()
-        if not inputs["interact"] or State.is_enabled("in_menu"):
-            return
+        if inputs["interact"] and not State.is_enabled("in_menu"):
+            if self.active_dialog:
+                key, boxes, index = self.active_dialog
+                if index < len(boxes) - 1:
+                    # Move to next box in dialog
+                    new_index = index + 1
+                    self.active_dialog = (key, boxes, new_index)
+                    self.active_textbox = (key, boxes[new_index])
+                else:
+                    # End of dialog reached
+                    self.hide(key)
+                    State.toggle("player_control", True)
+            elif self.active_textbox:
+                # Single Textbox Logic
+                key, element = self.active_textbox
+                if "ui_closable" in element.tags:
+                    self.hide(key)
+                    State.toggle("player_control", True)
 
-        # Progression Logic
-        if self.active_dialog:
-            key, boxes, index = self.active_dialog
-            if index < len(boxes) - 1:
-                # Move to next box in dialog
-                new_index = index + 1
-                self.active_dialog = (key, boxes, new_index)
-                self.active_textbox = (key, boxes[new_index])
-            else:
-                # End of dialog reached
-                self.hide(key)
-                State.toggle("player_control", True)
-
-        elif self.active_textbox:
-            # Single Textbox Logic
-            key, element = self.active_textbox
-            if "ui_closable" in element.tags:
-                self.hide(key)
+        if inputs["pause"] and self.active_menus:
+            # Close the most recently opened menu
+            print("Closing menu:", self.active_menus[-1])
+            last_menu_key = self.active_menus[-1]
+            self.hide(last_menu_key)
+            if len(self.active_menus) == 0:
+                State.toggle("in_menu", False)
                 State.toggle("player_control", True)
 
     def draw(self, surface: pg.Surface):
         self.fill((0, 0, 0, 0))
+
+        #PLAYER CONTROL: Reenable by default player control, but check if in future, other components will desactivate player control
+        #Override : Prevent player control from being reenabled if "override_player_control" is active, allowing other systems to take full control when needed (e.g., cutscenes, special interactions)
+        if not State.is_enabled("override_player_control"):
+            if len(self.active_menus) == 0:
+                State.toggle("player_control", True)
+
         for key in self.enabled_elements:
             element = self.elements[key]
 
@@ -92,6 +112,10 @@ class GameUI(pg.Surface):
                 if "ui_block" in self.active_textbox[1].tags:
                     State.toggle("player_control", False)
                 continue
+
+            if len(self.active_menus) != 0:
+                self.fill((0, 0, 0, 128))  # Semi-transparent overlay when a menu is open
+                State.toggle("player_control", False)
 
             # Draw other non-dialog UI elements normally
             element.draw(self)

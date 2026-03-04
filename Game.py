@@ -23,6 +23,8 @@ from pygame._sdl2 import controller
 from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
 
+
+
 class Game:
     """
     Main class of the Omicronde API, responsible for managing the game loop, rendering, and window management.
@@ -106,7 +108,7 @@ class Game:
                     func(event)
 
             self.register_debug()
-
+            Inputs.update_input_state()
             game()
 
             self.scene.draw(self.render)

@@ -1,7 +1,6 @@
-import os
-
 state_elements = {
     "player_control": True,
+    "override_player_control": False,
     "in_menu": False
 }
 
