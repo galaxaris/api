@@ -38,12 +38,16 @@ class Trajectory:
 
         virtual_traj = self.entity_screen_pos.copy()
 
-        #FIXME : the trajectory is not cancelled upon collision with gameobject
         for i in range(50):
-            obstacles = GlobalVariables.get_variable("game_objects")
+            obstacles = []
+            game_objects = GlobalVariables.get_variable("game_objects")
+            for game_object in game_objects:
+                if "solid" in game_object.tags:
+                    obstacles.append(game_object)
+
             position = self.entity_screen_pos.copy()
 
-            virtual_point = pygame.Rect(virtual_traj.x, virtual_traj.y,  4, 4)
+            virtual_point = pygame.Rect(virtual_traj.x + GlobalVariables.get_variable("cam_pos").x, virtual_traj.y + GlobalVariables.get_variable("cam_pos").y,  4, 4)
 
             hit = False
             for obstacle in obstacles:
@@ -58,6 +62,10 @@ class Trajectory:
             vy += self.gravity
 
             virtual_traj = position + i*pygame.Vector2(vx, vy)
+
+
+
+        #FIXME : the trajectory is not cancelled upon collision with gameobject
 
     def draw_trajectory(self, surface):
 

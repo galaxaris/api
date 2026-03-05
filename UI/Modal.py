@@ -21,7 +21,7 @@ class Modal(UIElement):
         self.elements.append(element)
         if "ui_button" in element.tags:
             element.idle()
-            element.menu_offset = self.pos + self.margin
+            element.set_global_margin(self.margin + self.pos)
             while len(self.buttons) <= x:
                 self.buttons.append([])
             self.buttons[x].append(element)

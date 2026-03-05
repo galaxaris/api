@@ -5,7 +5,7 @@ API's Player utilities
 from api.GameObject import GameObject
 from api.physics.Trajectory import Trajectory
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
-from api.utils import Debug, State, Inputs
+from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
@@ -39,6 +39,7 @@ class Player(Entity):
         self.resistance = resistance
         self.force = force
         self.boost = False
+        self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
         self.add_tag("player")
         self.active_trajectory = None
         self.set_direction(direction)
@@ -71,15 +72,15 @@ class Player(Entity):
                     self.shot_speed += Inputs.MOUSE_SCROLL
                     Inputs.MOUSE_SCROLL = 0
 
-                self.active_trajectory = Trajectory(self.pos, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
+                self.active_trajectory = Trajectory(self.pos+self.weapon_point, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()
 
-                if self.active_trajectory.trajectory_coordinates and self.active_trajectory.trajectory_coordinates[-1][0] < self.pos[0]:
-                    self.set_direction("left")
-                elif self.active_trajectory.trajectory_coordinates and self.active_trajectory.trajectory_coordinates[-1][0] > self.pos[0]:
-                    self.set_direction("right")
-                else :
-                    pass
+                if self.active_trajectory.trajectory_coordinates:
+                    last_trajectory_point = self.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
+                    if last_trajectory_point.x < self.pos[0]:
+                        self.set_direction("left")
+                    elif last_trajectory_point.x > self.pos[0]:
+                        self.set_direction("right")
 
             else:
                 self.active_trajectory = None
