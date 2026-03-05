@@ -246,3 +246,16 @@ def is_controller_connected():
 def prevent_input(key):
     if _cached_once_state:
         _cached_once_state[key] = False
+
+MOUSE_CLICKED = set()
+
+def is_mouse_clicked_once(number=0):
+    global MOUSE_CLICKED
+    mouse_pressed = pg.mouse.get_pressed()
+    if number < len(mouse_pressed) and mouse_pressed[number]:
+        if number not in MOUSE_CLICKED:
+            MOUSE_CLICKED.add(number)
+            return True
+    else:
+        MOUSE_CLICKED.discard(number)
+    return False

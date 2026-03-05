@@ -70,18 +70,23 @@ class Button(UIElement):
     def set_callback(self, callback):
         self.callback = callback
 
+    def set_global_margin(self, margin):
+        self.menu_offset = margin
+
     def update(self):
         super().update()
-        raw_mouse = Inputs.get_mouse() - self.menu_offset
-        ratio = GlobalVariables.get_variable("scale_ratio")
-        mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
 
         # FIXME: MOUSE PROBLEMS : not picking correctly, and click is not working well
         if Inputs.is_controller_connected():
             return
 
+        raw_mouse = Inputs.get_mouse() - self.menu_offset
+        ratio = GlobalVariables.get_variable("scale_ratio")
+        mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
+        self.rect.topleft = self.pos + self.menu_offset//2
+
         if self.rect.collidepoint(mouse_pos):
-            if pg.mouse.get_pressed()[0]:
+            if Inputs.is_mouse_clicked_once():
                 self.click()
             else:
                 self.focus()
