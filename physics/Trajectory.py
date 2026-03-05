@@ -7,10 +7,6 @@ from api.utils import GlobalVariables
 
 
 class Trajectory:
-    entity_pos : pygame.Vector2
-    shot_angle: float
-    shot_speed : int
-    gravity: float
     def __init__(self, player_pos: pygame.Vector2, shot_speed: int, gravity: float, mouse_pos: pygame.Vector2):
         self.angle_radians = None
         self.entity_pos = player_pos
@@ -19,7 +15,6 @@ class Trajectory:
         self.trajectory_coordinates = []
         self.mouse_pos = mouse_pos
         self.entity_screen_pos = pygame.Vector2(0,0)
-        self.initial_position = pygame.Vector2(0,0)
 
     def build_trajectory_coordinates(self):
         self.trajectory_coordinates.clear()
