@@ -13,16 +13,18 @@ class Music:
     """
     def __init__(self, path: str):
         self.path = path
-        self.sound = pg.mixer.music.load(path)
+        self.music = pg.mixer.music.load(path)
+        pg.mixer.music.stop() #Ensure music is stopped on initialization, to avoid any potential issues with music playing before intended
 
-    def play(self, loops: int = 0):
-        pg.mixer.music.play(loops=loops)
+    def play(self, loops: int = -1, fade_ms: int = 0):
+        self.music = pg.mixer.music.load(self.path)
+        pg.mixer.music.play(loops=loops, fade_ms=fade_ms) #(loops: 0 = play once, -1 = loop indefinitely)
 
     def stop(self):
         pg.mixer.music.stop()
 
     def set_volume(self, volume: float):
-        pg.mixer.music.set_volume(volume)
+        self.music.set_volume(volume)
 
     def get_volume(self) -> float:
-        return pg.mixer.music.get_volume()
+        return self.music.get_volume()
