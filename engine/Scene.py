@@ -60,6 +60,7 @@ class Scene(pg.Surface):
         self.fill((0, 0, 0))
         GlobalVariables.set_variable("game_objects", self.game_objects)
 
+        #TODO: when pausing the game, stop the FPS completely (no more events)
         self.camera.update()
 
         if self.background:

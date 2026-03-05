@@ -23,6 +23,8 @@ from pygame._sdl2 import controller
 from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
 
+from api.assets.AudioManager import AudioManager
+
 
 
 class Game:
@@ -44,6 +46,8 @@ class Game:
     bound_functions: Dict[int, List[Callable]]
     debug_list: List[tuple[str, str, int]]
     debug_font: str
+    audio_manager: AudioManager
+
     def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, debug_font: str="**/assets/Fonts/m6x11.ttf"):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
@@ -73,7 +77,8 @@ class Game:
         self.window = Window.from_display_module()
         self.bound_functions = {}
         self.debug_font = debug_font
-
+        self.audio_manager = AudioManager()
+        
     def run(self, game):
         """
         Runs the game loop, handling events, updating the scene, and rendering the game.
