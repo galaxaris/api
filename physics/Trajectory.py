@@ -15,6 +15,7 @@ class Trajectory:
         self.trajectory_coordinates = []
         self.mouse_pos = mouse_pos
         self.entity_screen_pos = pygame.Vector2(0,0)
+        self.test_collision = []
 
     def build_trajectory_coordinates(self):
         self.trajectory_coordinates.clear()
@@ -44,6 +45,7 @@ class Trajectory:
 
             virtual_point = pygame.Rect(virtual_traj.x + GlobalVariables.get_variable("cam_pos").x, virtual_traj.y + GlobalVariables.get_variable("cam_pos").y,  4, 4)
 
+
             hit = False
             for obstacle in obstacles:
                 if virtual_point.colliderect(obstacle.rect):
@@ -53,22 +55,18 @@ class Trajectory:
             if hit:
                 break
 
-            self.trajectory_coordinates.append(position + i*pygame.Vector2(vx, vy))
             vy += self.gravity
 
             virtual_traj = position + i*pygame.Vector2(vx, vy)
+            self.trajectory_coordinates.append(virtual_traj)
 
-
-
-        #FIXME : the trajectory is not cancelled upon collision with gameobject
+        self.trajectory_coordinates.pop(-1)
 
     def draw_trajectory(self, surface):
 
         trajectory_coordinates = self.trajectory_coordinates
         for point in trajectory_coordinates:
-            point_x = point[0]
-            point_y = point[1]
-
             colour_choices = ["white", "yellow"]
-            pygame.draw.circle(surface, random.choice(colour_choices), (int(point_x), int(point_y)), 2)
+            pygame.draw.circle(surface, random.choice(colour_choices), (int(point[0]), int(point[1])), 2)
+
 
