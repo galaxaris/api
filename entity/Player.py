@@ -21,7 +21,8 @@ class Player(Entity):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20,
+                  sfx_list: dict[str, str] = None):
         """
         Initializes the player with the given attributes.
 
@@ -32,6 +33,7 @@ class Player(Entity):
         :param acceleration: Player acceleration
         :param resistance: Player resistance
         :param force: Player force
+        :param sfx_list: List of sound effects. (key: name)
         """
         super().__init__(pos, size)
         self.max_velocity = max_velocity
@@ -47,6 +49,8 @@ class Player(Entity):
         self.gravity = DEFAULT_GRAVITY
 
         self.start_pos = pos
+
+        self.sfx_list = sfx_list
 
     def update(self):
         """
@@ -121,9 +125,11 @@ class Player(Entity):
                 self.jump = True
 
                 #SFX
-                audio_manager = GlobalVariables.get_variable("audio_manager")
-                if audio_manager:
-                    audio_manager.play_sfx("jump")
+                if self.sfx_list:
+                    if "jump" in self.sfx_list:
+                        audio_manager = GlobalVariables.get_variable("audio_manager")
+                        if audio_manager:
+                            audio_manager.play_sfx("jump")
 
 
             if inputs["boost"] and State.is_enabled("player_control"):
@@ -139,11 +145,13 @@ class Player(Entity):
             # Updates whith Entity's update
             super().update()
             
-            # Détection de l'atterrissage : le joueur tombait et touche maintenant le sol
-            if was_falling and self.is_hitting_ground:
-                audio_manager = GlobalVariables.get_variable("audio_manager")
-                if audio_manager:
-                    audio_manager.play_sfx("hit_ground")
+            # Détection de l'atterrissage : le joueur tombait et n'est plus en train de tomber
+            if was_falling and not self.fall:
+                if self.sfx_list:
+                    if "hit_ground" in self.sfx_list:
+                        audio_manager = GlobalVariables.get_variable("audio_manager")
+                        if audio_manager:
+                            audio_manager.play_sfx("hit_ground")
 
     def kill(self):
         """
