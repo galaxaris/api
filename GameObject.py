@@ -26,7 +26,7 @@ class GameObject:
         self.id = id(self)
         self.tags = set()
         self.direction = "right"
-
+    #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
     def set_texture(self, texture:Texture):
         self.animation = None
         self.image = pg.transform.scale(texture.image, self.size)

@@ -64,9 +64,6 @@ class Trajectory:
             virtual_traj = position + i*pygame.Vector2(vx, vy)
 
 
-
-        #FIXME : the trajectory is not cancelled upon collision with gameobject
-
     def draw_trajectory(self, surface):
 
         trajectory_coordinates = self.trajectory_coordinates
