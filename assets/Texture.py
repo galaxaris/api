@@ -1,3 +1,5 @@
+"""Texture abstraction built on top of pygame surfaces."""
+
 import pygame as pg
 
 from api.assets.Resource import Resource

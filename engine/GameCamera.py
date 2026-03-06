@@ -1,3 +1,5 @@
+"""Camera system used to navigate and focus the scene."""
+
 from typing import Optional
 
 import pygame as pg
@@ -28,21 +30,30 @@ class GameCamera:
 
     def move(self, dx: float, dy: float):
         """
-        Allows to move the camera by a certain amount in the x and y directions.
+        Move the camera by a delta.
+
+        :param dx: Horizontal delta.
+        :param dy: Vertical delta.
+        :return:
         """
         self.position.x += dx
         self.position.y += dy
 
     def focus(self, game_object: GameObject):
         """
-        Focuses the camera on a specific game object.
+        Focus the camera on a specific game object.
+
+        :param game_object: Target object to track.
+        :return:
         """
         self.focused_object = game_object
 
     def set_offset(self, offset: tuple[int, int] | tuple[float, float] | pg.Vector2):
         """
-        Sets the camera's offset from the focused object. This allows to adjust a game relative position. 
-        The universe enlarges! 
+        Set camera offset relative to the focused object.
+
+        :param offset: Offset applied to focused object position.
+        :return:
         """
         self.offset = pg.Vector2(offset)
 
@@ -58,7 +69,10 @@ class GameCamera:
 
     def set_position(self, position: tuple[int, int] | tuple[float, float] | pg.Vector2):
         """
-        Teleports the camera view to the specified position.
+        Teleport the camera to an absolute position.
+
+        :param position: New absolute camera position.
+        :return:
         """
 
         self.position = pg.Vector2(position)
@@ -66,7 +80,13 @@ class GameCamera:
 
     def update(self):
         """
-        Updates the camera's position based on the focused object and the current mode (freecam or focused).
+        Update camera mode and position for the current frame.
+
+        In freecam mode, movement follows live directional inputs. Otherwise,
+        the camera follows the focused object and optionally clamps to configured
+        boundaries.
+
+        :return:
         """
 
         if Debug.is_enabled("freecam"):

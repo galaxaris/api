@@ -1,3 +1,5 @@
+"""Scene composition and layered rendering."""
+
 import pygame as pg
 from typing import Dict, List, Optional
 from api.GameObject import GameObject

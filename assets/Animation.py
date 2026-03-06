@@ -1,8 +1,22 @@
+"""Animation helpers for sprite sheets.
+
+This module provides the `Animation` class used to split horizontal sprite
+sheets into frames and retrieve time-based animation frames.
+"""
+
 import pygame as pg
 from api.assets.Texture import Texture
 
 class Animation:
+    """Represents a frame-based animation extracted from a sprite sheet."""
+
     def __init__(self, texture: Texture, frame_count: int, delay: int = 100):
+        """Initialize an animation from a texture.
+
+        :param texture: Texture containing frames arranged horizontally.
+        :param frame_count: Total number of frames in the sheet.
+        :param delay: Delay in milliseconds between frame switches.
+        """
         self.texture = texture
         self.frame_count = frame_count
         self.delay = delay # On stocke le délai (ex: 100ms)
@@ -17,6 +31,11 @@ class Animation:
         self.frames_left = [pg.transform.flip(f, True, False) for f in self.frames_right]
 
     def _extract_frames(self, sheet: pg.Surface):
+        """Extract all animation frames from the sprite sheet.
+
+        :param sheet: Source sheet to split.
+        :return: Ordered list of extracted frame surfaces.
+        """
         frames = []
         for i in range(self.frame_count):
             surface = pg.Surface((self.width, self.height), pg.SRCALPHA, 32)
@@ -26,10 +45,19 @@ class Animation:
         return frames
 
     def reset(self):
+        """Reset animation playback to the first frame.
+
+        :return:
+        """
         self.animation_count = 0
         self.last_update = pg.time.get_ticks()
 
     def get_frame(self, direction: str = "right") -> pg.Surface:
+        """Return the current frame and advance when the delay elapsed.
+
+        :param direction: Visual direction (`"right"` or `"left"`).
+        :return: Current frame surface for the selected direction.
+        """
 
         now = pg.time.get_ticks()
         if now - self.last_update > self.delay:
@@ -42,6 +70,11 @@ class Animation:
         return frames[self.animation_count]
 
     def calculate_frame_size(self, size: tuple[int, int] | pg.Vector2):
+        """Resize already extracted frames to match a target render size.
+
+        :param size: Target frame size `(width, height)`.
+        :return:
+        """
         self.width = size[0] // self.frame_count
         self.height = size[1]
         self.frames_right = [pg.transform.scale(frame_right, size) for frame_right in self.frames_right]

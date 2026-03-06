@@ -1,3 +1,8 @@
+"""Core GameObject abstraction used throughout the API.
+Based on Unity's GameObject
+
+"""
+
 import os
 from typing import Optional
 

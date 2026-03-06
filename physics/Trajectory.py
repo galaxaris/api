@@ -1,3 +1,5 @@
+"""Projectile trajectory preview utilities."""
+
 import math
 import pygame
 import random
@@ -7,7 +9,16 @@ from api.utils import GlobalVariables
 
 
 class Trajectory:
+    """Builds and renders a predicted ballistic path."""
+
     def __init__(self, player_pos: pygame.Vector2, shot_speed: int, gravity: float, mouse_pos: pygame.Vector2):
+        """Initialize a trajectory computation context.
+
+        :param player_pos: Shooter world position.
+        :param shot_speed: Initial projectile speed.
+        :param gravity: Gravity increment applied per simulation step.
+        :param mouse_pos: Cursor position used to compute shoot angle.
+        """
         self.angle_radians = None
         self.entity_pos = player_pos
         self.shot_speed = shot_speed
@@ -18,6 +29,13 @@ class Trajectory:
         self.test_collision = []
 
     def build_trajectory_coordinates(self):
+        """Compute trajectory points until max steps or collision.
+
+        The preview is generated in screen space relative to the current camera.
+        Simulation stops early when a predicted point intersects a solid object.
+
+        :return:
+        """
         self.trajectory_coordinates.clear()
         cam_pos = GlobalVariables.get_variable("cam_pos")
         self.entity_screen_pos = self.entity_pos - cam_pos
@@ -63,6 +81,11 @@ class Trajectory:
         self.trajectory_coordinates.pop(-1)
 
     def draw_trajectory(self, surface):
+        """Draw previously computed trajectory points.
+
+        :param surface: Destination surface.
+        :return:
+        """
 
         trajectory_coordinates = self.trajectory_coordinates
         for point in trajectory_coordinates:

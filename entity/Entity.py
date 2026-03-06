@@ -1,3 +1,5 @@
+"""Entity abstraction with movement, collisions, and animation state."""
+
 from typing import Optional
 
 from pygame.surface import Surface

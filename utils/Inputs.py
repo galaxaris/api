@@ -1,3 +1,9 @@
+"""Unified input handling for keyboard, mouse, and controller.
+
+This module normalizes raw device states into game actions and provides both
+continuous (`held`) and edge-triggered (`once`) input views.
+"""
+
 import os
 
 import pygame as pg
@@ -72,13 +78,28 @@ BRAND_MAPS = {
 }
 
 def editor_edit_key(key,value):
+    """Override a key state when running through the editor layer.
+
+    :param key: Key identifier.
+    :param value: Forced pressed state.
+    :return:
+    """
     EDITOR_KEYS[key] = value
 
 def editor_release_key():
+    """Clear all temporary editor key overrides.
+
+    :return:
+    """
     global EDITOR_KEYS
     EDITOR_KEYS = {}
 
 def get_controller_brand(joy):
+    """Infer controller branding from device name.
+
+    :param joy: Controller instance.
+    :return: `"ps"` for PlayStation-like names, otherwise `"xbox"`.
+    """
     name = joy.name.lower()
     if any(x in name for x in ["playstation", "dualshock", "dualsense", "ps4", "ps5"]):
         return "ps"
@@ -86,6 +107,13 @@ def get_controller_brand(joy):
 
 
 def get_inputs():
+    """Compute current action states from all connected input devices.
+
+    Keyboard/mouse actions are computed first, then controller actions can
+    override them when active.
+
+    :return: Mapping of action names to pressed states.
+    """
     current_state = {}
     pg_keys = {}
     if os.environ.get("EDITOR") == "1":
@@ -142,8 +170,13 @@ _cached_current_state = {}
 
 def update_input_state():
     """
-    Call this ONCE at the beginning of your game loop.
-    It calculates the state for the entire frame.
+    Refresh cached input snapshots for the current frame.
+
+    Call this once at the beginning of each game-loop iteration. It computes:
+    - held states for all actions
+    - once states (`just pressed`) by comparing current and previous frames
+
+    :return:
     """
     global _cached_once_state, _cached_current_state
 
@@ -167,15 +200,26 @@ def update_input_state():
 
 
 def get_once_inputs():
-    """Returns the cached 'just pressed' states for this frame."""
+    """Return edge-triggered inputs for the current frame.
+
+    :return: Mapping `{action: bool}` for just-pressed actions.
+    """
     return _cached_once_state
 
 
 def get_held_inputs():
-    """Returns the cached 'currently held' states for this frame."""
+    """Return held inputs for the current frame.
+
+    :return: Mapping `{action: bool}` for currently held actions.
+    """
     return _cached_current_state
 
 def get_str_input(selected_input: str) -> str:
+    """Return a human-readable label for an action binding.
+
+    :param selected_input: Action name.
+    :return: Label adapted to controller/keyboard context.
+    """
     if _controllers:
         joy = _controllers[0]
         brand = get_controller_brand(joy)
@@ -207,13 +251,25 @@ def get_str_input(selected_input: str) -> str:
     return "None"
 
 def get_hint_input(selected_input: str)->str:
-   if len(_controllers) > 0:
+    """Return an on-screen hint wrapper for an action label.
+
+    Uses `(X)` style on controller and `[X]` style on keyboard.
+
+    :param selected_input: Action name.
+    :return: Formatted hint string.
+    """
+    if len(_controllers) > 0:
         return "(" + get_str_input(selected_input) + ")"
-   else:
+    else:
         return "[" + get_str_input(selected_input) + "]"
 
 
 def get_mouse(forced=False):
+    """Return mouse-like aiming coordinates for current control scheme.
+
+    :param forced: Force real mouse coordinates even when controller is active.
+    :return: Mouse position or synthetic stick-based vector.
+    """
     if len(_controllers) == 0 or forced:
         return pg.mouse.get_pos()
     else:
@@ -228,6 +284,11 @@ def get_mouse(forced=False):
 
 
 def get_key_pressed(param):
+    """Return the concrete key/button currently used for an action.
+
+    :param param: Action name.
+    :return: Key code or mouse token when pressed, else `None`.
+    """
     if param in INPUTS:
         keys = INPUTS[param]
         for key in keys:
@@ -241,15 +302,29 @@ def get_key_pressed(param):
 
 
 def is_controller_connected():
+    """Return whether at least one controller is tracked.
+
+    :return: `True` when a controller is available.
+    """
     return len(_controllers) > 0
 
 def prevent_input(key):
+    """Consume a just-pressed input for the current frame.
+
+    :param key: Action key to clear from once-state.
+    :return:
+    """
     if _cached_once_state:
         _cached_once_state[key] = False
 
 MOUSE_CLICKED = set()
 
 def is_mouse_clicked_once(number=0):
+    """Return `True` only on the frame where a mouse button starts pressing.
+
+    :param number: Mouse button index.
+    :return: Edge-triggered click state.
+    """
     global MOUSE_CLICKED
     mouse_pressed = pg.mouse.get_pressed()
     if number < len(mouse_pressed) and mouse_pressed[number]:
