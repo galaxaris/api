@@ -19,7 +19,7 @@ def get_font(name: str, size: int, custom: bool = False) -> Font:
     if (name, size) in font_generated:
         return font_generated[(name, size)]
     else:
-        print("Add font", name, size)
+        #print("Add font", name, size)
         if "**/" in name:
             path = name.split("**/")[1]
             font_generated[(name, size)] = pg.font.Font(path, size)
