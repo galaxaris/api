@@ -1,3 +1,5 @@
+"""Collision helper functions for game objects."""
+
 import pygame as pg
 from pygame import Rect
 
@@ -5,6 +7,18 @@ from api.GameObject import GameObject
 
 
 def get_collided_objects(obj: GameObject, tag: str, others: list[GameObject], dx: float, dy: float) -> list[tuple[GameObject, str]]:
+    """Return objects that would collide with `obj` after movement.
+
+    The function predicts collisions using a translated copy of `obj.rect`
+    without mutating the real object.
+
+    :param obj: Object being tested.
+    :param tag: Optional tag required on potential colliders.
+    :param others: Candidate objects to test against.
+    :param dx: Horizontal movement applied for prediction.
+    :param dy: Vertical movement applied for prediction.
+    :return: List of `(collider, direction)` tuples.
+    """
     collided_objects = []
 
     # TODO: remove wall jump
@@ -20,6 +34,12 @@ def get_collided_objects(obj: GameObject, tag: str, others: list[GameObject], dx
     return collided_objects
 
 def get_collision_direction(subject: Rect, target: Rect):
+    """Determine the side of `target` touched by `subject`.
+
+    :param subject: Moving rectangle.
+    :param target: Hit rectangle.
+    :return: Collision side (`"top"`, `"bottom"`, `"left"`, `"right"`) or `None`.
+    """
 
     dr = subject.right - target.left
     dl = target.right - subject.left

@@ -5,6 +5,7 @@ API's Triggers definition, collection & implementation
 from api.GameObject import GameObject
 from api.utils.GlobalVariables import get_variable
 import pygame as pg
+from api.utils.GlobalVariables import global_vars as GV
 
 class Trigger(GameObject):
     """
@@ -152,7 +153,7 @@ class Trigger_KillBox(Trigger):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False, sfx: str | None = None):
         """
         Initializes the trigger with the given attributes.
 
@@ -160,6 +161,7 @@ class Trigger_KillBox(Trigger):
         :param size: killBox size
         :param target_tags: killbox's target tags (usually "player"). Warning: the tags's entities must have a "kill()" method
         :param once: whether the killbox should be activated only once
+        :param sfx: sound effect to play when the trigger is activated
         """
         
         #Définir le callback de kill dans le constructeur
@@ -172,6 +174,9 @@ class Trigger_KillBox(Trigger):
             """
             if hasattr(obj, "kill"):
                 obj.kill()
+                if sfx:
+                    AudioManager = GV.get("audio_manager")
+                    AudioManager.play_sfx(sfx)
             else:
                 print(f"== Warning: object {obj} does not have a kill method ==")
         

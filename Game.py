@@ -11,6 +11,8 @@ v. Beta (in development) -
 Copyright (c) 2026 Galaxaris & Associates. All rights reserved.
 """
 
+### TODO: should we pass all the API instances to the Game class? (Could make it easier to access everything from one class)
+
 import pygame as pg
 
 from api.engine import Scene
@@ -44,6 +46,7 @@ class Game:
     bound_functions: Dict[int, List[Callable]]
     debug_list: List[tuple[str, str, int]]
     debug_font: str
+
     def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, debug_font: str="**/assets/Fonts/m6x11.ttf"):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene

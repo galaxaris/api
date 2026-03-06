@@ -1,3 +1,5 @@
+"""Modal menu container with keyboard/controller navigation."""
+
 import pygame as pg
 
 from api.UI.GameUI import UIElement
@@ -5,7 +7,15 @@ from api.utils import Inputs
 
 
 class Modal(UIElement):
+    """Blocking UI container that can host navigable button grids."""
+
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int] = (50, 50, 50)):
+        """Initialize a modal container.
+
+        :param pos: Modal position.
+        :param size: Modal size.
+        :param color: Background color of the modal panel.
+        """
         super().__init__(pos, size)
         self.elements: list[UIElement] = []
         self.buttons = [[]]  # 2D list to store buttons in a grid
@@ -18,6 +28,12 @@ class Modal(UIElement):
         self.add_tag("ui_block")
 
     def add_element(self, element: UIElement, x: int = 0):
+        """Add an element and optionally register it in a button column.
+
+        :param element: UI element to add.
+        :param x: Column index for button navigation grouping.
+        :return:
+        """
         self.elements.append(element)
         if "ui_button" in element.tags:
             element.idle()
@@ -28,6 +44,13 @@ class Modal(UIElement):
 
 
     def update(self):
+        """Update modal content and handle controller button navigation.
+
+        When a controller is connected, directional inputs move within the
+        button grid and selection triggers the focused button callback.
+
+        :return:
+        """
 
         if self.buttons:
             actual_button = self.buttons[self.active_button_index_x][self.active_button_index_y%len(self.buttons[self.active_button_index_x])]
@@ -60,6 +83,12 @@ class Modal(UIElement):
             element.update()
 
     def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
+        """Render modal and all child elements.
+
+        :param surface: Destination surface.
+        :param offset: Draw offset.
+        :return:
+        """
         super().draw(surface, offset)
         # Add a margin for the elements to avoid drawing them right at the edge of the modal
         self.menu_surface.fill((0,0,0,0))

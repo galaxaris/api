@@ -1,3 +1,5 @@
+"""Gameplay constants shared by multiple systems."""
+
 # Trajectory
 OFFSET_X = 0
 OFFSET_Y = 0

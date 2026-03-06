@@ -21,7 +21,8 @@ class Player(Entity):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20,
+                  sfx_list: dict[str, str] = None):
         """
         Initializes the player with the given attributes.
 
@@ -32,6 +33,7 @@ class Player(Entity):
         :param acceleration: Player acceleration
         :param resistance: Player resistance
         :param force: Player force
+        :param sfx_list: List of sound effects. (key: name)
         """
         super().__init__(pos, size)
         self.max_velocity = max_velocity
@@ -48,6 +50,8 @@ class Player(Entity):
 
         self.start_pos = pos
 
+        self.sfx_list = sfx_list
+
     def update(self):
         """
         Updates the player's position and velocity based on the inputs and the player's current state.
@@ -56,6 +60,9 @@ class Player(Entity):
         """
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
+
+        was_falling = self.fall
+
 
         if not Debug.is_enabled("freecam"):
 
@@ -117,20 +124,34 @@ class Player(Entity):
                 self.vel.y += -self.acceleration * max(1,gravity) * self.force
                 self.jump = True
 
+                #SFX
+                if self.sfx_list:
+                    if "jump" in self.sfx_list:
+                        audio_manager = GlobalVariables.get_variable("audio_manager")
+                        if audio_manager:
+                            audio_manager.play_sfx("jump")
+
 
             if inputs["boost"] and State.is_enabled("player_control"):
                 self.boost = True
             else:
                 self.boost = False
 
-
-
         if Debug.is_enabled("freecam"):
             self.vel.x = 0
             self.vel.y = 0
             self.update_sprite()
         else:
+            # Updates whith Entity's update
             super().update()
+            
+            # Détection de l'atterrissage : le joueur tombait et n'est plus en train de tomber
+            if was_falling and not self.fall:
+                if self.sfx_list:
+                    if "hit_ground" in self.sfx_list:
+                        audio_manager = GlobalVariables.get_variable("audio_manager")
+                        if audio_manager:
+                            audio_manager.play_sfx("hit_ground")
 
     def kill(self):
         """

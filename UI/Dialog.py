@@ -1,10 +1,18 @@
+"""Dialog container that converts scripted lines into text boxes."""
+
 from api.UI.TextBox import TextBox
 from api.UI.GameUI import UIElement
 from api.assets.Texture import Texture
 
 
 class Dialog(UIElement):
+    """Defines a multi-line dialog sequence with character metadata."""
+
     def __init__(self, font = "aptos"):
+        """Initialize an empty dialog sequence.
+
+        :param font: Font used when creating text boxes.
+        """
         super().__init__((0,0), (0,0), False)
         self.characters: list[tuple[str, Texture, str]] = []
         self.dialogs: list[tuple[str, str]] = []
@@ -12,12 +20,32 @@ class Dialog(UIElement):
         self.add_tag("ui_dialog")
 
     def add_character(self, name: str, texture: Texture, side: str = "left"):
+        """Register a character entry for dialog rendering.
+
+        :param name: Character identifier.
+        :param texture: Portrait texture.
+        :param side: Portrait side (`"left"` or `"right"`).
+        :return:
+        """
         self.characters.append((name, texture, side))
 
     def add_message(self, character_name: str, dialog: str):
+        """Append a message to the dialog sequence.
+
+        :param character_name: Speaker identifier.
+        :param dialog: Message content.
+        :return:
+        """
         self.dialogs.append((character_name, dialog))
 
     def get_dialogs(self):
+        """Build concrete textbox instances for the whole dialog sequence.
+
+        Each line resolves speaker texture/side and sets a goal marker that
+        indicates whether the next interaction should continue or close.
+
+        :return: Ordered list of `TextBox` objects.
+        """
         dialogs = []
         for character_name, dialog in self.dialogs:
             character_texture = None
