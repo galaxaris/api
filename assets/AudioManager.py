@@ -135,3 +135,47 @@ class AudioManager:
         """
         self.music_volume = volume
         pg.mixer.music.set_volume(volume)
+
+
+    ### UTILS ###
+    def is_music_playing(self):
+        """
+        Checks if any music track is currently playing.
+
+        :return: `True` if music is playing, `False` otherwise
+        """
+        return pg.mixer.music.get_busy()
+    
+    def is_sfx_playing(self, name: str):
+        """
+        Checks if the specified sound effect is currently playing.
+
+        :param name: Name of the sound effect to check
+        :return: `True` if the sound effect is playing, `False` otherwise
+        """
+        if name in self.sfx:
+            return self.sfx[name].get_num_channels() > 0
+        return False
+    
+    def current_music(self):
+        """
+        Returns the name of the currently playing music track, or `None` if no music is playing.
+
+        :return: Name of the currently playing music track, or `None` if no music is playing
+        """
+        for name, path in self.music.items():
+            if pg.mixer.music.get_busy() and pg.mixer.music.get_pos() >= 0:
+                return name
+        return None
+    
+    def current_sfx(self):
+        """
+        Returns a list of names of currently playing sound effects.
+
+        :return: List of names of currently playing sound effects
+        """
+        playing_sfx = []
+        for name, sound in self.sfx.items():
+            if sound.get_num_channels() > 0:
+                playing_sfx.append(name)
+        return playing_sfx
