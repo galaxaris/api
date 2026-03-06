@@ -1,4 +1,5 @@
 import pygame as pg
+from api.utils import GlobalVariables
 
 
 class AudioManager:
@@ -18,6 +19,8 @@ class AudioManager:
         self.music_volume = music_volume
 
         pg.mixer.music.set_volume(self.music_volume)
+        
+        GlobalVariables.set_variable("audio_manager", self)
 
     #### LOADING ####
 
@@ -34,7 +37,7 @@ class AudioManager:
 
     def play_sfx(self, name: str, loops=0):
         if name in self.sfx:
-            if pg.mixer.find_channel(): #Allows to avoid sound spamming
+            if self.sfx[name].get_num_channels() == 0: #Allows to avoid sound spamming
                 self.sfx[name].play(loops=loops)
 
     def stop_sfx(self, name: str):

@@ -19,6 +19,8 @@ class Entity(GameObject):
     boost: bool
     gravity: Optional[float]
     collided_objs : list[tuple[GameObject, str]]
+    is_hitting_ground: bool
+
     def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
         super().__init__(pos, size)
         self.boost = False
@@ -28,6 +30,7 @@ class Entity(GameObject):
         self.animations = {}
         self.gravity = None
         self.collided_objs = []
+        self.is_hitting_ground = False
         self.add_tag("entity")
 
 
@@ -42,6 +45,7 @@ class Entity(GameObject):
         self.gravity = gravity
 
     def land(self):
+        self.is_hitting_ground = True
         self.vel.y = 0
         self.jump = False
         self.fall = False
@@ -49,6 +53,9 @@ class Entity(GameObject):
     def hit_head(self):
         self.vel.y = 0
         self.jump = False
+    
+    def hit_wall(self):
+        ...
 
 
     def update(self):
@@ -65,10 +72,12 @@ class Entity(GameObject):
             if obj[1] == "bottom":
                 self.hit_head()
             if obj[1] == "left":
+                self.hit_wall()
                 self.vel.x = 0
                 if self.direction == "left":
                     self.vel.x = -0.1
             if obj[1] == "right":
+                self.hit_wall()
                 self.vel.x = 0
                 if self.direction == "right":
                     self.vel.x = 0.1
@@ -99,6 +108,8 @@ class Entity(GameObject):
                     break
 
         self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
+
+        self.is_hitting_ground = False
 
     def update_sprite(self):
         if self.vel.y > 0:

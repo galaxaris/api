@@ -57,6 +57,9 @@ class Player(Entity):
         inputs = get_inputs()
         boost_val = 1 if self.boost else 0
 
+        was_falling = self.fall
+
+
         if not Debug.is_enabled("freecam"):
 
             if inputs["aim"] and State.is_enabled("player_control"):
@@ -117,20 +120,30 @@ class Player(Entity):
                 self.vel.y += -self.acceleration * max(1,gravity) * self.force
                 self.jump = True
 
+                #SFX
+                audio_manager = GlobalVariables.get_variable("audio_manager")
+                if audio_manager:
+                    audio_manager.play_sfx("jump")
+
 
             if inputs["boost"] and State.is_enabled("player_control"):
                 self.boost = True
             else:
                 self.boost = False
 
-
-
         if Debug.is_enabled("freecam"):
             self.vel.x = 0
             self.vel.y = 0
             self.update_sprite()
         else:
+            # Updates whith Entity's update
             super().update()
+            
+            # Détection de l'atterrissage : le joueur tombait et touche maintenant le sol
+            if was_falling and self.is_hitting_ground:
+                audio_manager = GlobalVariables.get_variable("audio_manager")
+                if audio_manager:
+                    audio_manager.play_sfx("hit_ground")
 
     def kill(self):
         """
