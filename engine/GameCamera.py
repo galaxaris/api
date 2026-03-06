@@ -8,7 +8,15 @@ from api.utils.Inputs import get_inputs
 
 
 class GameCamera:
+    """
+    GameCamera class. Handles the camera's position, movement, and focus on game objects.
+    """
     def __init__(self, position: tuple[int, int]):
+        """
+        Initializes the GameCamera with a starting position.
+
+        :param position: Starting position of the camera
+        """
 
         self.limit_bottomright : Optional[pg.Vector2] = None
         self.limit_topleft : Optional[pg.Vector2] = None
@@ -19,24 +27,47 @@ class GameCamera:
         self.camera_mode = "Free"
 
     def move(self, dx: float, dy: float):
+        """
+        Allows to move the camera by a certain amount in the x and y directions.
+        """
         self.position.x += dx
         self.position.y += dy
 
     def focus(self, game_object: GameObject):
+        """
+        Focuses the camera on a specific game object.
+        """
         self.focused_object = game_object
 
     def set_offset(self, offset: tuple[int, int] | tuple[float, float] | pg.Vector2):
+        """
+        Sets the camera's offset from the focused object. This allows to adjust a game relative position. 
+        The universe enlarges! 
+        """
         self.offset = pg.Vector2(offset)
 
     def set_limits(self, topleft: tuple[int , int], bottomright: tuple[int , int]):
+        """
+        Sets the field of view limits
+
+        :param topleft: Top left corner of the field of view
+        :param bottomright: Bottom right corner of the field of view
+        """
         self.limit_topleft = pg.Vector2(topleft)
         self.limit_bottomright = pg.Vector2(bottomright)
 
     def set_position(self, position: tuple[int, int] | tuple[float, float] | pg.Vector2):
+        """
+        Teleports the camera view to the specified position.
+        """
+
         self.position = pg.Vector2(position)
 
 
     def update(self):
+        """
+        Updates the camera's position based on the focused object and the current mode (freecam or focused).
+        """
 
         if Debug.is_enabled("freecam"):
             self.camera_mode = "Freecam"

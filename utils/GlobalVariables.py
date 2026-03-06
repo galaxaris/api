@@ -1,3 +1,11 @@
+"""
+Global variables for the game.
+
+Useful for storing variables that need to be accessed across multiple modules, (camera position, scale ratio, game objects list, AudioManager...),
+whithout having to pass them as parameters to every function that needs them.
+"""
+
+
 import pygame as pg
 
 global_vars = {
@@ -9,7 +17,13 @@ global_vars = {
 }
 
 def set_variable(key, value):
+    """
+    Sets a new global variable.
+    """
     global_vars[key] = value
 
 def get_variable(key):
+    """
+    Gets the value of a global variable.
+    """
     return global_vars[key]
