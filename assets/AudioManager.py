@@ -8,7 +8,7 @@ class AudioManager:
     sfx_volume: float
     music_volume: float
 
-    def __init__(self, sfx_volume=0.7, music_volume=0.7, channels=16):
+    def __init__(self, sfx_volume=0.8, music_volume=1, channels=16):
         pg.mixer.init()
         pg.mixer.set_num_channels(channels)
 
