@@ -290,6 +290,7 @@ class Game:
             if audio_manager.current_music():
                 self.debug(f"Music :", "left", self.debug_font, 32)
                 self.debug(f"{audio_manager.current_music()} - {'Playing' if audio_manager.is_music_playing() else 'Paused'}", "left", self.debug_font, 16)
+            
             if audio_manager.current_sfx():
                 self.debug(f"SFX :", "left", self.debug_font, 32)
 

@@ -27,6 +27,7 @@ class AudioManager:
 
         self.sfx_volume = sfx_volume
         self.music_volume = music_volume
+        self.current_music_name = None
 
         pg.mixer.music.set_volume(self.music_volume)
         
@@ -87,12 +88,14 @@ class AudioManager:
         if name in self.music:
             pg.mixer.music.load(self.music[name])
             pg.mixer.music.play(loops)
+            self.current_music_name = name
 
     def stop_music(self):
         """
         Stops the currently playing music track.
         """
         pg.mixer.music.stop()
+        self.current_music_name = None
 
     def pause_music(self):
         """
@@ -163,10 +166,7 @@ class AudioManager:
 
         :return: Name of the currently playing music track, or `None` if no music is playing
         """
-        for name, path in self.music.items():
-            if pg.mixer.music.get_busy() and pg.mixer.music.get_pos() >= 0:
-                return name
-        return None
+        return self.current_music_name
     
     def current_sfx(self):
         """
