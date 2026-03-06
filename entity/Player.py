@@ -161,7 +161,6 @@ class Player(Entity):
 
         :return:
         """
-        print("[Player] Player killed, respawning...")
         self.vel = pg.Vector2(0, 0)
         self.set_position(self.start_pos)
 
