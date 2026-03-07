@@ -210,12 +210,9 @@ class TriggerInteract(Trigger):
         """
         self.enabled = False  #Whether the trigger can be activated (can be used to disable the trigger after activation without removing it)
         self.trigger_surface = trigger_surface
-        if not self.trigger_surface:
-            BOX_DIM = pg.Vector2(20, 20)
-            self.trigger_surface = pg.Surface(BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
-            self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
-            text = Fonts.get_font(get_variable("default_font"), 16).render(Inputs.get_str_input("interact"), False,(0, 0, 0))
-            self.trigger_surface.blit(text, (BOX_DIM.x // 2 - text.get_width() // 2, BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
+        if self.trigger_surface:
+            self.BOX_DIM = pg.Vector2(self.trigger_surface.get_size())
+
 
         def interact_callback(obj: GameObject):
             """
@@ -226,9 +223,18 @@ class TriggerInteract(Trigger):
             :return:
             """
 
+            if not self.trigger_surface:
+                self.BOX_DIM = pg.Vector2(20, 20)
+                self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
+                self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
+                text = Fonts.get_font(get_variable("default_font"), 16).render(Inputs.get_str_input("interact"), False,
+                                                                               (0, 0, 0))
+                self.trigger_surface.blit(text, (self.BOX_DIM.x // 2 - text.get_width() // 2,
+                                                 self.BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
+
             if not self.enabled and self.surface:
 
-                self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (BOX_DIM.x//2,BOX_DIM.y//2) ) # Position the box above the trigger
+                self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (self.BOX_DIM.x//2,self.BOX_DIM.y//2) ) # Position the box above the trigger
 
                 #Wait for the player to press the "interact" key
             inputs = Inputs.get_inputs()
