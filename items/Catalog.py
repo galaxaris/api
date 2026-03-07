@@ -7,7 +7,7 @@ from api.items.Item import Item
 from api.physics.Projectile import Projectile
 from api.physics.Trajectory import Trajectory
 from api.utils import GlobalVariables
-from api.utils.Constants import DEFAULT_GRAVITY, DEFAULT_SHOT_SPEED, DEFAULT_SHOT_ANGLE
+from api.utils.Constants import DEFAULT_GRAVITY, DEFAULT_SHOT_SPEED
 
 
 class HealthPotion(Item):
@@ -35,6 +35,7 @@ class Pistol(ActiveItem):
         self.mouse_pos = mouse_pos
         self.active_trajectory = active_trajectory
         self.projectile = None
+        self.is_shooting = is_shooting
 
         dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.active_trajectory.entity_screen_pos
         self.angle_radians = math.atan2(-dy, dx)
@@ -44,7 +45,7 @@ class Pistol(ActiveItem):
 
     def shoot(self):
         self.projectile = Projectile(self.active_trajectory.entity_screen_pos, (10,10), self.shot_speed, self.angle_radians, self.ammo_gravity)
-        self.projectile.update()
+
 
 
 

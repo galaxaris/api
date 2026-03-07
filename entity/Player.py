@@ -3,7 +3,7 @@ API's Player utilities
 """
 
 from api.physics.Trajectory import Trajectory
-from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, DEFAULT_WEAPON
+from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_WEAPON
 from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
@@ -42,10 +42,8 @@ class Player(Entity):
         self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
         self.equipped_weapon = DEFAULT_WEAPON
         self.add_tag("player")
-        self.active_trajectory = None
         self.set_direction(direction)
-        self.shot_speed = DEFAULT_SHOT_SPEED
-        self.gravity = DEFAULT_GRAVITY
+        self.projectiles = []
 
         self.start_pos = pos
 
@@ -72,9 +70,9 @@ class Player(Entity):
                 self.equipped_weapon.mouse_pos = pg.Vector2(mouse_x, mouse_y)
 
                 if Inputs.MOUSE_SCROLL != 0:
-                    self.equipped_weapon.shot_speed = max(MIN_SHOT_SPEED, min(self.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
+                    self.equipped_weapon.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
-                self.equipped_weapon.active_trajectory = Trajectory(self.pos+self.weapon_point, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
+                self.equipped_weapon.active_trajectory = Trajectory(self.pos+self.weapon_point, self.equipped_weapon.shot_speed, self.equipped_weapon.ammo_gravity, pg.Vector2(mouse_x, mouse_y))
                 self.equipped_weapon.active_trajectory.build_trajectory_coordinates()
 
                 if self.equipped_weapon.active_trajectory.trajectory_coordinates:
@@ -82,10 +80,9 @@ class Player(Entity):
                     self.set_direction("left" if last_trajectory_point.x < self.pos[0] else "right")
 
                 if inputs["shoot"] and State.is_enabled("player_control"):
-                    print("shoot")
+                    new_projectile = self.equipped_weapon.shoot()
+                    self.projectiles.append(new_projectile)
                     self.equipped_weapon.is_shooting = True
-                    self.equipped_weapon.shoot()
-                    self.equipped_weapon.is_shooting = False
 
             else:
                 self.equipped_weapon.active_trajectory = None
@@ -165,5 +162,10 @@ class Player(Entity):
 
         if self.equipped_weapon.active_trajectory:
             self.equipped_weapon.active_trajectory.draw_trajectory(surface)
+
+            if self.equipped_weapon.is_shooting:
+                self.equipped_weapon.projectile.draw(surface, offset)
+                self.equipped_weapon.projectile.update()
+
 
 

@@ -9,41 +9,32 @@ from api.utils import GlobalVariables
 class Projectile(GameObject):
     def __init__(self, pos: tuple[int, int], size: tuple[int, int],shot_speed: float, shot_angle: float, gravity: float, effect: str = None, target: str = None):
         super().__init__(pos, size)
-        self.add_tag("solid")
+        self.add_tag("projectile")
         self.shot_speed = shot_speed
         self.shot_angle = shot_angle
         self.gravity = gravity
+        self.rect = pygame.Rect(self.pos, (10, 10))
+        self.vx = self.shot_speed * math.cos(self.shot_angle)
+        self.vy = -self.shot_speed * math.sin(self.shot_angle)
 
 
     def update(self):
-        vx = self.shot_speed * math.cos(self.shot_angle)
-        vy = -self.shot_speed * math.sin(self.shot_angle)
 
-        virtual_traj = self.pos.copy()
-        for i in range(50):
-            obstacles = []
-            game_objects = GlobalVariables.get_variable("game_objects")
-            for game_object in game_objects:
-                if "solid" in game_object.tags:
-                    obstacles.append(game_object)
+        self.vy += self.gravity
 
-            position = self.pos
+        self.pos[0] += self.vx
+        self.pos[1] += self.vy
 
-            virtual_point = pygame.Rect(virtual_traj.x + GlobalVariables.get_variable("cam_pos").x,
-                                        virtual_traj.y + GlobalVariables.get_variable("cam_pos").y, 4, 4)
+        self.rect.topleft = (int(self.pos[0]), int(self.pos[1]))
 
-            hit = False
-            for obstacle in obstacles:
-                if virtual_point.colliderect(obstacle.rect):
-                    hit = True
-                    break
+    def draw(self, surface: pygame.Surface, offset: pygame.Vector2 = (0, 0)):
+        cam_pos = GlobalVariables.get_variable("cam_pos")
+        draw_pos = (self.rect.x - cam_pos.x, self.rect.y - cam_pos.y)
 
-            if hit:
-                break
+        pygame.draw.circle(surface, (255, 255, 0), draw_pos, 5)
 
-            vy += self.gravity
 
-            position += pygame.Vector2(vx, vy)
+
 
 
 
