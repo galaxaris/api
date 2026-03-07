@@ -137,6 +137,11 @@ class Player(Entity):
             else:
                 self.boost = False
 
+            if inputs["interact"] and State.is_enabled("player_control"):
+                self.interact = True
+            else:
+                self.interact = False
+
         if Debug.is_enabled("freecam"):
             self.vel.x = 0
             self.vel.y = 0

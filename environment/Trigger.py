@@ -3,6 +3,7 @@ API's Triggers definition, collection & implementation
 """
 
 from api.GameObject import GameObject
+from api.utils import Inputs, State, Fonts
 from api.utils.GlobalVariables import get_variable
 import pygame as pg
 from api.utils.GlobalVariables import global_vars as GV
@@ -27,6 +28,8 @@ class Trigger(GameObject):
 
         self.add_tag("trigger")
         self.target_tags = target_tags
+
+        self.track_object = True
         #"Callback" : fonction passée en paramètre d'une autre fonction, qui sera appelée plus tard.
         #Python : méthode classique (sans args) : "nom_fonction", SANS les "()". Sinon fonction exécutée immédiatement. Son return est passé en param.
         #Pour passer avec les arguments, on peut utiliser lambda ou partial : 
@@ -131,17 +134,28 @@ class Trigger(GameObject):
                         if self.once:
                             self.remove_trigger()
                             return
+                    elif not self.track_object:
+                        #Si l'objet est déjà dans le trigger mais que le suivi n'est pas activé, exécuter les callbacks à chaque frame
+                        for callback in self.callbacks:
+                            try:
+                                callback(obj)
+                            except TypeError:
+                                callback()
         
         #Track objects that have exited the trigger
         exited_objects = self.objects_inside - current_objects
         for obj_id in exited_objects:
+            self.leave_trigger(obj_id)
             self.objects_inside.discard(obj_id)
 
         #Add new objects to the tracking set
         self.objects_inside.update(current_objects)
 
+    def leave_trigger(self, obj_id):
+        pass
 
-class Trigger_KillBox(Trigger):
+
+class TriggerKillBox(Trigger):
     """
     A specific class for creating a killBox.
 
@@ -182,3 +196,60 @@ class Trigger_KillBox(Trigger):
         
         #Passer le callback au constructeur parent
         super().__init__(pos, size, target_tags, [kill_callback], once)
+
+class TriggerInteract(Trigger):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], callbacks: list[callable], once: bool = False, sfx: str | None = None, trigger_surface: pg.Surface | None = None):
+        """
+            Trigger which need the player to interact (press a key) to be activated. Used for doors, levers, NPC interactions...
+
+            :param pos: killBox position
+            :param size: killBox size
+            :param target_tags: killbox's target tags (usually "player"). Warning: the tags's entities must have a "kill()" method
+            :param once: whether the killbox should be activated only once
+            :param sfx: sound effect to play when the trigger is activated
+        """
+        self.enabled = False  #Whether the trigger can be activated (can be used to disable the trigger after activation without removing it)
+        self.trigger_surface = trigger_surface
+        if not self.trigger_surface:
+            BOX_DIM = pg.Vector2(20, 20)
+            self.trigger_surface = pg.Surface(BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
+            self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
+            text = Fonts.get_font(get_variable("default_font"), 16).render(Inputs.get_str_input("interact"), False,(0, 0, 0))
+            self.trigger_surface.blit(text, (BOX_DIM.x // 2 - text.get_width() // 2, BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
+
+        def interact_callback(obj: GameObject):
+            """
+            Apply a box upper the object to indicate the interaction, and wait for the player to press the "interact" key (default: E) to execute the interaction. The callback function must be passed with the interaction logic (via lambda or partial) and will be executed when the key is pressed.
+
+
+            :param obj: Object to be interacted with
+            :return:
+            """
+
+            if not self.enabled and self.surface:
+
+                self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (BOX_DIM.x//2,BOX_DIM.y//2) ) # Position the box above the trigger
+
+                #Wait for the player to press the "interact" key
+            inputs = Inputs.get_inputs()
+            if obj.interact and not self.enabled:
+                self.enabled = True
+                for callback in callbacks:
+                    try:
+                        callback(obj)
+                    except TypeError:
+                        callback()
+
+                if sfx:
+                    AudioManager = GV.get("audio_manager")
+                    AudioManager.play_sfx(sfx)
+
+
+
+
+
+        super().__init__(pos, size, target_tags, [interact_callback], once)
+        self.track_object = False
+
+    def leave_trigger(self, obj_id):
+        self.enabled = False
