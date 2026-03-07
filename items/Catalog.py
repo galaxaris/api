@@ -11,22 +11,22 @@ class HealthPotion(Item):
         """Initialize the health potion."""
         pass
 
-    def consume(self):
-        pass
-
 class Grapple(ActiveItem):
     """Base class for grapple."""
-    def __init__(self, name, item_type):
+    def __init__(self, name, item_type, is_equipped: bool):
+        super().__init__(name, item_type, is_equipped)
         pass
+
+
 
 class Pistol(ActiveItem):
     """Base class for pistol."""
-    def __init__(self, name: str, item_type: str, is_active: bool,
-                 projectile_gravity: float):
-        super().__init__(name, item_type, is_active)
-        self.projectile_gravity = DEFAULT_GRAVITY
-        pass
+    def __init__(self, name: str, item_type: str, is_equipped: bool,
+                 ammo_gravity: float = DEFAULT_GRAVITY):
+        super().__init__(name, item_type, is_equipped)
+        self.ammo_gravity = ammo_gravity
+
 
     def activate(self):
-        projectile = Projectile(projectile_type="mud", gravity=DEFAULT_GRAVITY)
-        self.projectile_gravity = projectile.gravity
+        pass
+

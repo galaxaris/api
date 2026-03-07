@@ -89,6 +89,9 @@ class Player(Entity):
                     elif last_trajectory_point.x > self.pos[0]:
                         self.set_direction("right")
 
+                if inputs["shoot"] and State.is_enabled("player_control"):
+                    pass
+
             else:
                 self.active_trajectory = None
                 self.shot_speed = DEFAULT_SHOT_SPEED
