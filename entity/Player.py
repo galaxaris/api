@@ -2,15 +2,12 @@
 API's Player utilities
 """
 
-from api.GameObject import GameObject
 from api.physics.Trajectory import Trajectory
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
-
-from api.Game import Game
 
 
 import pygame as pg
@@ -62,21 +59,17 @@ class Player(Entity):
         boost_val = 1 if self.boost else 0
 
         was_falling = self.fall
-
+        max_velocity = self.max_velocity
 
         if not Debug.is_enabled("freecam"):
 
             if inputs["aim"] and State.is_enabled("player_control"):
-                self.vel.x = 0
 
+                max_velocity /= 2
                 mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
 
-                if Inputs.MOUSE_SCROLL > 0 and self.shot_speed < MAX_SHOT_SPEED:
-                    self.shot_speed += Inputs.MOUSE_SCROLL
-                    Inputs.MOUSE_SCROLL = 0
-
-                elif Inputs.MOUSE_SCROLL < 0 and self.shot_speed > MIN_SHOT_SPEED:
-                    self.shot_speed += Inputs.MOUSE_SCROLL
+                if Inputs.MOUSE_SCROLL != 0:
+                    self.shot_speed = max(MIN_SHOT_SPEED, min(self.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
                     Inputs.MOUSE_SCROLL = 0
 
                 self.active_trajectory = Trajectory(self.pos+self.weapon_point, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
@@ -84,40 +77,29 @@ class Player(Entity):
 
                 if self.active_trajectory.trajectory_coordinates:
                     last_trajectory_point = self.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
-                    if last_trajectory_point.x < self.pos[0]:
-                        self.set_direction("left")
-                    elif last_trajectory_point.x > self.pos[0]:
-                        self.set_direction("right")
+                    self.set_direction("left" if last_trajectory_point.x < self.pos[0] else "right")
 
             else:
                 self.active_trajectory = None
                 self.shot_speed = DEFAULT_SHOT_SPEED
 
             if inputs["right"] and State.is_enabled("player_control"):
-                if self.vel.x < (self.max_velocity + boost_val):
-                    self.vel.x += self.acceleration
-                    if not inputs["aim"]:
-                        self.set_direction("right")
-                elif self.vel.x > (self.max_velocity + boost_val):
-                    self.vel.x = self.max_velocity
-            else:
-                if self.vel.x > 0:
-                    self.vel.x -= self.resistance
-                    if self.vel.x < 0:
-                        self.vel.x = 0
+
+                self.vel.x = max(0, min(self.vel.x + self.acceleration, max_velocity + boost_val))
+                if not inputs["aim"]:
+                    self.set_direction("right")
+
+            elif self.vel.x > 0:
+                self.vel.x = max(0, self.vel.x - self.resistance)
 
             if inputs["left"] and State.is_enabled("player_control"):
-                if self.vel.x > -(self.max_velocity + boost_val):
-                    self.vel.x -= self.acceleration
-                    if not inputs["aim"]:
-                        self.set_direction("left")
-                elif self.vel.x < -(self.max_velocity + boost_val):
-                    self.vel.x = -self.max_velocity
-            else:
-                if self.vel.x < 0:
-                    self.vel.x += self.resistance
-                    if self.vel.x > 0:
-                        self.vel.x = 0
+
+                self.vel.x = max(-(max_velocity + boost_val), min(self.vel.x - self.acceleration, 0))
+                if not inputs["aim"]:
+                    self.set_direction("left")
+
+            elif self.vel.x < 0:
+                self.vel.x = min(self.vel.x + self.resistance, 0)
 
             if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
                 gravity = self.gravity if self.gravity else 1
@@ -132,15 +114,8 @@ class Player(Entity):
                             audio_manager.play_sfx("jump")
 
 
-            if inputs["boost"] and State.is_enabled("player_control"):
-                self.boost = True
-            else:
-                self.boost = False
-
-            if inputs["interact"] and State.is_enabled("player_control"):
-                self.interact = True
-            else:
-                self.interact = False
+            self.boost = inputs["boost"] and State.is_enabled("player_control")
+            self.interact = inputs["interact"] and State.is_enabled("player_control")
 
         if Debug.is_enabled("freecam"):
             self.vel.x = 0
