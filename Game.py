@@ -48,7 +48,7 @@ class Game:
     debug_list: List[tuple[str, str, int]]
     debug_font: str
 
-    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, debug_font: str="**/assets/Fonts/m6x11.ttf"):
+    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, debug_font: str="arial"):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
 

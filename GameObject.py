@@ -24,8 +24,10 @@ class GameObject:
     rect: pg.Rect
     image: pg.Surface
     animation: Optional[Animation]
+    surface: Optional[pg.Surface]
     direction: str = "right"
     id: int
+    interact: bool = False
     def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] | pg.Vector2):
         """
         Initializes the GameObject with given parameters.
@@ -34,6 +36,7 @@ class GameObject:
         :param size: Size of the GameObject (width, height)
         """
         super().__init__()
+
         self.pos = pg.Vector2(pos)
         self.size = pg.Vector2(size)
         self.image = pg.Surface(size, pg.SRCALPHA, 32).convert_alpha()
@@ -42,6 +45,9 @@ class GameObject:
         self.id = id(self)
         self.tags = set()
         self.direction = "right"
+        self.surface = None
+        self.offset = None
+        self.interact = False
     #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
     def set_texture(self, texture:Texture):
         """
@@ -144,6 +150,9 @@ class GameObject:
         :param offset: The offset to be applied to the GameObject's position when drawing (useful for camera movement)
         """
         self.update()
+
+        self.surface = surface
+        self.offset = offset
 
         if not self.animation and self.direction == "left":
             self.image = pg.transform.flip(self.image, True, False)
