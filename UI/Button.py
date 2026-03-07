@@ -138,7 +138,6 @@ class Button(UIElement):
         """
         super().update()
 
-        # FIXME: MOUSE PROBLEMS : not picking correctly, and click is not working well
         if Inputs.is_controller_connected():
             return
 

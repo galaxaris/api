@@ -68,9 +68,11 @@ class Modal(UIElement):
                 elif inputs["menu_up"]:
                     self.active_button_index_y = (self.active_button_index_y - 1) % len(self.buttons[self.active_button_index_x])
                 elif inputs["menu_right"]:
-                    self.active_button_index_x = (self.active_button_index_x + 1) % len(self.buttons)
+                    if self.active_button_index_x + 1 < len(self.buttons) and len(self.buttons[self.active_button_index_x + 1]) > 0:
+                        self.active_button_index_x = (self.active_button_index_x + 1) % len(self.buttons)
                 elif inputs["menu_left"]:
-                    self.active_button_index_x = (self.active_button_index_x - 1) % len(self.buttons)
+                    if self.active_button_index_x - 1 >= 0 and len(self.buttons[self.active_button_index_x - 1]) > 0:
+                        self.active_button_index_x = (self.active_button_index_x - 1) % len(self.buttons)
 
                 actual_button.focus()
 

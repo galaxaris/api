@@ -42,7 +42,7 @@ class GameObject:
         self.id = id(self)
         self.tags = set()
         self.direction = "right"
-
+    #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
     def set_texture(self, texture:Texture):
         """
         Sets the texture for the GameObject.
