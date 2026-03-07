@@ -107,6 +107,10 @@ class Game:
                             if self.scene.camera:
                                 Debug.toggle("freecam")
 
+                    if event.key == pg.K_F9:
+                        if self.audio_manager:
+                            self.audio_manager.toggle_audio()
+
                 if event.type == pg.MOUSEWHEEL:
                     Inputs.MOUSE_SCROLL += event.y
 
