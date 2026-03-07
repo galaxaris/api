@@ -128,6 +128,8 @@ class Game:
             self.launch_debug()
 
             pg.display.update()
+
+            Inputs.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
             if self.locked_fps:
                 self.clock.tick(self.fps)
             else:

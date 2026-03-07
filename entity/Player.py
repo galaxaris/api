@@ -70,7 +70,6 @@ class Player(Entity):
 
                 if Inputs.MOUSE_SCROLL != 0:
                     self.shot_speed = max(MIN_SHOT_SPEED, min(self.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
-                    Inputs.MOUSE_SCROLL = 0
 
                 self.active_trajectory = Trajectory(self.pos+self.weapon_point, self.shot_speed, self.gravity, pg.Vector2(mouse_x, mouse_y))
                 self.active_trajectory.build_trajectory_coordinates()
@@ -118,8 +117,7 @@ class Player(Entity):
             self.interact = inputs["interact"] and State.is_enabled("player_control")
 
         if Debug.is_enabled("freecam"):
-            self.vel.x = 0
-            self.vel.y = 0
+            self.vel = pg.Vector2(0, 0)
             self.update_sprite()
         else:
             # Updates whith Entity's update
