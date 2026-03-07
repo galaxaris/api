@@ -11,22 +11,21 @@ from api.utils.Fonts import get_font
 class Button(UIElement):
     """Interactive UI button supporting textures and callbacks."""
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], text: str = None, text_color: tuple[int, int, int] = (0, 0, 0), bg_color: tuple[int, int, int] = (255, 255, 255), bg_color_hover: tuple[int, int, int] = (188, 188, 188), font: str = "arial"):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], text: str = None, color_set: dict[str, tuple[int, int, int]] = ((0, 0, 0), (255, 255, 255), (188, 188, 188), (210, 210, 210)), font: str = "arial"):
         """Initialize a button.
 
         :param pos: Top-left button position.
         :param size: Button size.
         :param text: Optional text drawn on fallback style.
-        :param text_color: Color of the text.
-        :param bg_color: Background color of the button.
-        :param bg_color_hover: Background color when hovered.
+        :param color_set: Tuple of four colors for the button (text, background, hover, focus) (default: black, white, gray, darker gray).
         :param font: Font used by `draw_text`.
         """
         super().__init__(pos, size)
         self.text = text
-        self.text_color = text_color
-        self.bg_color = bg_color
-        self.bg_color_hover = bg_color_hover
+        self.text_color = color_set[0]
+        self.bg_color = color_set[1]
+        self.bg_color_hover = color_set[2]
+        self.bg_color_focus = color_set[3]
         self.font = font
         self.default_texture = None
         self.hover_texture = None
@@ -51,7 +50,7 @@ class Button(UIElement):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def click(self, color: tuple[int, int, int] = (255, 0, 0)):
-        """Apply clicked state and execute callback when available.
+        """Apply clicked state visual style (mouse button held down).
 
         :param color: Fallback border/text color when click texture is missing.
         :return:
@@ -63,10 +62,7 @@ class Button(UIElement):
         else:
             #Mark a red border if no click texture is defined
             pg.draw.rect(self.image, color, self.image.get_rect(), 2)
-
             self.draw_text(color, self.text_color)
-        if self.callback:
-            self.callback(self)
 
     def idle(self, color: tuple[int, int, int] = (255, 255, 255)):
         """Apply idle state visual style.
@@ -84,7 +80,7 @@ class Button(UIElement):
 
 
     def hover(self, color: tuple[int, int, int] = (188, 188, 188)):
-        """Apply (hover) state visual style.
+        """Apply hover state visual style.
 
         :param color: Fallback border/text color when hover texture is missing.
         :return:
@@ -95,6 +91,21 @@ class Button(UIElement):
             self.rect = self.image.get_rect(topleft=self.pos)
         else:
             #Mark a red border if no hover texture is defined
+            pg.draw.rect(self.image, color, self.image.get_rect(), 2)
+            self.draw_text(color, self.text_color)
+
+    def focus(self, color: tuple[int, int, int] = (161, 2, 131)):
+        """Apply focused state visual style (when mouse clicks and holds the button).
+
+        :param color: Fallback border/text color when hover texture is missing.
+        :return:
+        """
+        self.state = "focus"
+        if self.hover_texture:
+            self.image = self.hover_texture.image
+            self.rect = self.image.get_rect(topleft=self.pos)
+        else:
+            #Mark a darker gray border if no focus texture is defined
             pg.draw.rect(self.image, color, self.image.get_rect(), 2)
             self.draw_text(color, self.text_color)
 
@@ -130,9 +141,11 @@ class Button(UIElement):
     def update(self):
         """Update button state from current pointer/controller context.
 
-        In mouse mode, the button computes local pointer coordinates according
-        to current UI scale and menu offset, then transitions between idle,
-        hover, and click states.
+        State machine:
+        - idle: no interaction
+        - hover: mouse over, not clicking
+        - focus: mouse button pressed (held down)
+        - Callback triggered on click release (mouse button up)
 
         :return:
         """
@@ -146,11 +159,30 @@ class Button(UIElement):
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
         self.rect.topleft = self.pos + self.menu_offset//2
 
+        #Track previous frame state for edge detection (click release)
+        prev_was_clicked = getattr(self, '_was_clicked_prev_frame', False)
+        is_currently_clicked = Inputs.is_mouse_clicked()
+
         if self.rect.collidepoint(mouse_pos):
+            #Mouse is over the button
             if Inputs.is_mouse_clicked_once():
-                self.click(self.bg_color_hover)
+                #Just pressed on the button
+                self.focus(self.bg_color_focus)
+            elif is_currently_clicked:
+                #Being held on the button
+                self.click(self.bg_color_focus)
+            elif prev_was_clicked and not is_currently_clicked:
+                #Just released on the button => trigger callback
+                if self.callback:
+                    self.callback(self)
+                self.idle(self.bg_color)
             else:
+                #hovering  without clicking
                 self.hover(self.bg_color_hover)
         else:
+            #Not over the button
             self.idle(self.bg_color)
+
+        #Store current state for next frame
+        self._was_clicked_prev_frame = is_currently_clicked
 

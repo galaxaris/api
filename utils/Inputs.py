@@ -334,3 +334,12 @@ def is_mouse_clicked_once(number=0):
     else:
         MOUSE_CLICKED.discard(number)
     return False
+
+def is_mouse_clicked(number=0):
+    """Return `True` while a mouse button is held down.
+
+    :param number: Mouse button index.
+    :return: Held click state.
+    """
+    mouse_pressed = pg.mouse.get_pressed()
+    return number < len(mouse_pressed) and mouse_pressed[number]
