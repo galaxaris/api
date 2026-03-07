@@ -13,7 +13,7 @@ global_vars = {
     "scale_ratio": 1,
     "game_objects": [],
     "previous_inputs": None,
-    "audio_manager": None
+    "audio_manager": None,
 }
 
 def set_variable(key, value):
