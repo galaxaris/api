@@ -15,6 +15,7 @@ Copyright (c) 2026 Galaxaris & Associates. All rights reserved.
 
 import pygame as pg
 
+from api.assets.AudioManager import AudioManager
 from api.engine import Scene
 
 from typing import Callable, List, Dict
@@ -75,6 +76,8 @@ class Game:
         self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
         self.bound_functions = {}
+        self.audio_manager = AudioManager()
+        GlobalVariables.set_variable("audio_manager", self.audio_manager)
         self.debug_font = debug_font
 
     def run(self, game):
