@@ -35,6 +35,17 @@ class Button(UIElement):
         self.state = "default"
         self.add_tag("ui_button")
 
+    ### PUBLIC METHODS ###
+    def set_text(self, text: str):
+        """
+        Set button text for fallback rendering.
+
+        :param text: Text to display on the button.
+        :return:
+        """
+        self.text = text
+
+    ### PRIVATE METHODS FOR STATE MANAGEMENT ###
     def define_texture(self, default: Texture, hover: Texture, click: Texture):
         """Define button textures for all visual states.
 

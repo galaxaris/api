@@ -139,7 +139,6 @@ class AudioManager:
         self.music_volume = volume
         pg.mixer.music.set_volume(volume)
 
-
     ### UTILS ###
     def is_music_playing(self):
         """
