@@ -27,6 +27,7 @@ class AudioManager:
 
         self.sfx_volume = sfx_volume
         self.music_volume = music_volume
+        self.is_muted = False
         self.current_music_name = None
 
         pg.mixer.music.set_volume(self.music_volume)
@@ -178,3 +179,16 @@ class AudioManager:
             if sound.get_num_channels() > 0:
                 playing_sfx.append(name)
         return playing_sfx
+    
+    def toggle_audio(self):
+        """
+        Toggles between mute and unmute states for both music and sound effects.
+        """
+        if self.music_volume > 0 or self.sfx_volume > 0:
+            self.set_music_volume(0)
+            self.set_sfx_volume(0)
+            self.is_muted = True
+        else:
+            self.set_music_volume(1)
+            self.set_sfx_volume(1)
+            self.is_muted = False
