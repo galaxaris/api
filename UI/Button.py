@@ -106,7 +106,7 @@ class Button(UIElement):
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def set_callback(self, callback):
-        """Set callback triggered by `click`.
+        """Set callback triggered by `click`. ==> Same fonctionnality as for the Trigger component, but for mouse input (and not from collision).
 
         :param callback: Callable receiving this button instance.
         :return:

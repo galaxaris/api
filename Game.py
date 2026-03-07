@@ -287,6 +287,21 @@ class Game:
                     else:
                         self.debug(f"{i} : {layer}", "left", self.debug_font, 16)
 
+        #SFX part
+        if GlobalVariables.get_variable("audio_manager"):
+            audio_manager = GlobalVariables.get_variable("audio_manager")
+            if audio_manager.current_music():
+                self.debug(f"Music :", "left", self.debug_font, 32)
+                self.debug(f"{audio_manager.current_music()} - {'Playing' if audio_manager.is_music_playing() else 'Paused'}", "left", self.debug_font, 16)
+            
+            if audio_manager.current_sfx():
+                self.debug(f"SFX :", "left", self.debug_font, 32)
+
+                sfx_debug_str = ""
+                for sfx in audio_manager.current_sfx():
+                    sfx_debug_str += f"{sfx} - {'Playing' if audio_manager.is_sfx_playing(sfx) else 'Paused'} | "
+                self.debug(sfx_debug_str[:-3], "left", self.debug_font, 16) #-3 allows to remove the last " | "
+
     def register_debug_entity(self, entity):
         """
         Registers debug information for an entity
