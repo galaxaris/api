@@ -61,7 +61,7 @@ class Modal(UIElement):
                 for lines in self.buttons:
                     for button in lines:
                         if button != actual_button:
-                            button.idle()
+                            button.idle(button.bg_color)
 
                 if inputs["menu_down"]:
                     self.active_button_index_y = (self.active_button_index_y + 1) % len(self.buttons[self.active_button_index_x])
@@ -74,12 +74,12 @@ class Modal(UIElement):
                     if self.active_button_index_x - 1 >= 0 and len(self.buttons[self.active_button_index_x - 1]) > 0:
                         self.active_button_index_x = (self.active_button_index_x - 1) % len(self.buttons)
 
-                actual_button.focus()
+                actual_button.hover(actual_button.bg_color_hover)
 
                 if inputs["menu_select"]:
                     actual_button.click()
             else:
-                actual_button.idle()
+                actual_button.idle(actual_button.bg_color)
 
         for element in self.elements:
             element.update()
