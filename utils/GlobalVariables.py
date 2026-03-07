@@ -14,7 +14,8 @@ global_vars = {
     "game_objects": [],
     "previous_inputs": None,
     "audio_manager": None,
-    "default_font": "arial"
+    "default_font": "arial",
+    "current_menu": None
 }
 
 def set_variable(key, value):
