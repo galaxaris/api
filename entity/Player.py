@@ -42,6 +42,7 @@ class Player(Entity):
         self.equipped_weapon = DEFAULT_WEAPON
         self.add_tag("player")
         self.set_direction(direction)
+        self.projectiles = []
 
         self.start_pos = pos
 
