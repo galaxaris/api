@@ -25,7 +25,7 @@ from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
 from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
-
+from api.utils.Console import *
 
 
 class Game:
@@ -138,6 +138,8 @@ class Game:
                 self.clock.tick(self.fps)
             else:
                 self.clock.tick()
+
+        print_success("Window closed successfully. Hoping see you soon for more adventures with the Omicronde API!")
         pg.quit()
 
     def get_current_monitor_size(self):
@@ -158,8 +160,11 @@ class Game:
         :return:
         """
         if path.endswith(".png") or path.endswith(".jpg"):
-            self.icon = pg.image.load(path)
-            pg.display.set_icon(self.icon)
+            try:
+                self.icon = pg.image.load(path)
+                pg.display.set_icon(self.icon)
+            except Exception as e:
+                print_error(f"Error loading game icon from {path}: {e}")
 
     def move_window(self, position: tuple[int,int] | pg.Vector2):
         """
