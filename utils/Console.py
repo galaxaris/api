@@ -52,6 +52,29 @@ def print_error(msg):
     """
     __print_message(msg, "ERROR", "red")
 
+
+def print_countdown(seconds):
+    """
+    Prints a colored countdown with progress bar using rich.
+
+    :param seconds: The number of seconds for the countdown
+    """
+    import time
+    try:
+        from rich.progress import Progress
+        
+        with Progress() as progress:
+            task = progress.add_task(f"[cyan]⏱ Countdown[/cyan]", total=seconds)
+            for remaining in range(seconds, 0, -1):
+                progress.update(task, advance=1, description=f"[cyan]⏱ {remaining}s[/cyan]")
+                time.sleep(1)
+            progress.update(task, description="")
+    except (ImportError, NameError):
+        #Fallback to simple countdown if rich is not available
+        for remaining in range(seconds, 0, -1):
+            print(f"{remaining} ", end="", flush=True)
+            time.sleep(1)
+
 print("\n") #Adds an empty line
 
 if __name__ == "__main__":
@@ -61,3 +84,5 @@ if __name__ == "__main__":
     print_success("This is a success message.")
 
     print_info("This is a very long informational message that should be wrapped inside the panel to demonstrate the width setting of the console output.\n It should be displayed in blue color and properly formatted within the panel.\nHmm, let's see how it handles multiple lines and if the formatting remains consistent across different message lengths.")
+
+    print_countdown(10)
