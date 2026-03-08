@@ -129,7 +129,6 @@ class GameUI(pg.Surface):
 
         if inputs["pause"] and self.active_menus:
             # Close the most recently opened menu
-            #print("Closing menu:", self.active_menus[-1])
             last_menu_key = self.active_menus[-1]
             self.hide(last_menu_key)
             if len(self.active_menus) == 0:

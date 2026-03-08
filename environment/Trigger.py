@@ -4,6 +4,7 @@ API's Triggers definition, collection & implementation
 
 from api.GameObject import GameObject
 from api.utils import Inputs, State, Fonts
+from api.utils.Console import *
 from api.utils.GlobalVariables import get_variable
 import pygame as pg
 from api.utils.GlobalVariables import global_vars as GV
@@ -64,7 +65,7 @@ class Trigger(GameObject):
         if callback in self.callbacks:
             self.callbacks.remove(callback)
         else:
-            print("== Warning: callback does not exists in trigger ==")
+            print_warning("callback does not exists in trigger")
 
     def add_target_tag(self, tag):
         """
@@ -87,7 +88,7 @@ class Trigger(GameObject):
         if tag in self.target_tags:
             self.target_tags.remove(tag)
         else:
-            print("== Warning: target tag does not exists in trigger ==")
+            print_warning("target tag does not exists in trigger")
 
     def remove_trigger(self):
         """
@@ -192,7 +193,7 @@ class TriggerKillBox(Trigger):
                     AudioManager = GV.get("audio_manager")
                     AudioManager.play_sfx(sfx)
             else:
-                print(f"== Warning: object {obj} does not have a kill method ==")
+                print_warning(f"object {obj} does not have a kill method")
         
         #Passer le callback au constructeur parent
         super().__init__(pos, size, target_tags, [kill_callback], once)

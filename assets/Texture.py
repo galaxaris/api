@@ -3,6 +3,7 @@
 import pygame as pg
 
 from api.assets.Resource import Resource
+from api.utils.Console import *
 
 class Texture(pg.Surface):
     """
@@ -18,7 +19,15 @@ class Texture(pg.Surface):
         :param resource: Resource manager to load the image
         """
         self.path = path
-        self.image = resource.image(path)
+
+        try:
+            self.image = resource.image(path)
+        except Exception as e:
+            print_error(f"loading texture from {path}: {e}")
+            # Magenta color to indicate missing texture
+            self.image = pg.Surface((32, 32))
+            self.image.fill((255, 0, 255))
+
         super().__init__(self.image.get_size())
 
     def override_image(self, param):
