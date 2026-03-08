@@ -8,7 +8,6 @@ from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs
-from api.items.Catalog import Pistol
 
 
 import pygame as pg
@@ -43,7 +42,6 @@ class Player(Entity):
         self.equipped_weapon = DEFAULT_WEAPON
         self.add_tag("player")
         self.set_direction(direction)
-        self.projectiles = []
 
         self.start_pos = pos
 

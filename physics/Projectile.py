@@ -3,8 +3,6 @@ import math
 import pygame
 
 from api.GameObject import GameObject
-from api.physics.Trajectory import Trajectory
-from api.utils import GlobalVariables
 
 
 class Projectile(GameObject):

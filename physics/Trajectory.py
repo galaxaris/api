@@ -2,7 +2,7 @@
 
 import math
 import pygame
-import random
+
 
 from api.utils import GlobalVariables
 
@@ -51,10 +51,6 @@ class Trajectory:
         vx = self.shot_speed * math.cos(self.angle_radians)
         vy = -self.shot_speed * math.sin(self.angle_radians)
 
-        virtual_traj = self.entity_screen_pos.copy()
-
-        offset = GlobalVariables.get_variable("offset")
-
         cam_pos = GlobalVariables.get_variable("cam_pos")
 
         render_height = GlobalVariables.get_variable("render_size")[0]
@@ -65,9 +61,6 @@ class Trajectory:
 
         print("top left screen border (x, y): ", ((self.entity_screen_pos.x - render_width // 2) * 2, (self.entity_screen_pos.y - render_width//2)*3))
 
-
-        # print("camera_limit_topleft", camera_limit_topleft)
-        # print("camera_limit_bottomright", camera_limit_bottomright)
 
         # FIXME: The screen border is not the right size
 
