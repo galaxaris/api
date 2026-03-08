@@ -170,5 +170,8 @@ class Player(Entity):
 
                     self.equipped_weapon.is_shooting = False
 
+    def set_sfx_list(self, sfx_list):
+        self.sfx_list = sfx_list
+
 
 

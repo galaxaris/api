@@ -49,14 +49,19 @@ class GameObject:
         self.offset = None
         self.interact = False
     #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
-    def set_texture(self, texture:Texture):
+    def set_texture(self, texture:Texture, rescale: bool = False):
         """
         Sets the texture for the GameObject.
 
+        :param rescale: Rescale the texture to fit the GameObject's size (if False, the texture will be repeated to fill the size)
         :param texture: The texture to be set
         """
         self.animation = None
-        self.image = self.repeat_texture(texture.image, self.size)
+
+        if rescale:
+            self.image = pg.transform.scale(texture.image, self.size)
+        else:
+            self.image = self.repeat_texture(texture.image, self.size)
 
         self.rect = self.image.get_rect(topleft=self.pos)
 
