@@ -29,11 +29,11 @@ class Texture(pg.Surface):
             magenta_rect_2 = pg.Rect(0, 0, 16, 16)
             magenta_rect = pg.Rect(16, 16, 16, 16)
             black_rect = pg.Rect(0, 16, 16, 16)
-            black_rect = pg.Rect(16, 0, 16, 16)
+            black_rect_2 = pg.Rect(16, 0, 16, 16)
             self.image.fill((255, 0, 255), magenta_rect)
             self.image.fill((255, 0, 255), magenta_rect_2)
             self.image.fill((0, 0, 0), black_rect)
-            self.image.fill((0, 0, 0), black_rect)
+            self.image.fill((0, 0, 0), black_rect_2)
 
 
         super().__init__(self.image.get_size())
