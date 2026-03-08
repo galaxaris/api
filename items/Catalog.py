@@ -38,7 +38,7 @@ class Pistol(ActiveItem):
         self.projectile_gravity = projectile_gravity
 
     def shoot(self):
-        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.projectile_gravity, self.active_trajectory.initial_velocity, self.active_trajectory.angle_radians)
+        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.projectile_gravity, self.active_trajectory.shot_speed, self.active_trajectory.angle_radians)
         GlobalVariables.get_variable("game_objects").append(self.projectile)
         self.projectile.update()
 

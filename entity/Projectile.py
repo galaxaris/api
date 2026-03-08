@@ -5,11 +5,11 @@ from api.utils import GlobalVariables
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int], gravity: float, velocity: pygame.Vector2, angle_radians: float, size: tuple[int, int] = (8,8), effect: str = None, target: str = None):
+    def __init__(self, pos: tuple[int, int], gravity: float, shot_speed: int, angle_radians: float, size: tuple[int, int] = (8,8), effect: str = None, target: str = None):
         super().__init__(pos = pos, size = (8,8))
         self.pos = pygame.Vector2(pos)
         self.set_gravity(gravity)
-        self.velocity = velocity
+        self.shot_speed = shot_speed
         self.angle_radians = angle_radians
         self.add_tag("projectile")
         self.image = pygame.Surface((8, 8))
@@ -20,7 +20,7 @@ class Projectile(Entity):
 #FIXME: update doesn't do anything
 
     def update(self) :
-        super().update()
+        """super().update()
 
         print("shooting")
 
@@ -32,17 +32,21 @@ class Projectile(Entity):
         print(f"Pos: {self.pos}, Vel: {self.vel}")
 
         if self.collided_objs:
-            self.on_impact()
+            self.on_impact()"""
+
+        print("PAN")
 
 
-    def on_impact(self) :
-        self.kill()
+    def on_impact(self):
+        print("ouch ça fait mal")
+        # self.kill()
 
 
     def kill(self):
-        game_objects = GlobalVariables.get_variable("game_objects")
+        print("go rejoindre papa Johnny")
+        """game_objects = GlobalVariables.get_variable("game_objects")
         if self in game_objects:
-                game_objects.remove(self)
+                game_objects.remove(self)"""
 
 
 

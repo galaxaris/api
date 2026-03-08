@@ -11,7 +11,6 @@ import pygame as pg
 from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
 from api.utils import Debug, GlobalVariables
-from api.utils.Constants import DEFAULT_WEAPON
 
 
 class Entity(GameObject):
@@ -48,7 +47,6 @@ class Entity(GameObject):
         self.is_hitting_ground = False
         self.projectiles = []
         self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
-        self.equipped_weapon = DEFAULT_WEAPON
         self.sfx_list = {}
         self.add_tag("entity")
 

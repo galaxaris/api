@@ -39,6 +39,7 @@ class Player(Entity):
         self.boost = False
         self.add_tag("player")
         self.set_direction(direction)
+        self.equipped_weapon = DEFAULT_WEAPON
 
 
         self.start_pos = pos

@@ -3,6 +3,7 @@ import pygame
 
 from api.physics.Trajectory import Trajectory
 
+
 # Trajectory
 OFFSET_X = 0
 OFFSET_Y = 0
