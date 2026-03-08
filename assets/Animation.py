@@ -19,7 +19,7 @@ class Animation:
         """
         self.texture = texture
         self.frame_count = frame_count
-        self.delay = delay # On stocke le délai (ex: 100ms)
+        self.delay = delay
 
         self.animation_count = 0
         self.last_update = pg.time.get_ticks() # On lance le chrono ici
@@ -77,5 +77,3 @@ class Animation:
         """
         self.width = size[0] // self.frame_count
         self.height = size[1]
-        self.frames_right = [pg.transform.scale(frame_right, size) for frame_right in self.frames_right]
-        self.frames_left = [pg.transform.scale(frame_left, size) for frame_left in self.frames_left]

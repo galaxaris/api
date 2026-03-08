@@ -56,8 +56,19 @@ class GameObject:
         :param texture: The texture to be set
         """
         self.animation = None
-        self.image = pg.transform.scale(texture.image, self.size)
+        self.image = self.repeat_texture(texture.image, self.size)
+
         self.rect = self.image.get_rect(topleft=self.pos)
+
+    def repeat_texture(self, surface: pg.Surface, size:pg.Vector2 | tuple[int, int]) -> pg.Surface:
+        s_size = pg.Vector2(surface.get_size())
+        new_image = pg.Surface(size, pg.SRCALPHA, 32).convert_alpha()
+
+        for y in range(int(self.size.y // s_size.y) + (1 if self.size.y % s_size.y != 0 else 0)):
+            for x in range(int(self.size.x // s_size.x) + (1 if self.size.x % s_size.x != 0 else 0)):
+                new_image.blit(surface, (x * s_size.x, y * s_size.y))
+
+        return new_image
 
     def set_surface(self, surface:pg.Surface):
         """
@@ -79,12 +90,12 @@ class GameObject:
 
     def set_size(self, size: tuple[int, int] | pg.Vector2):
         """
-        Sets the size of the GameObject. (wow wowwowow)
+        Sets the size of the GameObject.
 
         :param size: The new size (width, height)
         """
         self.size = pg.Vector2(size)
-        self.image = pg.transform.scale(self.image, size)
+        self.image = self.repeat_texture(self.image, size)
         self.rect = self.image.get_rect(topleft=self.pos)
         self.animation.calculate_frame_size(self.size)
 
@@ -129,8 +140,7 @@ class GameObject:
         """
 
         if self.animation:
-            self.image = self.animation.get_frame(self.direction)
-            self.rect = self.image.get_rect(topleft=self.pos)
+            self.set_surface(self.animation.get_frame(self.direction))
 
     def set_direction(self, direction: str):
         """
