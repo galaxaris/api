@@ -22,6 +22,7 @@ global_vars = {
     "current_menu": None,
     "offset": tuple[int],
     "render_size": tuple[int, int],
+    "default_surface": None,
 }
 
 def set_variable(key, value):
