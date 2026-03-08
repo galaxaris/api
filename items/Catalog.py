@@ -4,7 +4,7 @@ import pygame
 
 from api.items.ActiveItem import ActiveItem
 from api.items.Item import Item
-from api.physics.Projectile import Projectile
+from api.entity.Projectile import Projectile
 from api.physics.Trajectory import Trajectory
 from api.utils import GlobalVariables
 from api.utils.Constants import DEFAULT_GRAVITY, DEFAULT_SHOT_SPEED
@@ -27,24 +27,20 @@ class Grapple(ActiveItem):
 
 class Pistol(ActiveItem):
     """Base class for pistol."""
-    def __init__(self, mouse_pos: pygame.Vector2, active_trajectory: Trajectory, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True,
-                 ammo_gravity: float = DEFAULT_GRAVITY, shot_speed: float = DEFAULT_SHOT_SPEED, is_shooting: bool = False):
+    def __init__(self, active_trajectory: Trajectory, projectile_gravity = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True,
+                is_shooting: bool = False):
         super().__init__(name, item_type, is_equipped)
-        self.ammo_gravity = ammo_gravity
-        self.shot_speed = shot_speed
-        self.mouse_pos = mouse_pos
         self.active_trajectory = active_trajectory
-        self.projectile = None
+        self.shot_speed = self.active_trajectory.shot_speed
+        self.angle_radians = self.active_trajectory.angle_radians
         self.is_shooting = is_shooting
-
-        dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.active_trajectory.entity_screen_pos
-        self.angle_radians = math.atan2(-dy, dx)
-
-        if self.mouse_pos == (0, 0):
-            self.angle_radians = 1
+        self.projectile = None
+        self.projectile_gravity = projectile_gravity
 
     def shoot(self):
-        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.shot_speed, self.angle_radians, self.ammo_gravity, self.active_trajectory.trajectory_coordinates)
+        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.projectile_gravity, self.active_trajectory.initial_velocity, self.active_trajectory.angle_radians)
+        GlobalVariables.get_variable("game_objects").append(self.projectile)
+        self.projectile.update()
 
 
 

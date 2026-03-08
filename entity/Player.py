@@ -3,7 +3,7 @@ API's Player utilities
 """
 
 from api.physics.Trajectory import Trajectory
-from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_WEAPON
+from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_WEAPON, DEFAULT_GRAVITY
 from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
@@ -66,14 +66,13 @@ class Player(Entity):
 
                 max_velocity /= 2
                 mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
-                self.equipped_weapon.mouse_pos = pg.Vector2(mouse_x, mouse_y)
-                self.equipped_weapon.player_pos = self.pos
+                self.equipped_weapon.active_trajectory = Trajectory(self.pos + self.weapon_point, DEFAULT_SHOT_SPEED,
+                                                                    DEFAULT_GRAVITY, pg.Vector2(mouse_x, mouse_y))
+                self.equipped_weapon.active_trajectory.build_trajectory_coordinates()
+
 
                 if Inputs.MOUSE_SCROLL != 0:
-                    self.equipped_weapon.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
-
-                self.equipped_weapon.active_trajectory = Trajectory(self.pos+self.weapon_point, self.equipped_weapon.shot_speed, self.equipped_weapon.ammo_gravity, pg.Vector2(mouse_x, mouse_y))
-                self.equipped_weapon.active_trajectory.build_trajectory_coordinates()
+                    self.equipped_weapon.active_trajectory.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.active_trajectory.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
                 if self.equipped_weapon.active_trajectory.trajectory_coordinates:
                     last_trajectory_point = self.equipped_weapon.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
@@ -163,12 +162,7 @@ class Player(Entity):
         if self.equipped_weapon.active_trajectory:
             self.equipped_weapon.active_trajectory.draw_trajectory(surface)
 
-            if self.equipped_weapon.is_shooting:
-                for coordinate in self.equipped_weapon.active_trajectory.trajectory_coordinates:
-                    self.equipped_weapon.projectile.draw(surface, offset)
-                    self.equipped_weapon.projectile.update_position(coordinate)
 
-                    self.equipped_weapon.is_shooting = False
 
 
 

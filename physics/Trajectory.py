@@ -28,6 +28,7 @@ class Trajectory:
         self.entity_screen_pos = pygame.Vector2(0,0)
         self.test_collision = []
         self.trajectory_colour = "blue"
+        self.initial_velocity = pygame.Vector2(0,0)
 
     def build_trajectory_coordinates(self):
         """Compute trajectory points until max steps or collision.
@@ -48,19 +49,13 @@ class Trajectory:
         if self.mouse_pos == (0, 0):
             self.angle_radians = 1
 
-        vx = self.shot_speed * math.cos(self.angle_radians)
-        vy = -self.shot_speed * math.sin(self.angle_radians)
+        self.initial_velocity.x = self.shot_speed * math.cos(self.angle_radians)
+        self.initial_velocity.y = -self.shot_speed * math.sin(self.angle_radians)
 
         cam_pos = GlobalVariables.get_variable("cam_pos")
 
-        render_height = GlobalVariables.get_variable("render_size")[0]
-        render_width = GlobalVariables.get_variable("render_size")[1]
-
-        print("render height", render_height)
-        print("render width", render_width)
-
-        print("top left screen border (x, y): ", ((self.entity_screen_pos.x - render_width // 2) * 2, (self.entity_screen_pos.y - render_width//2)*3))
-
+        """render_height = GlobalVariables.get_variable("render_size")[0]
+        render_width = GlobalVariables.get_variable("render_size")[1]"""
 
         # FIXME: The screen border is not the right size
 
@@ -72,15 +67,15 @@ class Trajectory:
             if "solid" in game_object.tags:
                 obstacles.append(game_object)
 
+        position = self.entity_screen_pos.copy()
+        velocity = self.initial_velocity.copy()
         hit = False
         i = 0
         while not hit:
 
-            position = self.entity_screen_pos.copy()
+            velocity.y += self.gravity
 
-            vy += self.gravity
-
-            virtual_traj = position + i * pygame.Vector2(vx, vy)
+            virtual_traj = position + i * velocity
 
             virtual_point = pygame.Rect(virtual_traj.x + cam_pos.x, virtual_traj.y + cam_pos.y, 4, 4)
 
@@ -89,18 +84,19 @@ class Trajectory:
                     hit = True
                     break
 
-            screen_bounds = pygame.Rect(
-                ((self.entity_screen_pos.x - render_width // 2) * 2, (self.entity_screen_pos.y - render_width//2)*3),
-                (render_width, render_height))
+            """screen_topleft = cam_pos
+            screen_bottomright = pygame.Vector2(screen_topleft.x + render_width, cam_pos.y + render_height)
 
+            if not (screen_topleft.x < virtual_traj.x < screen_bottomright.x) and (screen_topleft.y < virtual_traj.y < screen_bottomright.y) :
+                hit = True"""
 
-
-            if (virtual_traj.x < screen_bounds.topleft[0] and virtual_traj.y < screen_bounds[1]) or virtual_traj.x > screen_bounds.topleft[1] + screen_bounds.width or virtual_traj.y > screen_bounds.topleft[1] + screen_bounds.height :
-                hit = True
 
             if not hit:
                 self.trajectory_coordinates.append(virtual_traj)
                 i += 1
+
+            if i > 250:
+                hit = True
 
 
 
