@@ -97,6 +97,7 @@ class Button(UIElement):
         :return:
         """
         self.state = "hover"
+
         if self.hover_texture:
             self.image = self.hover_texture.image
             self.rect = self.image.get_rect(topleft=self.pos)
@@ -175,6 +176,9 @@ class Button(UIElement):
         is_currently_clicked = Inputs.is_mouse_clicked()
 
         if self.rect.collidepoint(mouse_pos):
+            #Change cursor to pointer when hovering over the button
+            pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
+
             #Mouse is over the button
             if Inputs.is_mouse_clicked_once():
                 #Just pressed on the button
@@ -193,6 +197,8 @@ class Button(UIElement):
         else:
             #Not over the button
             self.idle(self.bg_color)
+            #Reset cursor to default if not hovering over any button
+            pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
         #Store current state for next frame
         self._was_clicked_prev_frame = is_currently_clicked
