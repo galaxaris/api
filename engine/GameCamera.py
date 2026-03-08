@@ -55,6 +55,7 @@ class GameCamera:
         :param offset: Offset applied to focused object position.
         :return:
         """
+        GlobalVariables.set_variable("cam_offset", pg.Vector2(offset))
         self.offset = pg.Vector2(offset)
 
     def set_limits(self, topleft: tuple[int , int], bottomright: tuple[int , int]):
@@ -64,6 +65,7 @@ class GameCamera:
         :param topleft: Top left corner of the field of view
         :param bottomright: Bottom right corner of the field of view
         """
+        GlobalVariables.set_variable("cam_limits", (pg.Vector2(topleft), pg.Vector2(bottomright)))
         self.limit_topleft = pg.Vector2(topleft)
         self.limit_bottomright = pg.Vector2(bottomright)
 
@@ -74,7 +76,6 @@ class GameCamera:
         :param position: New absolute camera position.
         :return:
         """
-
         self.position = pg.Vector2(position)
 
 

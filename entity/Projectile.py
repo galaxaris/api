@@ -17,9 +17,9 @@ class Projectile(Entity):
         self.rect = self.image.get_rect(topleft=pos)
         self.fall = True
 
+#FIXME: update doesn't do anything
 
-
-    """def update(self) :
+    def update(self) :
         super().update()
 
         print("shooting")
@@ -32,18 +32,7 @@ class Projectile(Entity):
         print(f"Pos: {self.pos}, Vel: {self.vel}")
 
         if self.collided_objs:
-            self.on_impact()"""
-
-    def update(self):
-        # Calculer la nouvelle destination
-        new_x = self.pos.x + self.vel.x
-        new_y = self.pos.y + self.vel.y
-
-        # Utiliser la méthode du parent pour tout mettre à jour d'un coup
-        self.set_position((new_x, new_y))
-
-        # Appeler le parent pour la gravité et les collisions
-        super().update()
+            self.on_impact()
 
 
     def on_impact(self) :
