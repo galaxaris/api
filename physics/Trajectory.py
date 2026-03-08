@@ -27,6 +27,7 @@ class Trajectory:
         self.mouse_pos = mouse_pos
         self.entity_screen_pos = pygame.Vector2(0,0)
         self.test_collision = []
+        self.trajectory_colour = "blue"
 
     def build_trajectory_coordinates(self):
         """Compute trajectory points until max steps or collision.
@@ -52,7 +53,22 @@ class Trajectory:
 
         virtual_traj = self.entity_screen_pos.copy()
 
-        for i in range(50):
+        # offset = GlobalVariables.get_variable("offset")
+
+        # cam_pos = GlobalVariables.get_variable("cam_pos")
+
+        # camera_limit_topleft = GlobalVariables.get_variable("camera_limit_topleft") + cam_pos + offset
+        # camera_limit_bottomright = GlobalVariables.get_variable("camera_limit_bottomright") + cam_pos + offset
+
+
+        # print("camera_limit_topleft", camera_limit_topleft)
+        # print("camera_limit_bottomright", camera_limit_bottomright)
+
+        # FIXME: Trajectory needs to stop when encountering screen border
+
+        hit = False
+        i = 0
+        while not hit:
             obstacles = []
             game_objects = GlobalVariables.get_variable("game_objects")
             for game_object in game_objects:
@@ -61,14 +77,16 @@ class Trajectory:
 
             position = self.entity_screen_pos.copy()
 
-            virtual_point = pygame.Rect(virtual_traj.x + GlobalVariables.get_variable("cam_pos").x, virtual_traj.y + GlobalVariables.get_variable("cam_pos").y,  4, 4)
+            virtual_point = pygame.Rect(virtual_traj.x + cam_pos.x, virtual_traj.y + cam_pos.y,  4, 4)
 
-
-            hit = False
             for obstacle in obstacles:
                 if virtual_point.colliderect(obstacle.rect):
                     hit = True
                     break
+
+                """elif camera_limit_topleft.x > virtual_traj.x > camera_limit_bottomright.y or camera_limit_topleft.y > virtual_traj.y > camera_limit_bottomright.y:
+                    hit = True
+                    break"""
 
             if hit:
                 break
@@ -77,6 +95,7 @@ class Trajectory:
 
             virtual_traj = position + i*pygame.Vector2(vx, vy)
             self.trajectory_coordinates.append(virtual_traj)
+            i += 1
 
         self.trajectory_coordinates.pop(-1)
 
@@ -89,7 +108,6 @@ class Trajectory:
 
         trajectory_coordinates = self.trajectory_coordinates
         for point in trajectory_coordinates:
-            colour_choices = ["white", "yellow"]
-            pygame.draw.circle(surface, random.choice(colour_choices), (int(point[0]), int(point[1])), 2)
+            pygame.draw.circle(surface, self.trajectory_colour, (int(point[0]), int(point[1])), 2)
 
 

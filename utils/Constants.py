@@ -18,4 +18,4 @@ DEFAULT_GRAVITY = 0.1
 
 from api.items.Catalog import Pistol
 
-DEFAULT_WEAPON = Pistol(pygame.Vector2(10, 10), Trajectory(pygame.Vector2(0,0), 0, 0, pygame.Vector2(0,0)))
+DEFAULT_WEAPON = Pistol( pygame.Vector2(10, 10), Trajectory(pygame.Vector2(0,0), 0, 0, pygame.Vector2(0,0)))

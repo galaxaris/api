@@ -15,7 +15,10 @@ global_vars = {
     "previous_inputs": None,
     "audio_manager": None,
     "default_font": "arial",
-    "current_menu": None
+    "current_menu": None,
+    "camera_limit_topleft": int,
+    "camera_limit_bottomright": int,
+    "offset": tuple[int],
 }
 
 def set_variable(key, value):

@@ -44,7 +44,7 @@ class Pistol(ActiveItem):
             self.angle_radians = 1
 
     def shoot(self):
-        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, (10,10), self.shot_speed, self.angle_radians, self.ammo_gravity)
+        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.shot_speed, self.angle_radians, self.ammo_gravity, self.active_trajectory.trajectory_coordinates)
 
 
 
