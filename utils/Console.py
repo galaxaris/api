@@ -30,7 +30,7 @@ def _use_classic_output():
 
 
 
-def __print_message(msg, title, color):
+def __print_message(msg, title, color, width=60):
     """
     Private function to print a message with a specific title and color. 
     
@@ -45,33 +45,33 @@ def __print_message(msg, title, color):
         return
 
     try:
-        console.print(Panel(msg, title=f"[bold]{title}[/bold]", border_style=color, width=60))
+        console.print(Panel(msg, title=f"[bold]{title}[/bold]", border_style=color, width=width))
     except Exception:
         print(f"[{title}] {msg}")
 
-def print_info(msg):
+def print_info(msg, width=60):
     """
     Prints an informational message to the console in blue color.
     """
-    __print_message(msg, "INFO", "blue")
+    __print_message(msg, "INFO", "blue", width=width)
 
-def print_success(msg):
+def print_success(msg, width=60):
     """
     Prints a success message to the console in green color.
     """
-    __print_message(msg, "SUCCESS", "green")
+    __print_message(msg, "SUCCESS", "green", width=width)
 
-def print_warning(msg):
+def print_warning(msg, width=60):
     """
     Prints a warning message to the console in yellow color.
     """
-    __print_message(msg, "WARNING", "yellow")
+    __print_message(msg, "WARNING", "yellow", width=width)
 
-def print_error(msg):
+def print_error(msg, width=60):
     """
     Prints an error message to the console in red color.
     """
-    __print_message(msg, "ERROR", "red")
+    __print_message(msg, "ERROR", "red", width=width)
 
 
 def print_countdown(seconds):
