@@ -11,6 +11,7 @@ import pygame as pg
 from api.assets.Animation import Animation
 from api.assets.Texture import Texture
 from api.utils import Debug
+from api.utils.Console import *
 
 
 class GameObject:
