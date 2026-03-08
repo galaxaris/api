@@ -18,8 +18,7 @@ class Player(Entity):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20,
-                  sfx_list: dict[str, str] = None):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
         """
         Initializes the player with the given attributes.
 
@@ -38,15 +37,13 @@ class Player(Entity):
         self.resistance = resistance
         self.force = force
         self.boost = False
-        self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
-        self.equipped_weapon = DEFAULT_WEAPON
         self.add_tag("player")
         self.set_direction(direction)
-        self.projectiles = []
+
 
         self.start_pos = pos
 
-        self.sfx_list = sfx_list
+
 
     def update(self):
         """
@@ -170,8 +167,6 @@ class Player(Entity):
 
                     self.equipped_weapon.is_shooting = False
 
-    def set_sfx_list(self, sfx_list):
-        self.sfx_list = sfx_list
 
 
 
