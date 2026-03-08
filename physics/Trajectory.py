@@ -53,51 +53,66 @@ class Trajectory:
 
         virtual_traj = self.entity_screen_pos.copy()
 
-        # offset = GlobalVariables.get_variable("offset")
+        offset = GlobalVariables.get_variable("offset")
 
-        # cam_pos = GlobalVariables.get_variable("cam_pos")
+        cam_pos = GlobalVariables.get_variable("cam_pos")
 
-        # camera_limit_topleft = GlobalVariables.get_variable("camera_limit_topleft") + cam_pos + offset
-        # camera_limit_bottomright = GlobalVariables.get_variable("camera_limit_bottomright") + cam_pos + offset
+        render_height = GlobalVariables.get_variable("render_size")[0]
+        render_width = GlobalVariables.get_variable("render_size")[1]
+
+        print("render height", render_height)
+        print("render width", render_width)
+
+        print("top left screen border (x, y): ", ((self.entity_screen_pos.x - render_width // 2) * 2, (self.entity_screen_pos.y - render_width//2)*3))
 
 
         # print("camera_limit_topleft", camera_limit_topleft)
         # print("camera_limit_bottomright", camera_limit_bottomright)
 
-        # FIXME: Trajectory needs to stop when encountering screen border
+        # FIXME: The screen border is not the right size
+
+
+
+        obstacles = []
+        game_objects = GlobalVariables.get_variable("game_objects")
+        for game_object in game_objects:
+            if "solid" in game_object.tags:
+                obstacles.append(game_object)
 
         hit = False
         i = 0
         while not hit:
-            obstacles = []
-            game_objects = GlobalVariables.get_variable("game_objects")
-            for game_object in game_objects:
-                if "solid" in game_object.tags:
-                    obstacles.append(game_object)
 
             position = self.entity_screen_pos.copy()
 
-            virtual_point = pygame.Rect(virtual_traj.x + cam_pos.x, virtual_traj.y + cam_pos.y,  4, 4)
+            vy += self.gravity
+
+            virtual_traj = position + i * pygame.Vector2(vx, vy)
+
+            virtual_point = pygame.Rect(virtual_traj.x + cam_pos.x, virtual_traj.y + cam_pos.y, 4, 4)
 
             for obstacle in obstacles:
                 if virtual_point.colliderect(obstacle.rect):
                     hit = True
                     break
 
-                """elif camera_limit_topleft.x > virtual_traj.x > camera_limit_bottomright.y or camera_limit_topleft.y > virtual_traj.y > camera_limit_bottomright.y:
-                    hit = True
-                    break"""
+            screen_bounds = pygame.Rect(
+                ((self.entity_screen_pos.x - render_width // 2) * 2, (self.entity_screen_pos.y - render_width//2)*3),
+                (render_width, render_height))
 
-            if hit:
-                break
 
-            vy += self.gravity
 
-            virtual_traj = position + i*pygame.Vector2(vx, vy)
-            self.trajectory_coordinates.append(virtual_traj)
-            i += 1
+            if (virtual_traj.x < screen_bounds.topleft[0] and virtual_traj.y < screen_bounds[1]) or virtual_traj.x > screen_bounds.topleft[1] + screen_bounds.width or virtual_traj.y > screen_bounds.topleft[1] + screen_bounds.height :
+                hit = True
 
-        self.trajectory_coordinates.pop(-1)
+            if not hit:
+                self.trajectory_coordinates.append(virtual_traj)
+                i += 1
+
+
+
+        if self.trajectory_coordinates:
+            self.trajectory_coordinates.pop(-1)
 
     def draw_trajectory(self, surface):
         """Draw previously computed trajectory points.

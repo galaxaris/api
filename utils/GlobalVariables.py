@@ -19,6 +19,7 @@ global_vars = {
     "camera_limit_topleft": int,
     "camera_limit_bottomright": int,
     "offset": tuple[int],
+    "render_size": tuple[int, int],
 }
 
 def set_variable(key, value):
