@@ -5,55 +5,52 @@ This module provides utility functions for console output, for debugging colorfu
 import sys
 import os
 try:
-    from colorama import init, Fore, Style
-    init(autoreset=True)
+    from rich.console import Console
+    from rich.panel import Panel
+    console = Console()
 except ImportError:
-    print("== WARNING: Colorama module not found. In order to have colored console output, please install colorama with 'pip install colorama'. ==")
-    # Define dummy Fore and Style classes to avoid errors
-    class Fore:
-        RED = ''
-        GREEN = ''
-        YELLOW = ''
-        BLUE = ''
-        MAGENTA = ''
-        CYAN = ''
-        WHITE = ''
+    print("\n== WARNING: Rich module not found. In order to have colored console output, please install rich with 'pip install rich'. ==")
 
-    class Style:
-        RESET_ALL = ''
 
-def print_message(message, color=Fore.WHITE):
+
+def __print_message(msg, title, color):
     """
-    Prints a message to the console with the specified color.
+    Private function to print a message with a specific title and color. 
+    
+    Allows to skip error printing if rich is not installed, without breaking the code.
 
-    :param message: The message to be printed
-    :param color: The color to print the message in (default is white)
+    :param msg: The message to print
+    :param title: The title of the message (e.g., "INFO", "WARNING", "ERROR", "SUCCESS")
+    :param color: The color to use for the message (e.g., "blue", "yellow", "red", "green")
     """
-    print(f"{color}{message}{Style.RESET_ALL}")
+    try:
+        console.print(Panel(msg, title=f"[bold]{title}[/bold]", border_style=color, width=60))
+    except NameError:
+        print(f"[{title}] {msg}")
 
-def print_info(message):
+def print_info(msg):
     """
-    Prints an informational message to the console in cyan.
+    Prints an informational message to the console in blue color.
+    """
+    __print_message(msg, "INFO", "blue")
 
-    :param message: The informational message to be printed
+def print_success(msg):
     """
-    print_message(f"**INFO**: {message}", color=Fore.CYAN)
+    Prints a success message to the console in green color.
+    """
+    __print_message(msg, "SUCCESS", "green")
 
-def print_warning(message):
+def print_warning(msg):
     """
-    Prints a warning message to the console in yellow.
+    Prints a warning message to the console in yellow color.
+    """
+    __print_message(msg, "WARNING", "yellow")
 
-    :param message: The warning message to be printed
+def print_error(msg):
     """
-    print_message(f"== WARNING: {message} ==", color=Fore.YELLOW)
-
-def print_error(message):
+    Prints an error message to the console in red color.
     """
-    Prints an error message to the console in red.
-
-    :param message: The error message to be printed
-    """
-    print_message(f"== ERROR: {message} ==", color=Fore.RED)
+    __print_message(msg, "ERROR", "red")
 
 print("\n") #Adds an empty line
 
@@ -61,3 +58,6 @@ if __name__ == "__main__":
     print_info("This is an informational message.")
     print_warning("This is a warning message.")
     print_error("This is an error message.")
+    print_success("This is a success message.")
+
+    print_info("This is a very long informational message that should be wrapped inside the panel to demonstrate the width setting of the console output.\n It should be displayed in blue color and properly formatted within the panel.\nHmm, let's see how it handles multiple lines and if the formatting remains consistent across different message lengths.")
