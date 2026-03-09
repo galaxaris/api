@@ -61,13 +61,13 @@ class Player(Entity):
 
                 max_velocity /= 2
                 mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
-                self.equipped_weapon.active_trajectory = Trajectory(self.pos + self.weapon_point, DEFAULT_SHOT_SPEED,
-                                                                    DEFAULT_GRAVITY, pg.Vector2(mouse_x, mouse_y))
+                self.equipped_weapon.active_trajectory = Trajectory(self.pos + self.weapon_point, self.equipped_weapon.shot_speed,
+                                                                    self.equipped_weapon.projectile_gravity, pg.Vector2(mouse_x, mouse_y))
                 self.equipped_weapon.active_trajectory.build_trajectory_coordinates()
 
 
                 if Inputs.MOUSE_SCROLL != 0:
-                    self.equipped_weapon.active_trajectory.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.active_trajectory.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
+                    self.equipped_weapon.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
                 if self.equipped_weapon.active_trajectory.trajectory_coordinates:
                     last_trajectory_point = self.equipped_weapon.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
