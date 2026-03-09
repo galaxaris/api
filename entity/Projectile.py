@@ -20,6 +20,7 @@ class Projectile(Entity):
 #FIXME: update doesn't do anything
 
     def update(self) :
+        pass
         """super().update()
 
         print("shooting")
@@ -34,7 +35,7 @@ class Projectile(Entity):
         if self.collided_objs:
             self.on_impact()"""
 
-        print("PAN")
+
 
 
     def on_impact(self):

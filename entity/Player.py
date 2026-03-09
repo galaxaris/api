@@ -32,15 +32,12 @@ class Player(Entity):
         :param sfx_list: List of sound effects. (key: name)
         """
         super().__init__(pos, size)
-        self.max_velocity = max_velocity
-        self.acceleration = acceleration
-        self.resistance = resistance
         self.force = force
         self.boost = False
         self.add_tag("player")
         self.set_direction(direction)
         self.equipped_weapon = DEFAULT_WEAPON
-
+        self.set_physics_properties(max_velocity, acceleration, resistance)
 
         self.start_pos = pos
 
@@ -86,22 +83,17 @@ class Player(Entity):
                 self.equipped_weapon.shot_speed = DEFAULT_SHOT_SPEED
 
             if inputs["right"] and State.is_enabled("player_control"):
-
+                self.is_controlled = True
                 self.vel.x = max(0, min(self.vel.x + self.acceleration, max_velocity + boost_val))
                 if not inputs["aim"]:
                     self.set_direction("right")
 
-            elif self.vel.x > 0:
-                self.vel.x = max(0, self.vel.x - self.resistance)
 
             if inputs["left"] and State.is_enabled("player_control"):
-
+                self.is_controlled = True
                 self.vel.x = max(-(max_velocity + boost_val), min(self.vel.x - self.acceleration, 0))
                 if not inputs["aim"]:
                     self.set_direction("left")
-
-            elif self.vel.x < 0:
-                self.vel.x = min(self.vel.x + self.resistance, 0)
 
             if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
                 gravity = self.gravity if self.gravity else 1

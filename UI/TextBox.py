@@ -81,7 +81,7 @@ class TextBox(UIElement):
     goal: str
 
     def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left",
-                 texture: Texture = None, closable: bool = True, goal="fermer"):
+                 texture: Texture = None, closable: bool = True, goal="fermer", border_radius: int = 10):
         """Initialize a textbox.
 
         :param title: Displayed title, usually speaker name.
@@ -101,6 +101,8 @@ class TextBox(UIElement):
         self.goal = goal
         self.image = None
         self.text_surfaces = []  # Sera généré au premier draw selon la largeur disponible
+        self.color = (30, 30, 30, 220)
+        self.border_radius = border_radius
 
         if texture:
             self.set_image(texture, image_side)
@@ -167,8 +169,9 @@ class TextBox(UIElement):
         if not self.text_surfaces:
             self.text_surfaces = process_text(self.font, self.raw_text, max_text_width)
 
+        text_box_rect = pg.Rect(0, 0, width, height)
         text_box_bg = pg.Surface((width, height), pg.SRCALPHA, 32).convert_alpha()
-        text_box_bg.fill((0, 0, 0, 220))
+        pg.draw.rect(text_box_bg, self.color, text_box_rect, border_radius=self.border_radius)
 
         content_surface = pg.Surface((max_text_width, height - margin * 2), pg.SRCALPHA, 32).convert_alpha()
 

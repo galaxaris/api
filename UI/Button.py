@@ -11,7 +11,7 @@ from api.utils.Fonts import get_font
 class Button(UIElement):
     """Interactive UI button supporting textures and callbacks."""
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], text: str = None, color_set: dict[str, tuple[int, int, int]] = ((0, 0, 0), (255, 255, 255), (188, 188, 188), (210, 210, 210)), font: str = "arial"):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], text: str = None, color_set: dict[str, tuple[int, int, int]] = ((0, 0, 0), (255, 255, 255), (188, 188, 188), (210, 210, 210)), font: str = "arial", border_radius: int = 7):
         """Initialize a button.
 
         :param pos: Top-left button position.
@@ -33,6 +33,7 @@ class Button(UIElement):
         self.callback = None
         self.menu_offset = (0, 0)
         self.state = "default"
+        self.border_radius = border_radius
         self.add_tag("ui_button")
 
     ### PUBLIC METHODS ###
@@ -72,7 +73,7 @@ class Button(UIElement):
             self.rect = self.image.get_rect(topleft=self.pos)
         else:
             #Mark a red border if no click texture is defined
-            pg.draw.rect(self.image, color, self.image.get_rect(), 2)
+            pg.draw.rect(self.image, color, self.image.get_rect(), 2, border_radius=self.border_radius)
             self.draw_text(color, self.text_color)
 
     def idle(self, color: tuple[int, int, int] = (255, 255, 255)):
@@ -103,7 +104,7 @@ class Button(UIElement):
             self.rect = self.image.get_rect(topleft=self.pos)
         else:
             #Mark a red border if no hover texture is defined
-            pg.draw.rect(self.image, color, self.image.get_rect(), 2)
+            pg.draw.rect(self.image, color, self.image.get_rect(), 2, border_radius=self.border_radius)
             self.draw_text(color, self.text_color)
 
     def focus(self, color: tuple[int, int, int] = (161, 2, 131)):
@@ -128,11 +129,15 @@ class Button(UIElement):
         :param text_color: Color of the text.
         :return:
         """
-        self.image.fill(color)
-        text = get_font(self.font, 20).render(self.text, False, text_color)
+
+        self.image = pg.Surface((self.size.x, self.size.y), pg.SRCALPHA)
+        button_rect = pg.Rect(0, 0, self.size.x, self.size.y)
+        pg.draw.rect(self.image, color, button_rect, border_radius=self.border_radius)
+        text = get_font(self.font, 20).render(self.text, True, text_color)  # True is for antialiasing
         text_rect = text.get_rect(center=(self.size.x // 2, self.size.y // 2))
         self.image.blit(text, text_rect)
         self.rect = self.image.get_rect(topleft=self.pos)
+
 
     def set_callback(self, callback):
         """Set callback triggered by `click`. ==> Same fonctionnality as for the Trigger component, but for mouse input (and not from collision).

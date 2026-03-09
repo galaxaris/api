@@ -9,7 +9,7 @@ from api.utils import Inputs
 class Modal(UIElement):
     """Blocking UI container that can host navigable button grids."""
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int] = (50, 50, 50)):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int] = (30, 30, 30, 220), border_radius: int = 10):
         """Initialize a modal container.
 
         :param pos: Modal position.
@@ -24,6 +24,7 @@ class Modal(UIElement):
         self.menu_surface = pg.Surface(self.size, pg.SRCALPHA, 32).convert_alpha()
         self.color = color
         self.margin = pg.Vector2(10, 10)
+        self.border_radius = border_radius
         self.add_tag("ui_menu")
         self.add_tag("ui_block")
 
@@ -93,8 +94,12 @@ class Modal(UIElement):
         """
         super().draw(surface, offset)
         # Add a margin for the elements to avoid drawing them right at the edge of the modal
+
         self.menu_surface.fill((0,0,0,0))
-        self.set_color(self.color)
+
+        menu_background = pg.Rect(0,0,self.size.x, self.size.y)
+        pg.draw.rect(self.image, self.color, menu_background, border_radius=self.border_radius)
+
         for element in self.elements:
             element.draw(self.menu_surface, offset)
 

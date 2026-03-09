@@ -29,6 +29,7 @@ class Entity(GameObject):
     collided_objs : list[tuple[GameObject, str]]
     is_hitting_ground: bool
 
+
     def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
         """
         Initializes the entity with the given attributes.
@@ -37,6 +38,9 @@ class Entity(GameObject):
         :param size: Entity size
         """
         super().__init__(pos, size)
+        self.max_velocity = 0
+        self.acceleration = 0
+        self.resistance = 0
         self.boost = False
         self.vel = pg.Vector2(0, 0)
         self.jump = False
@@ -48,6 +52,7 @@ class Entity(GameObject):
         self.projectiles = []
         self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
         self.sfx_list = {}
+        self.is_controlled = False
         self.add_tag("entity")
 
 
@@ -111,6 +116,12 @@ class Entity(GameObject):
         self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x, self.vel.y)
         on_ground = False
 
+        if not Debug.is_enabled("freecam") and not self.is_controlled:
+            if self.vel.x > 0:
+                self.vel.x = max(0, self.vel.x - self.resistance)
+            elif self.vel.x < 0:
+                self.vel.x = min(self.vel.x + self.resistance, 0)
+
         for obj in self.collided_objs:
             if obj[1] == "top" and obj[1] not in ["left", "right"]:
                 self.land()
@@ -156,6 +167,7 @@ class Entity(GameObject):
         self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
 
         self.is_hitting_ground = False
+        self.is_controlled = False
 
     def update_sprite(self):
         """
@@ -188,3 +200,8 @@ class Entity(GameObject):
 
     def set_sfx_list(self, sfx_list):
         self.sfx_list = sfx_list
+
+    def set_physics_properties(self, max_velocity: float, acceleration: float, resistance: float):
+        self.max_velocity = max_velocity
+        self.acceleration = acceleration
+        self.resistance = resistance
