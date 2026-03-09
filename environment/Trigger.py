@@ -2,6 +2,8 @@
 API's Triggers definition, collection & implementation
 """
 
+import random as rd
+
 from api.GameObject import GameObject
 from api.utils import Inputs, State, Fonts
 from api.utils.Console import *
@@ -168,7 +170,7 @@ class TriggerKillBox(Trigger):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False, sfx: str | None = None):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False, sfx: list[str] | None = None):
         """
         Initializes the trigger with the given attributes.
 
@@ -191,7 +193,8 @@ class TriggerKillBox(Trigger):
                 obj.kill()
                 if sfx:
                     AudioManager = GV.get("audio_manager")
-                    AudioManager.play_sfx(sfx)
+                    sfx_to_play = rd.choice(sfx) if isinstance(sfx, list) else sfx
+                    AudioManager.play_sfx(sfx_to_play)
             else:
                 print_warning(f"object {obj} does not have a kill method")
         
