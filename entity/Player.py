@@ -1,14 +1,13 @@
 """
 API's Player utilities
 """
-
+from api.items.Catalog import Pistol
 from api.physics.Trajectory import Trajectory
-from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_WEAPON, DEFAULT_GRAVITY
+from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, State, Inputs, GlobalVariables
 
 from api.entity.Entity import Entity
-from api.utils.Inputs import get_inputs
-
+from api.utils.Inputs import get_inputs, get_once_inputs
 
 import pygame as pg
 
@@ -34,7 +33,8 @@ class Player(Entity):
         super().__init__(pos, size)
         self.add_tag("player")
         self.set_direction(direction)
-        self.equipped_weapon = DEFAULT_WEAPON
+        self.equipped_weapon = Pistol(Trajectory(pg.Vector2(0,0), DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, pg.Vector2(0,0)))
+
 
 
 
@@ -49,6 +49,7 @@ class Player(Entity):
 
         was_falling = self.fall
         max_velocity = self.max_velocity
+        self.equipped_weapon.update()
 
         if not Debug.is_enabled("freecam"):
 
@@ -69,7 +70,7 @@ class Player(Entity):
                     last_trajectory_point = self.equipped_weapon.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
                     self.set_direction("left" if last_trajectory_point.x < self.pos[0] else "right")
 
-                if inputs["shoot"] and State.is_enabled("player_control"):
+                if get_once_inputs()["shoot"] and State.is_enabled("player_control"):
                     new_projectile = self.equipped_weapon.shoot()
                     self.projectiles.append(new_projectile)
                     self.equipped_weapon.is_shooting = True
@@ -125,6 +126,10 @@ class Player(Entity):
 
         if self.equipped_weapon.active_trajectory:
             self.equipped_weapon.active_trajectory.draw_trajectory(surface)
+
+            if self.equipped_weapon.projectile:
+                self.equipped_weapon.draw_projectile(surface)
+
 
 
 
