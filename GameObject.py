@@ -165,7 +165,6 @@ class GameObject:
         :param surface: The surface on which to draw the GameObject
         :param offset: The offset to be applied to the GameObject's position when drawing (useful for camera movement)
         """
-        self.update()
 
         self.surface = surface
         self.offset = offset

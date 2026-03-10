@@ -39,7 +39,6 @@ class Player(Entity):
         self.equipped_weapon = DEFAULT_WEAPON
         self.set_physics_properties(max_velocity, acceleration, resistance)
 
-        self.start_pos = pos
 
 
 
@@ -50,14 +49,12 @@ class Player(Entity):
         :return:
         """
         inputs = get_inputs()
-        boost_val = 1 if self.boost else 0
 
         was_falling = self.fall
         max_velocity = self.max_velocity
 
         if not Debug.is_enabled("freecam"):
 
-            Time = GlobalVariables.get_variable("Time")
 
             if inputs["aim"] and State.is_enabled("player_control"):
 
@@ -85,14 +82,14 @@ class Player(Entity):
 
             if inputs["right"] and State.is_enabled("player_control"):
                 self.is_controlled = True
-                self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, max_velocity + boost_val))
+                self.do_right()
                 if not inputs["aim"]:
                     self.set_direction("right")
 
 
             if inputs["left"] and State.is_enabled("player_control"):
                 self.is_controlled = True
-                self.vel.x = max(-(max_velocity + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))
+                self.do_left()
                 if not inputs["aim"]:
                     self.set_direction("left")
 
@@ -118,18 +115,6 @@ class Player(Entity):
                         if audio_manager:
                             audio_manager.play_sfx("hit_ground")
 
-    def kill(self):
-        """
-        Kills the player.
-
-        Working: the player is respawned at the starting position (temporarily)
-
-        :return:
-        """
-        self.vel = pg.Vector2(0, 0)
-        self.set_position(self.start_pos)
-
-
     def draw(self, surface, offset = pg.Vector2(0, 0)):
         """
         Draws the player on the given surface.
@@ -144,18 +129,7 @@ class Player(Entity):
         if self.equipped_weapon.active_trajectory:
             self.equipped_weapon.active_trajectory.draw_trajectory(surface)
 
-    def do_jump(self):
-        if not self.jump:
-            gravity = self.gravity if self.gravity else 1
-            self.vel.y += -self.acceleration * max(1, gravity) * self.force
-            self.jump = True
 
-            # SFX
-            if self.sfx_list:
-                if "jump" in self.sfx_list:
-                    audio_manager = GlobalVariables.get_variable("audio_manager")
-                    if audio_manager:
-                        audio_manager.play_sfx("jump")
 
 
 

@@ -53,6 +53,7 @@ class Entity(GameObject):
         self.weapon_point = pg.Vector2(size[0]//2, size[1]//2)
         self.sfx_list = {}
         self.is_controlled = False
+        self.start_pos = pg.Vector2(pos)
         self.add_tag("entity")
 
 
@@ -215,3 +216,37 @@ class Entity(GameObject):
         self.max_velocity = max_velocity
         self.acceleration = acceleration
         self.resistance = resistance
+
+    def do_jump(self):
+        if not self.jump:
+            gravity = self.gravity if self.gravity else 1
+            self.vel.y += -self.acceleration * max(1, gravity) * self.force
+            self.jump = True
+
+            # SFX
+            if self.sfx_list:
+                if "jump" in self.sfx_list:
+                    audio_manager = GlobalVariables.get_variable("audio_manager")
+                    if audio_manager:
+                        audio_manager.play_sfx("jump")
+
+    def kill(self):
+        """
+        Kills the player.
+
+        Working: the player is respawned at the starting position (temporarily)
+
+        :return:
+        """
+        self.vel = pg.Vector2(0, 0)
+        self.set_position(self.start_pos)
+
+    def do_right(self):
+        boost_val = 1 if self.boost else 0
+        Time = GlobalVariables.get_variable("Time")
+        self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, self.max_velocity + boost_val))
+
+    def do_left(self):
+        boost_val = 1 if self.boost else 0
+        Time = GlobalVariables.get_variable("Time")
+        self.vel.x = max(-(self.max_velocity + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))
