@@ -2,6 +2,7 @@ import math
 
 import pygame
 
+from api.GameObject import GameObject
 from api.items.ActiveItem import ActiveItem
 from api.items.Item import Item
 from api.entity.Projectile import Projectile
@@ -34,14 +35,31 @@ class Pistol(ActiveItem):
         self.shot_speed = self.active_trajectory.shot_speed
         self.angle_radians = self.active_trajectory.angle_radians
         self.is_shooting = is_shooting
-        self.projectile = None
+        self.projectile = []
         self.projectile_gravity = projectile_gravity
+        self.cooldown = 3000
+        self.last = - self.cooldown
 
     def shoot(self):
-        self.projectile = Projectile(self.active_trajectory.entity_screen_pos, self.projectile_gravity, self.active_trajectory.shot_speed, self.active_trajectory.angle_radians)
-        GlobalVariables.get_variable("game_objects").append(self.projectile)
-        self.projectile.update()
+        self.last = -self.cooldown
+        now = pygame.time.get_ticks()
+        if now - self.last >= self.cooldown:
+            self.last = now
+            self.projectile.append(
+                Projectile(self.active_trajectory.entity_screen_pos, self.projectile_gravity,
+                           self.active_trajectory.shot_speed, self.active_trajectory.angle_radians))
 
+    def update(self):
+        GameObject.update(self)
+        for i in range(len(self.projectile)-1, 0, -1):
+            projectile = self.projectile[i]
+            projectile.update()
+            if projectile.to_kill:
+                self.projectile.remove(projectile)
+
+    def draw_projectile(self, surface):
+        for projectile in self.projectile:
+            pygame.draw.circle(surface, "blue", (projectile.pos.x, projectile.pos.y), 4)
 
 
 

@@ -16,7 +16,3 @@ DEFAULT_SHOT_SPEED = 5
 DEFAULT_GRAVITY = 0.1
 
 # Weapon
-
-from api.items.Catalog import Pistol
-
-DEFAULT_WEAPON = Pistol(Trajectory(pygame.Vector2(0,0), DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, pygame.Vector2(0,0)))

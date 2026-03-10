@@ -16,31 +16,28 @@ class Projectile(Entity):
         self.image.fill("white")
         self.rect = self.image.get_rect(topleft=pos)
         self.fall = True
+        self.to_kill = False
+        print("ji souis né")
 
 #FIXME: update doesn't do anything
 
     def update(self) :
-        pass
-        """super().update()
-
-        print("shooting")
+        super().update()
 
         self.pos.x += self.vel.x
         self.pos.y += self.vel.y
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
         self.set_position((self.pos[0], self.pos[1]))
 
-        print(f"Pos: {self.pos}, Vel: {self.vel}")
-
         if self.collided_objs:
-            self.on_impact()"""
+            self.on_impact()
 
 
 
 
     def on_impact(self):
-        print("ouch ça fait mal")
-        # self.kill()
+        self.to_kill = True
+        print("ji souis mort")
 
 
     def kill(self):
