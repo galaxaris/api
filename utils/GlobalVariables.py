@@ -23,6 +23,7 @@ global_vars = {
     "offset": tuple[int],
     "render_size": tuple[int, int],
     "default_surface": None,
+    "projectiles": [],
 }
 
 def set_variable(key, value):

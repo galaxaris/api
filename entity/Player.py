@@ -71,7 +71,7 @@ class Player(Entity):
                     self.set_direction("left" if last_trajectory_point.x < self.pos[0] else "right")
 
                 if get_once_inputs()["shoot"] and State.is_enabled("player_control"):
-                    new_projectile = self.equipped_weapon.shoot()
+                    new_projectile = self.equipped_weapon.shoot(offset=self.offset)
                     self.projectiles.append(new_projectile)
                     self.equipped_weapon.is_shooting = True
             else:
@@ -123,12 +123,6 @@ class Player(Entity):
         """
 
         super().draw(surface, offset)
-
-        if self.equipped_weapon.active_trajectory:
-            self.equipped_weapon.active_trajectory.draw_trajectory(surface)
-
-            if self.equipped_weapon.projectile:
-                self.equipped_weapon.draw_projectile(surface)
 
 
 
