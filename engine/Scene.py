@@ -67,7 +67,7 @@ class Scene(pg.Surface):
         Adds a game object to the specified layer. If the layer doesn't exist, it will be created.
         """
         self.__ensure_layer(layer)
-        if game_object.id not in [obj.id for obj in self.layers[layer]]:
+        if game_object not in self.layers[layer]:
             self.layers[layer].append(game_object)
             self.game_objects.append(game_object)
 

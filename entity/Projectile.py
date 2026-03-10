@@ -34,7 +34,7 @@ class Projectile(Entity):
 
     def on_impact(self):
         self.to_kill = True
-        print("ji souis mort")
+
 
 
 
