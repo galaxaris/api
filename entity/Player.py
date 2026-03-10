@@ -77,7 +77,6 @@ class Player(Entity):
                     new_projectile = self.equipped_weapon.shoot()
                     self.projectiles.append(new_projectile)
                     self.equipped_weapon.is_shooting = True
-
             else:
                 self.equipped_weapon.active_trajectory = None
                 self.equipped_weapon.shot_speed = DEFAULT_SHOT_SPEED
@@ -95,17 +94,8 @@ class Player(Entity):
                 if not inputs["aim"]:
                     self.set_direction("left")
 
-            if inputs["jump"] and self.jump == False and State.is_enabled("player_control"):
-                gravity = self.gravity if self.gravity else 1
-                self.vel.y += -self.acceleration * max(1,gravity) * self.force
-                self.jump = True
-
-                #SFX
-                if self.sfx_list:
-                    if "jump" in self.sfx_list:
-                        audio_manager = GlobalVariables.get_variable("audio_manager")
-                        if audio_manager:
-                            audio_manager.play_sfx("jump")
+            if inputs["jump"] and State.is_enabled("player_control"):
+                self.do_jump()
 
 
             self.boost = inputs["boost"] and State.is_enabled("player_control")
@@ -151,6 +141,19 @@ class Player(Entity):
 
         if self.equipped_weapon.active_trajectory:
             self.equipped_weapon.active_trajectory.draw_trajectory(surface)
+
+    def do_jump(self):
+        if not self.jump:
+            gravity = self.gravity if self.gravity else 1
+            self.vel.y += -self.acceleration * max(1, gravity) * self.force
+            self.jump = True
+
+            # SFX
+            if self.sfx_list:
+                if "jump" in self.sfx_list:
+                    audio_manager = GlobalVariables.get_variable("audio_manager")
+                    if audio_manager:
+                        audio_manager.play_sfx("jump")
 
 
 

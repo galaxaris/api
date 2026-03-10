@@ -1,19 +1,19 @@
 # TODO for API
 
-- UI
-  - Menu
-
 Entity :
   - Player improvements  
-  - Enemy
+
+  - Enemy (IA)
+  - Boss
+
+Environment :
+  - InOut (Doors, Teleporters)
+  - Trap
+  - Handle Collisions correctly
 
 Objects :
   - GraplingHook
   - WaterGun
-
-Environment :
-  - InOut
-  - Trap
 
 # Plan
 
@@ -25,10 +25,6 @@ Environment :
   - Sauvegarder un niveau dans un .level
 
 ## Environment
-
-- Solid.py (GameObject) :
-  - Ajouter des propriétés physiques 
-  - Gérer les interactions avec d'autres objets
 
 - InOut.py (GameObject) :
   - Ajouter des propriétés d'entrée/sortie (ex: portes, téléporteurs, etc.)
@@ -46,37 +42,11 @@ Environment :
     - Intégrer une bibliothèque de sons libres de droits pour les tests
 
 ## UI 
-
-- Button.py :
-  - Ajouter des animations pour les états (hover, click)
-  - Permettre la personnalisation des styles (couleurs, polices, etc.)
-  
-- TextBox.py :
-  - Ajouter la possibilité d'afficher du texte multi-ligne
-  - Fond personnalisable (couleur, image, etc.)
-  - Permettre la personnalisation des styles (couleurs, polices, etc.)
-  
-- Dialog.py :
-  - Générer des dialogues à partir de fichiers de script (ex: .json, .yaml)
-  - Ajouter des options de dialogue pour les choix du joueur
-  - Générer une multitude de TextBox pour les dialogues
-
-- HUD.py :
-  - Ajouter des éléments de HUD (barres de santé, énergie, etc.)
-  - Permettre la personnalisation du HUD (position, style, etc.)
-
-- Menu.py :
-  - Ajouter des animations pour les transitions de menu
-  - Permettre la personnalisation du style du menu (couleurs, polices, etc.)
-
-
+- HealthBar.py (UIElement) :
+  - Ajouter une barre de santé pour le joueur et les ennemis
+  - Gérer les mises à jour de la barre de santé en fonction des dégâts subis
 
 ## Entity
-
-- Character.py :
-  - Ajouter des animations pour les différentes actions (marcher, sauter, attaquer, etc.)
-  - Gérer les états du personnage (santé, énergie, etc.)
-  - Implémenter un système de compétences ou d'actions spéciales
 
 - Player.py (Character) :
   - Ajouter la gestion des entrées pour contrôler le personnage
@@ -97,5 +67,3 @@ Environment :
   - Gérer les interactions avec les ennemis (ralentir, étourdir, etc.)
 
 # Debug Tools
-
-- Add Information of DebugMode (ex: FPS, position du joueur, etc.)
