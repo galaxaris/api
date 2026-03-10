@@ -37,11 +37,11 @@ class Game:
     width: int
     height: int
     name: str
-    clock: pg.time.Clock
+    clock: pg.time.Clock #Time
     screen: Scene
     running: bool
     icon: pg.Surface
-    fps: int
+    fps: int #Time
     flags: int
     window: Window
     bound_functions: Dict[int, List[Callable]]
@@ -68,10 +68,10 @@ class Game:
         self.scene = Scene(size if render_size is None else render_size)
         pg.display.set_caption(name)
         self.Window = Window.from_display_module()
-        self.clock = pg.time.Clock()
+        self.clock = pg.time.Clock() #Time
         self.running = True
-        self.locked_fps = True
-        self.fps = fps
+        self.locked_fps = True #Time
+        self.fps = fps #Time
         self.flags = flags
         self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
@@ -94,7 +94,7 @@ class Game:
 
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_F10:
-                        self.locked_fps = not self.locked_fps
+                        self.locked_fps = not self.locked_fps #Time
 
                     if event.key == pg.K_F11:
                         self.toggle_fullscreen()
@@ -134,10 +134,10 @@ class Game:
             pg.display.update()
 
             Inputs.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
-            if self.locked_fps:
-                self.clock.tick(self.fps)
-            else:
-                self.clock.tick()
+            if self.locked_fps:                    #Time
+                self.clock.tick(self.fps)          #Time
+            else:                                  #Time
+                self.clock.tick()                  #Time
 
         print_success("Window closed successfully. Hoping see you soon for more adventures with the Omicronde API!")
         pg.quit()
