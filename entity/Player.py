@@ -57,6 +57,8 @@ class Player(Entity):
 
         if not Debug.is_enabled("freecam"):
 
+            Time = GlobalVariables.get_variable("Time")
+
             if inputs["aim"] and State.is_enabled("player_control"):
 
                 max_velocity /= 2
@@ -83,14 +85,14 @@ class Player(Entity):
 
             if inputs["right"] and State.is_enabled("player_control"):
                 self.is_controlled = True
-                self.vel.x = max(0, min(self.vel.x + self.acceleration, max_velocity + boost_val))
+                self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, max_velocity + boost_val))
                 if not inputs["aim"]:
                     self.set_direction("right")
 
 
             if inputs["left"] and State.is_enabled("player_control"):
                 self.is_controlled = True
-                self.vel.x = max(-(max_velocity + boost_val), min(self.vel.x - self.acceleration, 0))
+                self.vel.x = max(-(max_velocity + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))
                 if not inputs["aim"]:
                     self.set_direction("left")
 

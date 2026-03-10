@@ -78,10 +78,13 @@ class Entity(GameObject):
         """
         Sets the gravity for the entity.
 
+        [ADVICE] 9.8 should be the Earth-like default gravity
+
         :param gravity: Gravity value to be applied to the entity
         """
 
-        self.gravity = gravity
+        self.gravity = gravity/20 #Divided by 20 so 10 ~= 9.8 m/s**2 would be the default gravity!
+        self.displayed_gravity = gravity
 
     def land(self):
         """
@@ -113,14 +116,21 @@ class Entity(GameObject):
         super().update()
         self.update_sprite()
         others = [obj for obj in GlobalVariables.get_variable("game_objects") if obj.id != self.id]
-        self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x, self.vel.y)
         on_ground = False
+
+        # Gets normalized frame factor (1.0 ~= one frame at target FPS).
+        Time = GlobalVariables.get_variable("Time")
+        
 
         if not Debug.is_enabled("freecam") and not self.is_controlled:
             if self.vel.x > 0:
-                self.vel.x = max(0, self.vel.x - self.resistance)
+                self.vel.x = max(0, self.vel.x - self.resistance * Time.deltaTime)
             elif self.vel.x < 0:
-                self.vel.x = min(self.vel.x + self.resistance, 0)
+                self.vel.x = min(self.vel.x + self.resistance * Time.deltaTime, 0)
+
+        next_dx = self.vel.x * Time.deltaTime
+        next_dy = self.vel.y * Time.deltaTime
+        self.collided_objs = get_collided_objects(self, "solid", others, next_dx, next_dy)
 
         for obj in self.collided_objs:
             if obj[1] == "top" and obj[1] not in ["left", "right"]:
@@ -145,7 +155,7 @@ class Entity(GameObject):
             self.fall = False
 
         if self.gravity and self.fall:
-            self.vel.y += self.gravity
+            self.vel.y += self.gravity * Time.deltaTime
 
         if self.vel.x != 0 and self.collided_objs:
             for obj in self.collided_objs:
@@ -164,7 +174,7 @@ class Entity(GameObject):
                         self.set_position((self.pos.x, obj[0].rect.bottom))
                     break
 
-        self.set_position((self.pos.x + self.vel.x, self.pos.y + self.vel.y))
+        self.set_position((self.pos.x + self.vel.x * Time.deltaTime, self.pos.y + self.vel.y * Time.deltaTime))
 
         self.is_hitting_ground = False
         self.is_controlled = False
