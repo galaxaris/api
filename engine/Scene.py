@@ -138,11 +138,13 @@ class Scene(pg.Surface):
                 layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
+                    obj.update()
                     obj.draw(layer_surf)
                 self.blit(layer_surf, (0, 0))
             else:
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
+                    obj.update()
                     if -self.size.x - obj.size.x < relative_pos.x < self.size.x + obj.size.x:
                         obj.draw(self, offset=self.camera.position)
 
