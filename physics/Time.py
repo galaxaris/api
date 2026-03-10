@@ -7,33 +7,71 @@ import pygame as pg
 
 
 class Time:
+    """
+    Manages time-related functionalities for the game, including tracking delta time, total time, and FPS locking.
+    """
     clock: pg.time.Clock
     lockedFPS: bool
     maxFps: int
+    _deltaTime: float
+
+    #NOTE: deltaTime = frameScale for clarity reason and harmonization with Unity's Time class
     deltaTime: float
     totalTime: float
+    frameScale: float
+    maxDeltaTime: float
 
     def __init__(self, maxFps):
+        """
+        Initialize the Time class with a maximum FPS limit.
+
+        NOTE: All clock properties are still accessessible through Time.clock
+
+        :param maxFps: Maximum frames per second to lock the game loop to.
+        """
+
+        #NOTE: All clock properties are still accessessible through Time.clock
         self.clock = pg.time.Clock()
-        #To be removed when using deltaTime: not useful anymore. Let escape the True power of computers!!
-        #Without limit, the Game Engine is more precise
+        #Let escape the True power of computers!!
+        #Without limit, the Game Engine is more precise but more hazardous
         self.lockedFPS = True 
         self.maxFps = maxFps
-        self.deltaTime = 0
+        #_deltaTime is the real delta time (calculated with the clock). deltaTime is the scaled delta time
+        self._deltaTime = 1 / max(1, maxFps)
         self.totalTime = 0
+        #Prevent physics jumps when the loop is frozen for whatever reason
+        self.maxDeltaTime = 1 / 20
+        #1.0 ~= one frame at target FPS. => Harmonizes physics calculations across different frame rates. (0.5 = half a frame, 2 =two frames)
+        self.frameScale = self._deltaTime * max(1, self.maxFps)
+        self.deltaTime = self.frameScale
 
-    def get_ticks():
+    def get_ticks(self) -> int:
+        """
+        Get the number of milliseconds since the Time class was initialized.
+
+        :return: Milliseconds since initialization.
+        """
+        return int(self.totalTime * 1000)
+
+    def timeSinceLevelLoad(self):
+        """
+        TODO: Get the time in seconds since the level was loaded
+        """
         ...
-
-    def timeSinceLevelLoad():
-        ...
-
-    
-
 
     def update(self):
-        self.totalTime += self.deltaTime
-        if self.lockedFPS:              
-            self.deltaTime = self.clock.tick(self.maxFps) / 1000 #1000 for making 1s
-        else:                            
-            self.deltaTime = self.clock.tick() / 1000 #1000 for making 1s
+        """Update the Time instance by calculating delta time and total time.
+
+        :param time_instance: The Time instance to update.
+        """
+        self.totalTime += self._deltaTime
+        if self.lockedFPS:
+            raw_delta = self.clock.tick(self.maxFps) / 1000 #1000 for making 1s
+        else:
+            raw_delta = self.clock.tick() / 1000 #1000 for making 1s
+
+        self._deltaTime = min(raw_delta, self.maxDeltaTime)
+        self.frameScale = self._deltaTime * max(1, self.maxFps)
+
+        #NOTE: deltaTime = frameScale for clarity reason and harmonization with Unity's Time class
+        self.deltaTime = self.frameScale

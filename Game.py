@@ -25,6 +25,7 @@ from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
 from api.utils import Debug, GlobalVariables, Inputs
 from api.utils.DebugElement import DebugElement
+from api.physics.Time import Time
 from api.utils.Console import *
 
 
@@ -48,7 +49,7 @@ class Game:
     debug_list: List[tuple[str, str, int]]
     debug_font: str
 
-    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=60, debug_font: str="arial"):
+    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120, debug_font: str="arial"):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
 
@@ -57,7 +58,7 @@ class Game:
         this allows to scale the game to a certain resolution (intended for pixel art)
         :param name: Name of the window
         :param flags: Flags for the window, such as fullscreen, resizable, etc.
-        :param fps: Max Frame/sec rate (60fps is the default val)
+        :param fps: Max Frame/sec rate (120fps is the default val)
         """
         pg.init()
         pg.mixer.init()
@@ -68,10 +69,12 @@ class Game:
         self.scene = Scene(size if render_size is None else render_size)
         pg.display.set_caption(name)
         self.Window = Window.from_display_module()
-        self.clock = pg.time.Clock() #Time
+        self.Time = Time(fps)
+        GlobalVariables.set_variable("Time", self.Time)
+        #self.clock = self.Time.clock
         self.running = True
-        self.locked_fps = True #Time
-        self.fps = fps #Time
+        #self.locked_fps = self.Time.lockedFPS
+        #self.fps = fps #Time
         self.flags = flags
         self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
@@ -94,7 +97,7 @@ class Game:
 
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_F10:
-                        self.locked_fps = not self.locked_fps #Time
+                        self.Time.lockedFPS = not self.Time.lockedFPS #Time
 
                     if event.key == pg.K_F11:
                         self.toggle_fullscreen()
@@ -134,10 +137,8 @@ class Game:
             pg.display.update()
 
             Inputs.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
-            if self.locked_fps:                    #Time
-                self.clock.tick(self.fps)          #Time
-            else:                                  #Time
-                self.clock.tick()                  #Time
+            Time.update(self.Time) #Time    
+            GlobalVariables.set_variable("Time", self.Time)           
 
         print_success("Window closed successfully. Hoping see you soon for more adventures with the Omicronde API!")
         pg.quit()
@@ -275,7 +276,7 @@ class Game:
         """
 
         self.debug("Omicronde API - Galaxaris", "left", self.debug_font, 36)
-        self.debug(f"FPS : {int(self.clock.get_fps())} | Render t : {self.clock.get_rawtime()} ms", "left", self.debug_font, 32)
+        self.debug(f"FPS : {int(self.Time.clock.get_fps())} | Render t : {self.Time.clock.get_rawtime()} ms", "left", self.debug_font, 32)
 
         if self.scene:
             screen = self.scene
@@ -328,6 +329,7 @@ class Game:
             self.debug("Fall : " + ("True" if entity.fall else "False"), "right", self.debug_font, 32)
             self.debug("Boost : " + ("True" if entity.boost else "False"), "right", self.debug_font, 32)
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
+            self.debug(f"Gravity : {entity.displayed_gravity:.2f}", "right", self.debug_font, 32)
 
             if hasattr(entity, "active_trajectory") and entity.active_trajectory:
                 self.debug(f"Trajectory : Angle {round(entity.active_trajectory.angle_radians, 2)} rad | Speed {entity.active_trajectory.shot_speed}", "right", self.debug_font, 32)
