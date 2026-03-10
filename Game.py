@@ -331,8 +331,10 @@ class Game:
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
             self.debug(f"Gravity : {entity.displayed_gravity:.2f}", "right", self.debug_font, 32)
 
-            if hasattr(entity, "active_trajectory") and entity.active_trajectory:
-                self.debug(f"Trajectory : Angle {round(entity.active_trajectory.angle_radians, 2)} rad | Speed {entity.active_trajectory.shot_speed}", "right", self.debug_font, 32)
+            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.active_trajectory:
+                angle = entity.equipped_weapon.angle_radians if entity.equipped_weapon.angle_radians else 0
+                shot_speed = entity.equipped_weapon.shot_speed if entity.equipped_weapon.shot_speed else 0
+                self.debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {shot_speed}", "right", self.debug_font, 32)
 
         if entity.collided_objs:
             self.debug("Collisions :", "right", self.debug_font, 32)

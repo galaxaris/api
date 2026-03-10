@@ -30,7 +30,7 @@ class Entity(GameObject):
     is_hitting_ground: bool
 
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
         """
         Initializes the entity with the given attributes.
 
@@ -41,6 +41,7 @@ class Entity(GameObject):
         self.max_velocity = 0
         self.acceleration = 0
         self.resistance = 0
+        self.force = 0
         self.boost = False
         self.vel = pg.Vector2(0, 0)
         self.jump = False
@@ -54,6 +55,7 @@ class Entity(GameObject):
         self.sfx_list = {}
         self.is_controlled = False
         self.start_pos = pg.Vector2(pos)
+        self.set_physics_properties(max_velocity, acceleration, resistance, force)
         self.add_tag("entity")
 
 
@@ -212,9 +214,10 @@ class Entity(GameObject):
     def set_sfx_list(self, sfx_list):
         self.sfx_list = sfx_list
 
-    def set_physics_properties(self, max_velocity: float, acceleration: float, resistance: float):
+    def set_physics_properties(self, max_velocity: float, acceleration: float, resistance: float, force: float):
         self.max_velocity = max_velocity
         self.acceleration = acceleration
+        self.force = force
         self.resistance = resistance
 
     def do_jump(self):

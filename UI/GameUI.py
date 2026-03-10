@@ -134,7 +134,10 @@ class GameUI(pg.Surface):
             if len(self.active_menus) == 0:
                 State.toggle("in_menu", False)
                 State.toggle("player_control", True)
-                
+
+        for key in self.enabled_elements:
+            element = self.elements[key]
+            element.update()
 
     def draw(self, surface: pg.Surface):
         """Render enabled UI elements onto the destination surface.

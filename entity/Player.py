@@ -18,7 +18,7 @@ class Player(Entity):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right", max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right"):
         """
         Initializes the player with the given attributes.
 
@@ -32,12 +32,9 @@ class Player(Entity):
         :param sfx_list: List of sound effects. (key: name)
         """
         super().__init__(pos, size)
-        self.force = force
-        self.boost = False
         self.add_tag("player")
         self.set_direction(direction)
         self.equipped_weapon = DEFAULT_WEAPON
-        self.set_physics_properties(max_velocity, acceleration, resistance)
 
 
 
