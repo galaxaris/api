@@ -187,14 +187,19 @@ class TriggerKillBox(Trigger):
             :param obj: Object to be killed
             :return:
             """
-            if hasattr(obj, "kill"):
+            #Checks if it is the player (only the player, and not a projectile)
+            if hasattr(obj, "kill") and "player" in obj.tags and "projectile" not in obj.tags:
                 obj.respawn()
                 if sfx:
                     AudioManager = self.audio_manager
                     sfx_to_play = rd.choice(sfx) if isinstance(sfx, list) else sfx
                     AudioManager.play_sfx(sfx_to_play)
+
+            #For killing projectiles
+            elif hasattr(obj, "on_impact"):
+                obj.on_impact()
             else:
-                print_warning(f"object {obj} does not have a kill method")
+                print_warning(f"object {obj} does not have a kill or on_impact method")
         
         #Passer le callback au constructeur parent
         super().__init__(pos, size, target_tags, [kill_callback], once)
