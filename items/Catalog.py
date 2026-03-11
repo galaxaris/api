@@ -7,9 +7,8 @@ from api.items.ActiveItem import ActiveItem
 from api.items.Item import Item
 from api.entity.Projectile import Projectile
 from api.physics.Trajectory import Trajectory
-from api.utils.Constants import DEFAULT_GRAVITY, DEFAULT_SHOT_SPEED, DEFAULT_PROJECTILE_GRAVITY
+from api.utils.Constants import DEFAULT_GRAVITY
 
-print
 class HealthPotion(Item):
     """Base class for health potion."""
     quantity: int
@@ -27,12 +26,12 @@ class Grapple(ActiveItem):
 
 class Pistol(ActiveItem):
     """Base class for pistol."""
-    def __init__(self, trajectory: Trajectory, projectile_gravity: float = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True):
+    def __init__(self, trajectory: Trajectory, gravity: float = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True):
         super().__init__(name, item_type, is_equipped)
         self.projectiles = []
         self.trajectory = trajectory
         self.is_aiming = False
-        self.projectile_gravity = projectile_gravity
+        self.gravity = gravity
         self.cooldown = 3000
         self.Time = None
         self.last = - self.cooldown
@@ -44,7 +43,7 @@ class Pistol(ActiveItem):
 
         if now - self.last >= self.cooldown:
             self.last = now
-            projectile = Projectile(shoot_pos, self.projectile_gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, Time=self.Time)
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, Time=self.Time)
             game_projectiles.append(projectile)
 
     def update(self, scene=None):

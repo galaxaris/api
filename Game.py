@@ -326,7 +326,7 @@ class Game:
             self.debug("Fall : " + ("True" if entity.fall else "False"), "right", self.debug_font, 32)
             self.debug("Boost : " + ("True" if entity.boost else "False"), "right", self.debug_font, 32)
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
-            self.debug(f"Gravity : {entity.displayed_gravity:.2f}", "right", self.debug_font, 32)
+            self.debug(f"Gravity : {entity.gravity:.2f}", "right", self.debug_font, 32)
 
             if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.trajectory:
                 angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0

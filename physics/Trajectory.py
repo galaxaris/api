@@ -10,7 +10,7 @@ def free_fall(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: floa
 
 class Trajectory:
     """Builds and renders a predicted ballistic path."""
-    def __init__(self, kinematic_equation, ini_pos: pg.Vector2, ini_speed: float, angle_radians: float, gravity: float, color: tuple[int, int, int] = (255, 251, 0)):
+    def __init__(self, kinematic_equation, ini_pos: pg.Vector2, ini_speed: float, angle_radians: float, gravity: float, color: tuple[int, int, int] = (200, 200, 200)):
         self.kinematic_equation = kinematic_equation
         self.ini_pos = ini_pos
         self.ini_speed = ini_speed

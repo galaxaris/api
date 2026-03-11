@@ -11,6 +11,8 @@ import pygame as pg
 from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
 from api.utils import Debug
+from api.utils.Constants import DEFAULT_GRAVITY
+
 
 #TODO: Player is kind of shaking
 #TODO: Remove clipping
@@ -49,7 +51,7 @@ class Entity(GameObject):
         self.jump = False
         self.fall = False
         self.animations = {}
-        self.gravity = None
+        self.gravity = DEFAULT_GRAVITY
         self.collided_objs = []
         self.is_hitting_ground = False
         self.projectiles = []
@@ -88,8 +90,7 @@ class Entity(GameObject):
         :param gravity: Gravity value to be applied to the entity
         """
 
-        self.gravity = gravity/20 #Divided by 20 so 10 ~= 9.8 m/s**2 would be the default gravity!
-        self.displayed_gravity = gravity
+        self.gravity = gravity
 
     def land(self):
         """
