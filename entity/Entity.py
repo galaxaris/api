@@ -40,6 +40,7 @@ class Entity(GameObject):
         """
         super().__init__(pos, size)
         self.max_velocity = 0
+        self.speed_malus = 0
         self.acceleration = 0
         self.resistance = 0
         self.force = 0
@@ -258,8 +259,8 @@ class Entity(GameObject):
 
     def do_right(self, Time):
         boost_val = 1 if self.boost else 0
-        self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, self.max_velocity + boost_val))
+        self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, self.max_velocity - self.speed_malus + boost_val))
 
     def do_left(self, Time):
         boost_val = 1 if self.boost else 0
-        self.vel.x = max(-(self.max_velocity + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))
+        self.vel.x = max(-(self.max_velocity - self.speed_malus + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))

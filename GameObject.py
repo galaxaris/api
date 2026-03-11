@@ -50,6 +50,7 @@ class GameObject:
         self.surface = None
         self.offset = None
         self.interact = False
+        self.in_trigger_interact = False
     #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
     def set_texture(self, texture:Texture, rescale: bool = False):
         """

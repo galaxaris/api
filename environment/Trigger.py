@@ -146,13 +146,13 @@ class Trigger(GameObject):
         #Track objects that have exited the trigger
         exited_objects = self.objects_inside - current_objects
         for obj_id in exited_objects:
-            self.leave_trigger(obj_id)
+            self.leave_trigger(obj_id, scene)
             self.objects_inside.discard(obj_id)
 
         #Add new objects to the tracking set
         self.objects_inside.update(current_objects)
 
-    def leave_trigger(self, obj_id):
+    def leave_trigger(self, obj_id, scene=None):
         pass
 
 
@@ -220,7 +220,7 @@ class TriggerInteract(Trigger):
         if self.trigger_surface:
             self.BOX_DIM = pg.Vector2(self.trigger_surface.get_size())
 
-
+        #TODO: Fix wrong interract hint
         def interact_callback(obj: GameObject):
             """
             Apply a box upper the object to indicate the interaction, and wait for the player to press the "interact" key (default: E) to execute the interaction. The callback function must be passed with the interaction logic (via lambda or partial) and will be executed when the key is pressed.
@@ -229,12 +229,13 @@ class TriggerInteract(Trigger):
             :param obj: Object to be interacted with
             :return:
             """
-
+            obj.in_trigger_interact = True
             if not self.trigger_surface:
                 self.BOX_DIM = pg.Vector2(20, 20)
                 self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
                 self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
-                text = Fonts.get_font(Fonts.DEFAULT_FONT, 16).render(Inputs.get_str_input("interact"), False,
+                correct_text = Inputs.get_str_input("interact")
+                text = Fonts.get_font(Fonts.DEFAULT_FONT, 16).render(correct_text, False,
                                                                                (0, 0, 0))
                 self.trigger_surface.blit(text, (self.BOX_DIM.x // 2 - text.get_width() // 2,
                                                  self.BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
@@ -246,6 +247,7 @@ class TriggerInteract(Trigger):
                 #Wait for the player to press the "interact" key
             inputs = Inputs.get_inputs()
             if obj.interact and not self.enabled:
+
                 self.enabled = True
                 for callback in callbacks:
                     try:
@@ -264,5 +266,8 @@ class TriggerInteract(Trigger):
         super().__init__(pos, size, target_tags, [interact_callback], once)
         self.track_object = False
 
-    def leave_trigger(self, obj_id):
+    def leave_trigger(self, obj_id, scene=None):
+        game_obj = next((obj for obj in scene.game_objects if obj.id == obj_id), None)
+        if game_obj:
+            game_obj.in_trigger_interact = False
         self.enabled = False

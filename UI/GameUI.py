@@ -1,6 +1,7 @@
 """UI orchestration surface for dialogs, menus, and overlays."""
 
 from api.GameObject import GameObject
+from api.utils import Inputs
 from api.utils.Inputs import get_once_inputs
 import pygame as pg
 
@@ -107,7 +108,7 @@ class GameUI(pg.Surface):
         :return:
         """
         inputs = get_once_inputs()
-        if inputs["interact"] and not  scene.global_state["in_menu"]:
+        if inputs["interact"] and not scene.global_state["in_menu"]:
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 if index < len(boxes) - 1:
@@ -119,12 +120,15 @@ class GameUI(pg.Surface):
                     # End of dialog reached
                     self.hide(key)
                     scene.global_state["player_control"] = True
+                    Inputs.prevent_once_key("jump")
             elif self.active_textbox:
                 # Single Textbox Logic
                 key, element = self.active_textbox
                 if "ui_closable" in element.tags:
                     self.hide(key)
                     scene.global_state["player_control"] = True
+                    Inputs.prevent_once_key("jump")
+
 
         if inputs["pause"] and self.active_menus:
             # Close the most recently opened menu
