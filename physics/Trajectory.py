@@ -1,113 +1,61 @@
 """Projectile trajectory preview utilities."""
 
 import math
-import pygame
-
+import colorsys
+import pygame as pg
 
 from api.utils import GlobalVariables
 
-
+def free_fall(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: float, t: float) -> pg.Vector2:
+    """Free fall trajectory preview utility."""
+    return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y + 0.5 * gravity * t**2 - math.sin(angle) * ini_speed * t)
 
 class Trajectory:
     """Builds and renders a predicted ballistic path."""
-
-    def __init__(self, player_pos: pygame.Vector2, shot_speed: int, gravity: float, mouse_pos: pygame.Vector2):
-        """Initialize a trajectory computation context.
-
-        :param player_pos: Shooter world position.
-        :param shot_speed: Initial projectile speed.
-        :param gravity: Gravity increment applied per simulation step.
-        :param mouse_pos: Cursor position used to compute shoot angle.
-        """
-        self.angle_radians = None
-        self.entity_pos = player_pos
-        self.shot_speed = shot_speed
+    def __init__(self, kinematic_equation, ini_pos: pg.Vector2, ini_speed: float, angle_radians: float, gravity: float, color: tuple[int, int, int] = (255, 251, 0)):
+        self.kinematic_equation = kinematic_equation
+        self.ini_pos = ini_pos
+        self.ini_speed = ini_speed
+        self.angle_radians = angle_radians
         self.gravity = gravity
-        self.trajectory_coordinates = []
-        self.mouse_pos = mouse_pos
-        self.entity_screen_pos = pygame.Vector2(0,0)
-        self.test_collision = []
-        self.trajectory_colour = "blue"
 
-    def build_trajectory_coordinates(self):
-        """Compute trajectory points until max steps or collision.
+        self.color = color
+        h, s, v = colorsys.rgb_to_hsv(color[0]/255, color[1]/255, color[2]/255)
+        v = min(v + 0.4, 1.0)
+        s = max(s - 0.6, 0.0)
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        self.bright_color = (r*255, g*255, b*255)
 
-        The preview is generated in screen space relative to the current camera.
-        Simulation stops early when a predicted point intersects a solid object
-        or leaves the screen limits.
-        """
-        self.trajectory_coordinates.clear()
-        cam_pos = GlobalVariables.get_variable("cam_pos")
-        self.entity_screen_pos = self.entity_pos - cam_pos
+    def get_pos(self, t: float | int) -> pg.Vector2:
+        return self.kinematic_equation(self.ini_pos, self.ini_speed, self.angle_radians, self.gravity, t)
 
-        # Calcul de l'angle par rapport à la position de la souris
-        dx, dy = self.mouse_pos / GlobalVariables.get_variable("scale_ratio") - self.entity_screen_pos
+    def draw(self, surface: pg.Surface, offset: pg.Vector2 = (0, 0), offset2: pg.Vector2 = (0, 0)) -> None :
+        max_points = 300
+        time_step = 3 #sec
+        step = 0
+        collided = False
 
-        self.angle_radians = math.atan2(-dy, dx)
+        obstacles = [obj for obj in GlobalVariables.get_variable("game_objects") if "solid" in obj.tags]
+        render_width, render_height = GlobalVariables.get_variable("render_size")
 
-        if self.mouse_pos == (0, 0):
-            self.angle_radians = 1
+        while not collided and max_points > 0:
+            pos = self.get_pos(step)
+            draw_pos = pos + offset2
+            pos += offset
 
-        # Vitesses initiales
-        vx = self.shot_speed * math.cos(self.angle_radians)
-        vy = -self.shot_speed * math.sin(self.angle_radians)
+            #we don't continue if we are out of cam WARNING, IS ONLY PERTINENT IF THE TRAJECTORY DOES NOT DO A U TURN
+            if 0 > pos.x > render_width.x and 0 > pos.y > render_height.y:
+                collided = True
 
-        # FIX : Correction des index (0 = width, 1 = height)
-        render_size = GlobalVariables.get_variable("render_size")
-        render_width = render_size[0]
-        render_height = render_size[1]
+            else:
+                virtual_point = pg.Rect(pos.x, pos.y, 4, 4)
+                for obstacle in obstacles:
+                    if virtual_point.colliderect(obstacle.rect):
+                        collided = True
+                        break
 
-        # Récupération optimisée des obstacles
-        obstacles = [
-            obj for obj in GlobalVariables.get_variable("game_objects")
-            if "solid" in obj.tags
-        ]
+            if not collided:
+                pg.draw.circle(surface, self.color if int(step/time_step)%2 == 0 else self.bright_color, draw_pos, 2)
 
-        hit = False
-        i = 0
-        max_steps = 300  # Sécurité pour éviter les boucles infinies (lag)
-        dot_spacing = 3
-
-        # Simulation pas-à-pas (Intégration d'Euler)
-        current_pos = pygame.Vector2(self.entity_screen_pos)
-
-        while not hit and i < max_steps:
-            # Application de la gravité et mise à jour de la position
-            vy += self.gravity
-            current_pos.x += vx
-            current_pos.y += vy
-
-            virtual_traj = pygame.Vector2(current_pos.x, current_pos.y)
-
-            # FIX : Utilisation de "or" pour arrêter la ligne dès qu'elle sort d'un des 4 bords
-            if (virtual_traj.x < 0 or virtual_traj.y < 0 or
-                    virtual_traj.x > render_width or virtual_traj.y > render_height):
-                hit = True
-                break
-
-            # Vérification des collisions avec le décor
-            virtual_point = pygame.Rect(virtual_traj.x + cam_pos.x, virtual_traj.y + cam_pos.y, 4, 4)
-            for obstacle in obstacles:
-                if virtual_point.colliderect(obstacle.rect):
-                    hit = True
-                    break
-
-            if not hit:
-                if i % dot_spacing == 0:
-                    self.trajectory_coordinates.append(virtual_traj)
-
-            i += 1
-
-
-    def draw_trajectory(self, surface):
-        """Draw previously computed trajectory points.
-
-        :param surface: Destination surface.
-        :return:
-        """
-
-        trajectory_coordinates = self.trajectory_coordinates
-        for point in trajectory_coordinates:
-            pygame.draw.circle(surface, self.trajectory_colour, (int(point[0]), int(point[1])), 2)
-
-
+            step += time_step
+            max_points -= 1

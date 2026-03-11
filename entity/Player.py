@@ -2,7 +2,7 @@
 API's Player utilities
 """
 from api.items.Catalog import Pistol
-from api.physics.Trajectory import Trajectory
+from api.physics.Trajectory import Trajectory, free_fall
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, State, Inputs, GlobalVariables
 
@@ -10,6 +10,7 @@ from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs, get_once_inputs
 
 import pygame as pg
+import math
 
 class Player(Entity):
     """
@@ -33,11 +34,7 @@ class Player(Entity):
         super().__init__(pos, size)
         self.add_tag("player")
         self.set_direction(direction)
-        self.equipped_weapon = Pistol(Trajectory(pg.Vector2(0,0), DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, pg.Vector2(0,0)))
-
-
-
-
+        self.equipped_weapon = Pistol(Trajectory(free_fall, pg.Vector2(0,0), DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
 
     def update(self):
         """
@@ -57,26 +54,25 @@ class Player(Entity):
             if inputs["aim"] and State.is_enabled("player_control"):
 
                 max_velocity /= 2
-                mouse_x, mouse_y = Inputs.get_mouse(Inputs.get_key_pressed("aim"))
-                self.equipped_weapon.active_trajectory = Trajectory(self.pos + self.weapon_point, self.equipped_weapon.shot_speed,
-                                                                    self.equipped_weapon.projectile_gravity, pg.Vector2(mouse_x, mouse_y))
-                self.equipped_weapon.active_trajectory.build_trajectory_coordinates()
+                mouse = pg.Vector2(Inputs.get_mouse(Inputs.get_key_pressed("aim")))
+                cam_pos = GlobalVariables.get_variable("cam_pos")
+                self.player_screen_pos = self.pos - cam_pos
+                angle_with_player = mouse / GlobalVariables.get_variable("scale_ratio") - self.player_screen_pos
 
+                self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
                 if Inputs.MOUSE_SCROLL != 0:
-                    self.equipped_weapon.shot_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.shot_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
+                    self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
-                if self.equipped_weapon.active_trajectory.trajectory_coordinates:
-                    last_trajectory_point = self.equipped_weapon.active_trajectory.trajectory_coordinates[-1] + GlobalVariables.get_variable("cam_pos")
-                    self.set_direction("left" if last_trajectory_point.x < self.pos[0] else "right")
+                self.set_direction("left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14/2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14/2 else "right")
 
                 if get_once_inputs()["shoot"] and State.is_enabled("player_control"):
-                    new_projectile = self.equipped_weapon.shoot(offset=self.offset)
-                    self.projectiles.append(new_projectile)
-                    self.equipped_weapon.is_shooting = True
+                    self.equipped_weapon.shoot(self.pos)
+
+                self.equipped_weapon.is_aiming = True
+
             else:
-                self.equipped_weapon.active_trajectory = None
-                self.equipped_weapon.shot_speed = DEFAULT_SHOT_SPEED
+                self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
 
             if inputs["right"] and State.is_enabled("player_control"):
                 self.is_controlled = True
