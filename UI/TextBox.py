@@ -145,14 +145,14 @@ class TextBox(UIElement):
         """
         self.title_surface = process_title(title, font)
 
-    def draw(self, surface: pg.Surface, offset=(0, 0)):
+    def draw(self, surface: pg.Surface, scene=None):
         """Render textbox content at the bottom of the destination surface.
 
         Layout is computed dynamically from the destination size and optional
         portrait image, then text is wrapped to fit the remaining content area.
 
+        :param scene:
         :param surface: Destination surface.
-        :param offset: Reserved draw offset parameter.
         :return:
         """
         margin = 15

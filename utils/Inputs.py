@@ -9,9 +9,8 @@ import os
 import pygame as pg
 from pygame._sdl2 import controller
 
-from api.utils import GlobalVariables
-
 MOUSE_SCROLL = 0
+PREVIOUS_INPUTS = None
 
 INPUTS = {
     "right": [pg.K_RIGHT, pg.K_d],
@@ -178,13 +177,13 @@ def update_input_state():
 
     :return:
     """
-    global _cached_once_state, _cached_current_state
+    global _cached_once_state, _cached_current_state, PREVIOUS_INPUTS
 
     # 1. Get what is currently held down
     current_state = get_inputs()
 
     # 2. Get what was held last frame
-    previous_inputs = GlobalVariables.get_variable("previous_inputs")
+    previous_inputs = PREVIOUS_INPUTS
     if previous_inputs is None:
         previous_inputs = {action: False for action in current_state}
 
@@ -196,7 +195,7 @@ def update_input_state():
 
     # 4. Save for the next frame
     _cached_current_state = current_state
-    GlobalVariables.set_variable("previous_inputs", current_state)
+    PREVIOUS_INPUTS = current_state
 
 
 def get_once_inputs():

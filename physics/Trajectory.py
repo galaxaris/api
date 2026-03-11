@@ -4,8 +4,6 @@ import math
 import colorsys
 import pygame as pg
 
-from api.utils import GlobalVariables
-
 def free_fall(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: float, t: float) -> pg.Vector2:
     """Free fall trajectory preview utility."""
     return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y + 0.5 * gravity * t**2 - math.sin(angle) * ini_speed * t)
@@ -29,14 +27,17 @@ class Trajectory:
     def get_pos(self, t: float | int) -> pg.Vector2:
         return self.kinematic_equation(self.ini_pos, self.ini_speed, self.angle_radians, self.gravity, t)
 
-    def draw(self, surface: pg.Surface, offset: pg.Vector2 = (0, 0), offset2: pg.Vector2 = (0, 0)) -> None :
+    def draw(self, surface: pg.Surface, scene, player_pos: pg.Vector2 = (0, 0)) -> None :
         max_points = 300
         time_step = 3 #sec
         step = 0
         collided = False
 
-        obstacles = [obj for obj in GlobalVariables.get_variable("game_objects") if "solid" in obj.tags]
-        render_width, render_height = GlobalVariables.get_variable("render_size")
+        offset = player_pos
+        offset2 = player_pos - scene.camera.position
+
+        obstacles = [obj for obj in scene.game_objects if "solid" in obj.tags]
+        render_width, render_height = scene.get_width(), scene.get_height()
 
         while not collided and max_points > 0:
             pos = self.get_pos(step)
@@ -44,7 +45,7 @@ class Trajectory:
             pos += offset
 
             #we don't continue if we are out of cam WARNING, IS ONLY PERTINENT IF THE TRAJECTORY DOES NOT DO A U TURN
-            if 0 > pos.x > render_width.x and 0 > pos.y > render_height.y:
+            if 0 > pos.x > render_width and 0 > pos.y > render_height:
                 collided = True
 
             else:

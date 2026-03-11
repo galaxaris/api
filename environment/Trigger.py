@@ -5,11 +5,9 @@ API's Triggers definition, collection & implementation
 import random as rd
 
 from api.GameObject import GameObject
-from api.utils import Inputs, State, Fonts
+from api.utils import Inputs, Fonts
 from api.utils.Console import *
-from api.utils.GlobalVariables import get_variable
 import pygame as pg
-from api.utils.GlobalVariables import global_vars as GV
 
 class Trigger(GameObject):
     """
@@ -101,7 +99,7 @@ class Trigger(GameObject):
         self.remove_tag("trigger")
         self.callbacks = []
 
-    def update(self):
+    def update(self, scene=None):
         """
         Checks for collisions with target objects (tags) and executes callbacks if the trigger is activated.
 
@@ -109,10 +107,10 @@ class Trigger(GameObject):
 
         :return:
         """
-        super().update()
+        super().update(scene)
         
         #Récupérer tous les objets de la scène
-        game_objects = get_variable("game_objects")
+        game_objects = scene.game_objects
         
         #Track current objects in trigger for this frame
         current_objects = set()
@@ -190,9 +188,9 @@ class TriggerKillBox(Trigger):
             :return:
             """
             if hasattr(obj, "kill"):
-                obj.kill()
+                obj.respawn()
                 if sfx:
-                    AudioManager = GV.get("audio_manager")
+                    AudioManager = self.audio_manager
                     sfx_to_play = rd.choice(sfx) if isinstance(sfx, list) else sfx
                     AudioManager.play_sfx(sfx_to_play)
             else:
@@ -231,7 +229,7 @@ class TriggerInteract(Trigger):
                 self.BOX_DIM = pg.Vector2(20, 20)
                 self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
                 self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
-                text = Fonts.get_font(get_variable("default_font"), 16).render(Inputs.get_str_input("interact"), False,
+                text = Fonts.get_font(Fonts.DEFAULT_FONT, 16).render(Inputs.get_str_input("interact"), False,
                                                                                (0, 0, 0))
                 self.trigger_surface.blit(text, (self.BOX_DIM.x // 2 - text.get_width() // 2,
                                                  self.BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
@@ -251,7 +249,7 @@ class TriggerInteract(Trigger):
                         callback()
 
                 if sfx:
-                    AudioManager = GV.get("audio_manager")
+                    AudioManager = self.audio_manager
                     AudioManager.play_sfx(sfx)
 
 

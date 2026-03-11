@@ -1,7 +1,6 @@
 import pygame as pg
 from io import BytesIO
 import wave
-from api.utils import GlobalVariables
 from api.utils.Console import *
 
 
@@ -34,8 +33,7 @@ class AudioManager:
         self.current_music_name = None
 
         pg.mixer.music.set_volume(self.music_volume)
-        
-        GlobalVariables.set_variable("audio_manager", self)
+
 
     def _create_silent_sound(self, duration_ms: int = 50000) -> pg.mixer.Sound:
         """

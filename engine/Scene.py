@@ -4,10 +4,12 @@ import pygame as pg
 from typing import Dict, List, Optional
 from api.GameObject import GameObject
 from api.UI.GameUI import GameUI
+from api.assets.AudioManager import AudioManager
 from api.engine.GameCamera import GameCamera
+from api.entity.EntityManager import EntityManager
 from api.environment.Background import Background
 from api.environment.Parallax import ParallaxBackground
-from api.utils import GlobalVariables
+from api.physics.Time import Time
 
 
 class Scene(pg.Surface):
@@ -29,10 +31,20 @@ class Scene(pg.Surface):
         self.layer_surfaces: Dict[str, pg.Surface] = {}
         self.game_objects: List[GameObject] = []
         self.camera : GameCamera = GameCamera((0, 0))
+        self.entities : EntityManager = EntityManager(self)
         self.background: Optional[Background | ParallaxBackground] = None
+        self.audio_manager : AudioManager = None
+        self.Time : Time = None
+        self.scale_ratio = 1
         self.UI = GameUI(size)
         size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
+        self.global_state = {
+            "player_control": True,
+            "override_player_control": False,
+            "in_menu": False
+        }
+
 
     def __ensure_layer(self, layer_name: str):
         """
@@ -106,8 +118,6 @@ class Scene(pg.Surface):
         :param screen: The surface on which the scene should be drawn (usually the main display surface)
         """
         self.fill((0, 0, 0))
-        GlobalVariables.set_variable("game_objects", self.game_objects)
-        GlobalVariables.set_variable("default_surface", self.default_surface)
 
         #TODO: when pausing the game, stop the FPS completely (no more events)
         self.camera.update()
@@ -123,8 +133,8 @@ class Scene(pg.Surface):
         if self.UI:
             self.set_layer(len(self.layer_order), "_UI")
             self.layer_surfaces["_UI"].fill((0, 0, 0, 0))
-            self.UI.update()
-            self.UI.draw(self.layer_surfaces["_UI"])
+            self.UI.update(self)
+            self.UI.draw(self.layer_surfaces["_UI"], self)
 
 
         for name in self.layer_order:
@@ -132,21 +142,23 @@ class Scene(pg.Surface):
                 layer_surf = self.layer_surfaces[name]
                 if "#" in name:
                     self.blit(layer_surf, pg.Vector2(0, 0) - self.camera.position)
+                    self.layer_surfaces[name].fill((0, 0, 0, 0))
                 else:
                     self.blit(layer_surf, pg.Vector2(0, 0))
+                    self.layer_surfaces[name].fill((0, 0, 0, 0))
             elif "#" not in name:
                 layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
-                    obj.update()
-                    obj.draw(layer_surf)
+                    obj.update(self)
+                    obj.draw(layer_surf, self)
                 self.blit(layer_surf, (0, 0))
             else:
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
-                    obj.update()
+                    obj.update(self)
                     if -self.size.x - obj.size.x < relative_pos.x < self.size.x + obj.size.x:
-                        obj.draw(self, offset=self.camera.position)
+                        obj.draw(self, self)
 
 
         self.blit(self.default_surface, (0, 0))
@@ -158,6 +170,16 @@ class Scene(pg.Surface):
         """
         for layer in self.layers:
             self.layers[layer].clear()
+
+    def assign_game_instances(self, Time, audio_manager):
+        """
+        Assigns the Time and AudioManager instances to the scene, allowing game objects to access them.
+
+        :param Time: The Time instance to be assigned to the scene
+        :param audio_manager: The AudioManager instance to be assigned to the scene
+        """
+        self.Time = Time
+        self.audio_manager = audio_manager
 
 
 

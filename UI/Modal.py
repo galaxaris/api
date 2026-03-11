@@ -44,7 +44,7 @@ class Modal(UIElement):
             self.buttons[x].append(element)
 
 
-    def update(self):
+    def update(self, scene=None):
         """Update modal content and handle controller button navigation.
 
         When a controller is connected, directional inputs move within the
@@ -83,11 +83,12 @@ class Modal(UIElement):
                 actual_button.idle(actual_button.bg_color)
 
         for element in self.elements:
-            element.update()
+            element.update(scene)
 
-    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
+    def draw(self, surface: pg.Surface, offset=None):
         """Render modal and all child elements.
 
+        :param scene:
         :param surface: Destination surface.
         :param offset: Draw offset.
         :return:
