@@ -233,7 +233,7 @@ class Entity(GameObject):
                 if "jump" in self.sfx_list:
                     audio_manager = self.audio_manager
                     if audio_manager:
-                        audio_manager.play_sfx("jump")
+                        audio_manager.play_sfx("jump", allow_overlap=False)
 
     def respawn(self):
         """
