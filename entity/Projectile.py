@@ -6,9 +6,9 @@ from api.physics.Collision import get_collided_objects
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, size: tuple[int, int] = (8,8), damage: int = 10):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10):
         super().__init__(pos, size)
-        self.pos = pg.Vector2(pos)
+        self.pos = pg.Vector2(pos) - self.size/2
         self.vel = shot_speed * pg.Vector2(math.cos(angle_radians), -math.sin(angle_radians))
         self.add_tag("projectile")
         self.image = pg.Surface((8, 8))
