@@ -39,7 +39,7 @@ class Time:
         #_deltaTime is the real delta time (calculated with the clock). deltaTime is the scaled delta time
         self._deltaTime = 1 / max(1, maxFps)
         self.totalTime = 0
-        #Prevent physics jumps when the loop is frozen for whatever reason
+        #Prevent physics jumps when the loop is frozen for whatever reason. Activated only after 1/20 = 50ms
         self.maxDeltaTime = 1 / 20
         #1.0 ~= one frame at target FPS. => Harmonizes physics calculations across different frame rates. (0.5 = half a frame, 2 =two frames)
         self.frameScale = self._deltaTime * max(1, self.maxFps)

@@ -73,6 +73,13 @@ class Player(Entity):
                 if get_once_inputs()["shoot"] and  scene.global_state["player_control"]:
                     self.equipped_weapon.shoot(self.pos + self.size//2)
 
+                    #SFX
+                    if self.sfx_list:
+                        if "fire" in self.sfx_list:
+                            audio_manager = scene.audio_manager
+                            if audio_manager:
+                                audio_manager.play_sfx("fire")
+
                 self.equipped_weapon.is_aiming = True
 
             else:

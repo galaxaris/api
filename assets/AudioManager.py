@@ -140,15 +140,16 @@ class AudioManager:
     #### PLAYING/STOPPING ####
     #(loops: 0 = play once, -1 = loop indefinitely)
 
-    def play_sfx(self, name: str, loops=0):
+    def play_sfx(self, name: str, loops=0, allow_overlap=True):
         """
         Plays the specified sound effect.
 
         :param name: Name of the sound effect to play
         :param loops: Number of times to loop the sound effect (0 = play once, -1 = loop indefinitely)
+        :param allow_overlap: When `False`, allows to avoid sound spamming
         """
         if name in self.sfx:
-            if self.sfx[name].get_num_channels() == 0: #Allows to avoid sound spamming
+            if allow_overlap or self.sfx[name].get_num_channels() == 0:
                 self.sfx[name].play(loops=loops)
 
     def stop_sfx(self, name: str):
