@@ -41,6 +41,7 @@ class Entity(GameObject):
         :param size: Entity size
         """
         super().__init__(pos, size)
+
         self.max_velocity = 0
         self.speed_malus = 0
         self.acceleration = 0
@@ -120,6 +121,8 @@ class Entity(GameObject):
         Should be called every frame
         """
         super().update(scene)
+        if self.destroyed:
+            return
         self.update_sprite()
         others = [obj for obj in scene.game_objects if obj.id != self.id]
         on_ground = False
@@ -251,12 +254,9 @@ class Entity(GameObject):
     def kill(self):
         """
         Kills the player.
-
-        Working: the player is respawned at the starting position (temporarily)
-
         :return:
         """
-        self.respawn()
+        self.destroyed = True
 
     def do_right(self, Time):
         boost_val = 1 if self.boost else 0

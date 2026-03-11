@@ -43,7 +43,7 @@ class Pistol(ActiveItem):
 
         if now - self.last >= self.cooldown:
             self.last = now
-            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, Time=self.Time)
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians)
             game_projectiles.append(projectile)
 
     def update(self, scene=None):

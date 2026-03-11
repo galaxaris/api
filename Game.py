@@ -282,7 +282,7 @@ class Game:
         
         keys_pressed = pg.key.get_pressed()
         active_keys = [pg.key.name(i) for i in range(len(keys_pressed)) if keys_pressed[i]]
-        self.debug("Keys : " + ", ".join(active_keys), "left", self.debug_font, 32)
+
 
         if self.scene:
             screen = self.scene
@@ -297,12 +297,16 @@ class Game:
                         self.debug(f"{i} : {layer}", "left", self.debug_font, 16)
 
         #SFX part
+        
+        if len(active_keys) > 0:
+            self.debug("Keys : " + ", ".join(active_keys), "left", self.debug_font, 20)
+
         if self.audio_manager:
             audio_manager = self.audio_manager
             if audio_manager.current_music():
                 self.debug(f"Music :", "left", self.debug_font, 32)
                 self.debug(f"{audio_manager.current_music()} - {'Playing' if audio_manager.is_music_playing() else 'Paused'}", "left", self.debug_font, 16)
-            
+
             if audio_manager.current_sfx():
                 self.debug(f"SFX :", "left", self.debug_font, 32)
 
@@ -310,6 +314,7 @@ class Game:
                 for sfx in audio_manager.current_sfx():
                     sfx_debug_str += f"{sfx} - {'Playing' if audio_manager.is_sfx_playing(sfx) else 'Paused'} | "
                 self.debug(sfx_debug_str[:-3], "left", self.debug_font, 16) #-3 allows to remove the last " | "
+
 
     def register_debug_entity(self, entity):
         """
@@ -322,16 +327,19 @@ class Game:
         self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", self.debug_font, 32)
 
         if entity:
-            self.debug("Jump : " + ("True" if entity.jump else "False"), "right", self.debug_font, 32)
-            self.debug("Fall : " + ("True" if entity.fall else "False"), "right", self.debug_font, 32)
-            self.debug("Boost : " + ("True" if entity.boost else "False"), "right", self.debug_font, 32)
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
-            self.debug(f"Gravity : {entity.gravity:.2f}", "right", self.debug_font, 32)
+            self.debug("Jump : " + ("True" if entity.jump else "False"), "right", self.debug_font, 16)
+            self.debug("Fall : " + ("True" if entity.fall else "False"), "right", self.debug_font, 16)
+            self.debug("Boost : " + ("True" if entity.boost else "False"), "right", self.debug_font, 16)
+            self.debug(f"Gravity : {entity.gravity:.2f}", "right", self.debug_font, 16)
 
-            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.trajectory:
+            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.trajectory and entity.equipped_weapon.is_aiming:
                 angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0
                 ini_speed = entity.equipped_weapon.trajectory.ini_speed if entity.equipped_weapon.trajectory.ini_speed else 0
                 self.debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {ini_speed}", "right", self.debug_font, 32)
+
+            if hasattr(entity, "health"):
+                self.debug(f"Health : {entity.health}", "right", self.debug_font, 32)
 
         if entity.collided_objs:
             self.debug("Collisions :", "right", self.debug_font, 32)

@@ -38,6 +38,7 @@ class GameObject:
         """
         super().__init__()
 
+
         self.audio_manager = None
         self.pos = pg.Vector2(pos)
         self.size = pg.Vector2(size)
@@ -50,6 +51,7 @@ class GameObject:
         self.surface = None
         self.offset = None
         self.interact = False
+        self.destroyed = False
         self.in_trigger_interact = False
     #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
     def set_texture(self, texture:Texture, rescale: bool = False):
@@ -146,7 +148,9 @@ class GameObject:
         """
         Updates the GameObject. If it has an animation, updates the image to the current frame of the animation.
         """
-
+        if self.destroyed:
+            self.set_position((-1000, -1000))  # Move off-screen to avoid interactions
+            return
         if self.animation:
             self.set_surface(self.animation.get_frame(self.direction))
 
@@ -168,6 +172,8 @@ class GameObject:
         :param surface: The surface on which to draw the GameObject
         :param offset: The offset to be applied to the GameObject's position when drawing (useful for camera movement)
         """
+        if self.destroyed:
+            return
         offset = scene.camera.position if scene else pg.Vector2(0, 0)
         self.surface = surface
         self.offset = offset

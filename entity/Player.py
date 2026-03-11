@@ -1,7 +1,9 @@
 """
 API's Player utilities
 """
+from api.entity.Character import Character
 from api.items.Catalog import Pistol
+from api.physics.Collision import get_collided_objects
 from api.physics.Trajectory import Trajectory, free_fall
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, Inputs
@@ -12,7 +14,7 @@ from api.utils.Inputs import get_inputs, get_once_inputs
 import pygame as pg
 import math
 
-class Player(Entity):
+class Player(Character):
     """
     Player class, based on Entity class. Contains all the player's attributes and methods.
     """
@@ -34,7 +36,6 @@ class Player(Entity):
         super().__init__(pos, size)
         self.add_tag("player")
         self.set_direction(direction)
-        self.equipped_weapon = Pistol(Trajectory(free_fall, self.size//2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
 
 
     def update(self, scene=None):
@@ -115,7 +116,13 @@ class Player(Entity):
         else:
             # Updates whith Entity's update
             super().update(scene)
-            
+
+            enemies_collisions = get_collided_objects(self,"enemy", scene.game_objects, self.vel.x, self.vel.y)
+            if enemies_collisions:
+                if not self.invincible:
+                    for obj in enemies_collisions:
+                        self.take_damage(obj[0].damage_force)
+
             # Détection de l'atterrissage : le joueur tombait et n'est plus en train de tomber
             if was_falling and not self.fall:
                 if self.sfx_list:

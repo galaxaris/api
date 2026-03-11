@@ -171,6 +171,16 @@ class Scene(pg.Surface):
         for layer in self.layers:
             self.layers[layer].clear()
 
+    def clear_layer(self, layer: str):
+        """
+        Clears a specific layer.
+
+        :param layer: The name of the layer to be cleared
+        """
+        if layer in self.layers:
+            self.layers[layer].clear()
+            self.layer_surfaces[layer].fill((0, 0, 0, 0))
+
     def assign_game_instances(self, Time, audio_manager):
         """
         Assigns the Time and AudioManager instances to the scene, allowing game objects to access them.
