@@ -11,6 +11,7 @@ from pygame._sdl2 import controller
 
 MOUSE_SCROLL = 0
 PREVIOUS_INPUTS = None
+PREVENTED_INPUTS = {}
 
 INPUTS = {
     "right": [pg.K_RIGHT, pg.K_d],
@@ -37,9 +38,9 @@ CONTROLLER_INPUTS = {
     "down": [("axis", pg.CONTROLLER_AXIS_LEFTY, 16000)],
     "jump": [("button", pg.CONTROLLER_BUTTON_A)],
     "boost": [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
-    "interact": [("button", pg.CONTROLLER_BUTTON_B)],
+    "interact": [("button", pg.CONTROLLER_BUTTON_A)],
     "aim": [("axis", pg.CONTROLLER_AXIS_TRIGGERLEFT, 10000)],
-    "shoot": [("button", pg.CONTROLLER_BUTTON_RIGHTSHOULDER)],
+    "shoot":  [("axis", pg.CONTROLLER_AXIS_TRIGGERRIGHT, 10000)],
     "pause": [("button", pg.CONTROLLER_BUTTON_START)],
     "menu_up": [("axis", pg.CONTROLLER_AXIS_LEFTY, -16000),
                 ("button", pg.CONTROLLER_BUTTON_DPAD_UP),
@@ -160,6 +161,18 @@ def get_inputs():
                     val = joy.get_axis(axis_index)
                     if (0 > threshold > val) or (0 < threshold < val):
                         current_state[action] = True
+
+    for key in list(PREVENTED_INPUTS):
+        if not PREVENTED_INPUTS[key] and not current_state[key]:
+            del PREVENTED_INPUTS[key]
+
+    for key in current_state:  # Added list() here
+        if key in PREVENTED_INPUTS:
+            current_state[key] = False
+            PREVENTED_INPUTS[key] = False
+
+
+
     return current_state
 
 
@@ -194,8 +207,12 @@ def update_input_state():
     }
 
     # 4. Save for the next frame
+
     _cached_current_state = current_state
     PREVIOUS_INPUTS = current_state
+
+
+
 
 
 def get_once_inputs():
@@ -213,6 +230,7 @@ def get_held_inputs():
     """
     return _cached_current_state
 
+#Be sure that it's updated when controller is up
 def get_str_input(selected_input: str) -> str:
     """Return a human-readable label for an action binding.
 
@@ -342,3 +360,12 @@ def is_mouse_clicked(number=0):
     """
     mouse_pressed = pg.mouse.get_pressed()
     return number < len(mouse_pressed) and mouse_pressed[number]
+
+
+def prevent_once_key(param):
+    """
+    Clear the just-pressed state of an action to prevent it from triggering in the current frame.
+    :param param:
+    :return:
+    """
+    PREVENTED_INPUTS[param] = True

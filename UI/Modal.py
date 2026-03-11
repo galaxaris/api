@@ -4,6 +4,7 @@ import pygame as pg
 
 from api.UI.GameUI import UIElement
 from api.utils import Inputs
+from api.utils.Inputs import prevent_input
 
 
 class Modal(UIElement):
@@ -79,6 +80,9 @@ class Modal(UIElement):
 
                 if inputs["menu_select"]:
                     actual_button.click()
+                    Inputs.prevent_once_key("jump")
+                    if actual_button.callback:
+                        actual_button.callback(actual_button)
             else:
                 actual_button.idle(actual_button.bg_color)
 

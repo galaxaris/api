@@ -34,7 +34,8 @@ class Player(Entity):
         super().__init__(pos, size)
         self.add_tag("player")
         self.set_direction(direction)
-        self.equipped_weapon = Pistol(Trajectory(free_fall, pg.Vector2(0,0), DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
+        self.equipped_weapon = Pistol(Trajectory(free_fall, self.size//2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
+
 
     def update(self, scene=None):
         """
@@ -45,7 +46,6 @@ class Player(Entity):
         inputs = get_inputs()
 
         was_falling = self.fall
-        max_velocity = self.max_velocity
         Time = scene.Time if scene and scene.Time else None
 
         self.equipped_weapon.update(scene)
@@ -54,11 +54,10 @@ class Player(Entity):
 
 
             if inputs["aim"] and scene.global_state["player_control"]:
-
-                max_velocity /= 2
+                self.speed_malus = self.max_velocity//2
                 mouse = pg.Vector2(Inputs.get_mouse(Inputs.get_key_pressed("aim")))
                 cam_pos = scene.camera.position
-                player_screen_pos = self.pos - cam_pos
+                player_screen_pos = self.pos - cam_pos + self.size/2
                 angle_with_player = mouse / scene.scale_ratio - player_screen_pos
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
@@ -66,14 +65,18 @@ class Player(Entity):
                 if Inputs.MOUSE_SCROLL != 0:
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
+                if Inputs.is_controller_connected() and mouse == (0, -1000):
+                    self.equipped_weapon.trajectory.angle_radians = 0.56
+
                 self.set_direction("left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14/2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14/2 else "right")
 
                 if get_once_inputs()["shoot"] and  scene.global_state["player_control"]:
-                    self.equipped_weapon.shoot(self.pos)
+                    self.equipped_weapon.shoot(self.pos + self.size//2)
 
                 self.equipped_weapon.is_aiming = True
 
             else:
+                self.speed_malus = 0
                 self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
                 self.equipped_weapon.is_aiming = False
 
@@ -90,11 +93,11 @@ class Player(Entity):
                 if not inputs["aim"]:
                     self.set_direction("left")
 
-            if inputs["jump"] and scene.global_state["player_control"]:
+            if inputs["jump"] and scene.global_state["player_control"] and (not self.in_trigger_interact or not Inputs.is_controller_connected()) :
                 self.do_jump()
 
 
-            self.boost = inputs["boost"] and scene.global_state["player_control"]
+            self.boost = inputs["boost"] and scene.global_state["player_control"] and not inputs["aim"]
             self.interact = inputs["interact"] and scene.global_state["player_control"]
 
         if Debug.is_enabled("freecam"):
