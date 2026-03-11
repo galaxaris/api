@@ -4,7 +4,7 @@ from api.UI.GameUI import UIElement
 from api.assets.Texture import Texture
 import pygame as pg
 
-from api.utils import Inputs, GlobalVariables
+from api.utils import Inputs
 from api.utils.Fonts import get_font
 
 
@@ -155,7 +155,7 @@ class Button(UIElement):
         """
         self.menu_offset = margin
 
-    def update(self):
+    def update(self, scene=None):
         """Update button state from current pointer/controller context.
 
         State machine:
@@ -166,13 +166,13 @@ class Button(UIElement):
 
         :return:
         """
-        super().update()
+        super().update(scene)
 
         if Inputs.is_controller_connected():
             return
 
         raw_mouse = Inputs.get_mouse() - self.menu_offset
-        ratio = GlobalVariables.get_variable("scale_ratio")
+        ratio = scene.scale_ratio
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
         self.rect.topleft = self.pos + self.menu_offset//2
 

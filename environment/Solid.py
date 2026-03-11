@@ -16,9 +16,9 @@ class Solid(GameObject):
         super().__init__(pos, size)
         self.add_tag("solid")
 
-    def update(self):
+    def update(self, scene=None):
         """Update the solid object.
 
         :return:
         """
-        super().update()
+        super().update(scene)

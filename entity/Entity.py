@@ -10,9 +10,10 @@ import pygame as pg
 
 from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
-from api.utils import Debug, GlobalVariables
+from api.utils import Debug
 
-
+#TODO: Player is kind of shaking
+#TODO: Remove clipping
 class Entity(GameObject):
     """
     Entity class, based on GameObject. Contains all the attributes and methods common to all entities in the game (player, enemies, etc.).
@@ -111,18 +112,18 @@ class Entity(GameObject):
         """
         ...
 
-    def update(self):
+    def update(self, scene=None):
         """
         Updates the entity's position, velocity, and animation. 
         Should be called every frame
         """
-        super().update()
+        super().update(scene)
         self.update_sprite()
-        others = [obj for obj in GlobalVariables.get_variable("game_objects") if obj.id != self.id]
+        others = [obj for obj in scene.game_objects if obj.id != self.id]
         on_ground = False
 
         # Gets normalized frame factor (1.0 ~= one frame at target FPS).
-        Time = GlobalVariables.get_variable("Time")
+        Time = scene.Time
         
 
         if not Debug.is_enabled("freecam") and not self.is_controlled:
@@ -177,6 +178,7 @@ class Entity(GameObject):
                         self.set_position((self.pos.x, obj[0].rect.bottom))
                     break
 
+
         self.set_position((self.pos.x + self.vel.x * Time.deltaTime, self.pos.y + self.vel.y * Time.deltaTime))
 
         self.is_hitting_ground = False
@@ -229,11 +231,11 @@ class Entity(GameObject):
             # SFX
             if self.sfx_list:
                 if "jump" in self.sfx_list:
-                    audio_manager = GlobalVariables.get_variable("audio_manager")
+                    audio_manager = self.audio_manager
                     if audio_manager:
                         audio_manager.play_sfx("jump")
 
-    def kill(self):
+    def respawn(self):
         """
         Kills the player.
 
@@ -244,12 +246,20 @@ class Entity(GameObject):
         self.vel = pg.Vector2(0, 0)
         self.set_position(self.start_pos)
 
-    def do_right(self):
+    def kill(self):
+        """
+        Kills the player.
+
+        Working: the player is respawned at the starting position (temporarily)
+
+        :return:
+        """
+        self.respawn()
+
+    def do_right(self, Time):
         boost_val = 1 if self.boost else 0
-        Time = GlobalVariables.get_variable("Time")
         self.vel.x = max(0, min(self.vel.x + self.acceleration * Time.deltaTime, self.max_velocity + boost_val))
 
-    def do_left(self):
+    def do_left(self, Time):
         boost_val = 1 if self.boost else 0
-        Time = GlobalVariables.get_variable("Time")
         self.vel.x = max(-(self.max_velocity + boost_val), min(self.vel.x - self.acceleration * Time.deltaTime, 0))

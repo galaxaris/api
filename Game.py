@@ -23,7 +23,7 @@ from typing import Callable, List, Dict
 from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
-from api.utils import Debug, GlobalVariables, Inputs
+from api.utils import Debug, Inputs
 from api.utils.DebugElement import DebugElement
 from api.physics.Time import Time
 from api.utils.Console import *
@@ -70,17 +70,12 @@ class Game:
         pg.display.set_caption(name)
         self.Window = Window.from_display_module()
         self.Time = Time(fps)
-        GlobalVariables.set_variable("Time", self.Time)
-        #self.clock = self.Time.clock
         self.running = True
-        #self.locked_fps = self.Time.lockedFPS
-        #self.fps = fps #Time
         self.flags = flags
         self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
         self.bound_functions = {}
         self.audio_manager = AudioManager()
-        GlobalVariables.set_variable("audio_manager", self.audio_manager)
         self.debug_font = debug_font
 
     def run(self, game):
@@ -124,13 +119,15 @@ class Game:
             Inputs.update_input_state()
             game()
 
+            self.scene.assign_game_instances(self.Time, self.audio_manager)
             self.scene.draw(self.render)
+
 
             self.render.fill((0, 0, 0))
 
             pg.transform.scale(self.scene, self.render.get_size(), self.render)
 
-            GlobalVariables.set_variable("scale_ratio", self.render.get_size()[0] / self.scene.get_size()[0])
+            self.scene.scale_ratio = self.render.get_size()[0] / self.scene.get_size()[0]
 
             self.launch_debug()
 
@@ -138,7 +135,7 @@ class Game:
 
             Inputs.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
             Time.update(self.Time) #Time    
-            GlobalVariables.set_variable("Time", self.Time)           
+
 
         print_success("Window closed successfully. Hoping see you soon for more adventures with the Omicronde API!")
         pg.quit()
@@ -300,8 +297,8 @@ class Game:
                         self.debug(f"{i} : {layer}", "left", self.debug_font, 16)
 
         #SFX part
-        if GlobalVariables.get_variable("audio_manager"):
-            audio_manager = GlobalVariables.get_variable("audio_manager")
+        if self.audio_manager:
+            audio_manager = self.audio_manager
             if audio_manager.current_music():
                 self.debug(f"Music :", "left", self.debug_font, 32)
                 self.debug(f"{audio_manager.current_music()} - {'Playing' if audio_manager.is_music_playing() else 'Paused'}", "left", self.debug_font, 16)
@@ -331,10 +328,10 @@ class Game:
             self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
             self.debug(f"Gravity : {entity.displayed_gravity:.2f}", "right", self.debug_font, 32)
 
-            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.active_trajectory:
-                angle = entity.equipped_weapon.angle_radians if entity.equipped_weapon.angle_radians else 0
-                shot_speed = entity.equipped_weapon.shot_speed if entity.equipped_weapon.shot_speed else 0
-                self.debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {shot_speed}", "right", self.debug_font, 32)
+            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.trajectory:
+                angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0
+                ini_speed = entity.equipped_weapon.trajectory.ini_speed if entity.equipped_weapon.trajectory.ini_speed else 0
+                self.debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {ini_speed}", "right", self.debug_font, 32)
 
         if entity.collided_objs:
             self.debug("Collisions :", "right", self.debug_font, 32)

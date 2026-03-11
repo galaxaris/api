@@ -128,7 +128,6 @@ La gestion de l'interface repose sur la classe `GameUI` qui agit comme un chef d
 * `get_once_inputs()` : Retourne les actions enfoncées lors de la frame courante uniquement.
 
 
-* **`GlobalVariables.py`** : Magasin clé/valeur (ex: `cam_pos`, `scale_ratio`, `audio_manager`) évitant de passer ces constantes en paramètre de chaque classe.
 * **`State.py`** : Gère des drapeaux d'états de jeu globaux via `toggle()` (ex: bloquer les inputs via `"player_control"`, activer le menu via `"in_menu"`).
 * **`Collision.py`** : Fonctions de prédiction de collision (`get_collided_objects`). Détermine par quel côté (`"top"`, `"bottom"`, `"left"`, `"right"`) se produirait le contact pour ajuster précisément la physique du jeu.
 

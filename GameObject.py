@@ -38,6 +38,7 @@ class GameObject:
         """
         super().__init__()
 
+        self.audio_manager = None
         self.pos = pg.Vector2(pos)
         self.size = pg.Vector2(size)
         self.image = pg.Surface(size, pg.SRCALPHA, 32).convert_alpha()
@@ -140,7 +141,7 @@ class GameObject:
         """
         self.tags.discard(tag)
 
-    def update(self):
+    def update(self, scene=None):
         """
         Updates the GameObject. If it has an animation, updates the image to the current frame of the animation.
         """
@@ -157,17 +158,19 @@ class GameObject:
         if direction in ["left", "right"]:
             self.direction = direction
 
-    def draw(self, surface: pg.Surface, offset=pg.Vector2(0, 0)):
+    def draw(self, surface: pg.Surface, scene=None):
         """
         Draws the GameObject. Offsets taken into accccccount!
         In debug mode, also draws the collider rect underlined in red.
 
+        :param scene:
         :param surface: The surface on which to draw the GameObject
         :param offset: The offset to be applied to the GameObject's position when drawing (useful for camera movement)
         """
-
+        offset = scene.camera.position if scene else pg.Vector2(0, 0)
         self.surface = surface
         self.offset = offset
+        self.audio_manager = scene.audio_manager if scene else None
 
         if not self.animation and self.direction == "left":
             self.image = pg.transform.flip(self.image, True, False)

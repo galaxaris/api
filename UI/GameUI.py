@@ -1,7 +1,6 @@
 """UI orchestration surface for dialogs, menus, and overlays."""
 
 from api.GameObject import GameObject
-from api.utils import State
 from api.utils.Inputs import get_once_inputs
 import pygame as pg
 
@@ -99,7 +98,7 @@ class GameUI(pg.Surface):
             if key in self.active_menus:
                 self.active_menus.remove(key)
 
-    def update(self):
+    def update(self, scene):
         """Advance UI interaction state from one-shot player inputs.
 
         This method handles dialog progression, closable textboxes, and menu
@@ -108,7 +107,7 @@ class GameUI(pg.Surface):
         :return:
         """
         inputs = get_once_inputs()
-        if inputs["interact"] and not State.is_enabled("in_menu"):
+        if inputs["interact"] and not  scene.global_state["in_menu"]:
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 if index < len(boxes) - 1:
@@ -119,32 +118,33 @@ class GameUI(pg.Surface):
                 else:
                     # End of dialog reached
                     self.hide(key)
-                    State.toggle("player_control", True)
+                    scene.global_state["player_control"] = True
             elif self.active_textbox:
                 # Single Textbox Logic
                 key, element = self.active_textbox
                 if "ui_closable" in element.tags:
                     self.hide(key)
-                    State.toggle("player_control", True)
+                    scene.global_state["player_control"] = True
 
         if inputs["pause"] and self.active_menus:
             # Close the most recently opened menu
             last_menu_key = self.active_menus[-1]
             self.hide(last_menu_key)
             if len(self.active_menus) == 0:
-                State.toggle("in_menu", False)
-                State.toggle("player_control", True)
+                scene.global_state["in_menu"] = False
+                scene.global_state["player_control"] = True
 
         for key in self.enabled_elements:
             element = self.elements[key]
-            element.update()
+            element.update(scene)
 
-    def draw(self, surface: pg.Surface):
+    def draw(self, surface: pg.Surface, scene=None):
         """Render enabled UI elements onto the destination surface.
 
         The method also applies modal darkening for active menus and toggles
         player-control state when blocking UI is displayed.
 
+        :param scene:
         :param surface: Final destination surface.
         :return:
         """
@@ -152,9 +152,9 @@ class GameUI(pg.Surface):
 
         #PLAYER CONTROL: Reenable by default player control, but check if in future, other components will desactivate player control
         #Override : Prevent player control from being reenabled if "override_player_control" is active, allowing other systems to take full control when needed (e.g., cutscenes, special interactions)
-        if not State.is_enabled("override_player_control"):
+        if not scene.global_state["override_player_control"]:
             if len(self.active_menus) == 0:
-                State.toggle("player_control", True)
+                scene.global_state["player_control"] = True
 
         for key in self.enabled_elements:
             element = self.elements[key]
@@ -163,12 +163,12 @@ class GameUI(pg.Surface):
             if self.active_textbox and key == self.active_textbox[0]:
                 self.active_textbox[1].draw(self)
                 if "ui_block" in self.active_textbox[1].tags:
-                    State.toggle("player_control", False)
+                    scene.global_state["player_control"] = False
                 continue
 
             if len(self.active_menus) != 0:
                 self.fill((0, 0, 0, 128))  # Semi-transparent overlay when a menu is open
-                State.toggle("player_control", False)
+                scene.global_state["player_control"] = False  # Disable player control when any menu is active
 
             # Draw other non-dialog UI elements normally
             element.draw(self)

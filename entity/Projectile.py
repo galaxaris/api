@@ -1,36 +1,28 @@
-import pygame
+import pygame as pg
+import math
 
 from api.entity.Entity import Entity
 from api.physics.Collision import get_collided_objects
-from api.utils import GlobalVariables
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int], gravity: float, shot_speed: int, angle_radians: float, size: tuple[int, int] = (8,8), effect: str = None, target: str = None, offset=pygame.Vector2(0, 0)):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, size: tuple[int, int] = (8,8), effect: str = None, target: str = None):
         super().__init__(pos = pos, size = (8,8))
-        self.pos = pygame.Vector2(pos)
-
-        self.shot_speed = shot_speed
-        self.angle_radians = angle_radians
+        self.pos = pg.Vector2(pos)
+        self.vel = shot_speed*3 * pg.Vector2(math.cos(angle_radians)*1.8, -math.sin(angle_radians))
         self.add_tag("projectile")
-        self.image = pygame.Surface((8, 8))
+        self.image = pg.Surface((8, 8))
         self.image.fill("white")
         self.rect = self.image.get_rect(topleft=pos)
         self.fall = True
         self.to_kill = False
-        self.offset = None
-        self.set_gravity(gravity)
+        self.set_gravity(gravity*2)
 
-
-    def update(self) :
-        super().update()
+    def update(self, scene=None) :
+        super().update(scene)
 
         if self.collided_objs:
-            print(self.collided_objs[0][0].pos)
             self.on_impact()
-
-
-
 
     def on_impact(self):
         self.to_kill = True

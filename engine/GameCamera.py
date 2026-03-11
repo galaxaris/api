@@ -5,7 +5,7 @@ from typing import Optional
 import pygame as pg
 
 from api.GameObject import GameObject
-from api.utils import Debug, GlobalVariables
+from api.utils import Debug
 from api.utils.Inputs import get_inputs
 
 
@@ -55,7 +55,6 @@ class GameCamera:
         :param offset: Offset applied to focused object position.
         :return:
         """
-        GlobalVariables.set_variable("cam_offset", pg.Vector2(offset))
         self.offset = pg.Vector2(offset)
 
     def set_limits(self, topleft: tuple[int , int], bottomright: tuple[int , int]):
@@ -65,7 +64,6 @@ class GameCamera:
         :param topleft: Top left corner of the field of view
         :param bottomright: Bottom right corner of the field of view
         """
-        GlobalVariables.set_variable("cam_limits", (pg.Vector2(topleft), pg.Vector2(bottomright)))
         self.limit_topleft = pg.Vector2(topleft)
         self.limit_bottomright = pg.Vector2(bottomright)
 
@@ -124,5 +122,3 @@ class GameCamera:
                 self.position = self.freecam_old.copy()
                 self.freecam_old = None
             self.camera_mode = "Free"
-
-        GlobalVariables.set_variable("cam_pos", self.position)

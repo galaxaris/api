@@ -5,6 +5,8 @@ from pygame.font import Font
 
 font_generated : dict[tuple[str, int], Font] = {}
 
+DEFAULT_FONT = "arial"
+
 def get_font(name: str, size: int, custom: bool = False) -> Font:
     """Return a cached font instance for the requested name and size.
 
