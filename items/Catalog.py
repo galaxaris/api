@@ -32,8 +32,9 @@ class Pistol(ActiveItem):
         self.projectiles = []
         self.trajectory = trajectory
         self.is_aiming = False
-        self.projectile_gravity = 98.1*projectile_gravity
+        self.projectile_gravity = projectile_gravity
         self.cooldown = 3000
+        self.Time = None
         self.last = - self.cooldown
 
     def shoot(self, shoot_pos: pg.Vector2):
@@ -43,10 +44,11 @@ class Pistol(ActiveItem):
 
         if now - self.last >= self.cooldown:
             self.last = now
-            projectile = Projectile(shoot_pos, self.projectile_gravity, self.trajectory.ini_speed, self.trajectory.angle_radians)
+            projectile = Projectile(shoot_pos, self.projectile_gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, Time=self.Time)
             game_projectiles.append(projectile)
 
     def update(self, scene=None):
+        self.Time = scene.Time
         projectiles = self.projectiles
         length = len(projectiles) - 1
         for i in range(length, -1, -1):

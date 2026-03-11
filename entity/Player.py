@@ -72,7 +72,7 @@ class Player(Entity):
 
                 if get_once_inputs()["shoot"] and  scene.global_state["player_control"]:
                     self.equipped_weapon.shoot(self.pos + self.size//2)
-
+                    #self.equipped_weapon.is_aiming = False
                     #SFX
                     if self.sfx_list:
                         if "fire" in self.sfx_list:
@@ -80,7 +80,9 @@ class Player(Entity):
                             if audio_manager:
                                 audio_manager.play_sfx("fire")
 
-                self.equipped_weapon.is_aiming = True
+                else:
+                    self.equipped_weapon.is_aiming = True
+
 
             else:
                 self.speed_malus = 0
