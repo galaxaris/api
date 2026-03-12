@@ -13,7 +13,7 @@ class AudioManager:
     sfx_volume: float
     music_volume: float
 
-    def __init__(self, sfx_volume=0.8, music_volume=1, channels=16):
+    def __init__(self, sfx_volume:float|int = 0.8, music_volume:float|int = 1, channels:float|int = 16):
         """
         Initializes the AudioManager with the given volume levels and number of channels.
 

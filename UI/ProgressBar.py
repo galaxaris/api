@@ -7,7 +7,7 @@ from api.engine.Scene import Scene
 class ProgressBar(UIElement):
     """A polished, modern UI progress bar with smooth transitions."""
 
-    def __init__(self, pos, size, color_bg, color_fg, progress_max=100):
+    def __init__(self, pos: tuple[int, int]|pg.Vector2, size: tuple[int, int]|pg.Vector2, color_bg: tuple[int, int, int], color_fg: tuple[int, int, int], progress_max: int=100):
         super().__init__(pos, size)
         self.color_bg = color_bg
         self.color_fg = color_fg

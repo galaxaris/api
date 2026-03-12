@@ -18,7 +18,7 @@ class HealthPotion(Item):
 
 class Pistol(ActiveItem):
     """Base class for pistol."""
-    def __init__(self, trajectory: Trajectory, gravity: float = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True):
+    def __init__(self, trajectory: Trajectory, gravity: float|int = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True):
         super().__init__(name, item_type, is_equipped)
         self.projectiles = []
         self.trajectory = trajectory

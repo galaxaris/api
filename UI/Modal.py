@@ -10,7 +10,7 @@ from api.utils.Inputs import prevent_input
 class Modal(UIElement):
     """Blocking UI container that can host navigable button grids."""
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int] = (30, 30, 30, 220), border_radius: int = 10):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], color: tuple[int, int, int, int] = (30, 30, 30, 220), border_radius: int = 10):
         """Initialize a modal container.
 
         :param pos: Modal position.

@@ -6,7 +6,7 @@ from api.utils import Debug
 
 
 class Enemy(Character):
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], health: int = 100, speed: float = 2, mode: str = "patrol", range: int = 100):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], health: int = 100, speed: float|int = 2, mode: str = "patrol", range: int = 100):
         super().__init__(pos, size, health)
         self.speed = speed
         self.range = range

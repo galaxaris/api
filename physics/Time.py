@@ -21,7 +21,7 @@ class Time:
     frameScale: float
     maxDeltaTime: float
 
-    def __init__(self, maxFps):
+    def __init__(self, maxFps:int):
         """
         Initialize the Time class with a maximum FPS limit.
 

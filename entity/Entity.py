@@ -33,7 +33,7 @@ class Entity(GameObject):
     is_hitting_ground: bool
 
 
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], max_velocity = 2, acceleration = 0.5, resistance = 0.2, force = 20):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], max_velocity: float|int = 2, acceleration: float|int = 0.5, resistance:float|int = 0.2, force:float|int = 20):
         """
         Initializes the entity with the given attributes.
 

@@ -8,7 +8,7 @@ from api.assets.Texture import Texture
 class Dialog(UIElement):
     """Defines a multi-line dialog sequence with character metadata."""
 
-    def __init__(self, font = "aptos"):
+    def __init__(self, font: str = "aptos"):
         """Initialize an empty dialog sequence.
 
         :param font: Font used when creating text boxes.

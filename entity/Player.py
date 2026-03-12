@@ -20,7 +20,7 @@ class Player(Character):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction = "right"):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction: str = "right"):
         """
         Initializes the player with the given attributes.
 
@@ -131,7 +131,7 @@ class Player(Character):
                         if audio_manager:
                             audio_manager.play_sfx("hit_ground")
 
-    def draw(self, surface, scene=None):
+    def draw(self, surface: pg.Surface, scene=None):
         """
         Draws the player on the given surface.
         
