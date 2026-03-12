@@ -40,3 +40,9 @@ class Character(Entity):
     def respawn(self):
         self.health = self.original_health
         super().respawn()
+
+    def update_sprite(self):
+        if self.hit_cooldown > 0:
+            self.set_sprite("hit")
+        else:
+            super().update_sprite()

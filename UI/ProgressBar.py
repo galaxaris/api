@@ -30,6 +30,10 @@ class ProgressBar(UIElement):
         diff = self.current_value - self.visual_progress
         self.visual_progress += diff * self.lerp_speed
 
+    def set_position(self, pos: tuple[int, int] | tuple[float, float] | pg.Vector2):
+        """Set the position of the progress bar."""
+        super().set_position(pos)
+
     def set_color(self, color_fg: tuple[int, int, int] = None, color_bg: tuple[int, int, int] = None):
         """Update the colors of the progress bar."""
         if color_fg: self.color_fg = color_fg
@@ -50,7 +54,7 @@ class ProgressBar(UIElement):
             fill_width = int(self.size[0] * fill_ratio)
 
             # Ensure the fill width doesn't look weird at very low values
-            if fill_width > 0:
+            if fill_width > 4:
                 fill_rect = pg.Rect(self.pos, (fill_width, self.size[1]))
                 pg.draw.rect(surface, self.color_fg, fill_rect, border_radius=self.border_radius)
 

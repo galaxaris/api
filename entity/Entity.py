@@ -205,6 +205,7 @@ class Entity(GameObject):
         else:
             self.set_sprite("idle")
 
+
     def set_sprite(self, name: str):
         """
         Sets the sprite for the entity.

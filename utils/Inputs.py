@@ -20,7 +20,7 @@ INPUTS = {
     "boost": [pg.K_LSHIFT, pg.K_RCTRL],
     "up": [pg.K_UP, pg.K_z],
     "down": [pg.K_DOWN, pg.K_s],
-    "aim": ["MOUSE_RIGHT"],
+    "aim": ["MOUSE_RIGHT", pg.K_LALT],
     "shoot": ["MOUSE_LEFT"],
     "interact": [pg.K_e],
     "pause": [pg.K_ESCAPE],
