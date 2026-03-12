@@ -2,6 +2,7 @@ from api.UI.ProgressBar import ProgressBar
 from api.entity.Character import Character
 import pygame as pg
 
+from api.physics.Collision import get_collided_objects
 from api.utils import Debug
 
 
@@ -53,4 +54,45 @@ class Enemy(Character):
             self.set_direction("right")
 
     def do_chase(self, scene):
-        pass
+        # 1. Calculs logiques dans l'ESPACE MONDE (indépendant de la caméra)
+        range_box_world = pg.Rect(
+            self.pos.x - (self.range // 2) + (self.size.x // 2),
+            self.pos.y - self.range + self.size.y,
+            self.range,
+            self.range
+        )
+
+        # 2. Affichage Debug dans l'ESPACE ÉCRAN (en appliquant l'offset de la caméra)
+        if Debug.is_enabled("colliders"):
+            # On décale le rectangle du monde vers l'écran pour le dessiner
+            range_box_screen = range_box_world.move(-scene.camera.position.x, -scene.camera.position.y)
+            pg.draw.rect(scene, (255, 255, 0), range_box_screen, width=1)
+
+        # 3. Recherche du joueur et logique de poursuite
+        for obj in scene.game_objects:
+            if "player" in obj.tags:
+                player = obj
+                # Centre du joueur dans l'espace monde
+                player_center = (player.pos.x + player.size.x // 2, player.pos.y + player.size.y // 2)
+
+                # Si le joueur entre dans la zone de détection
+                if range_box_world.collidepoint(player_center):
+
+                    # Déterminer la direction (gauche ou droite)
+                    diff_x = player.pos.x - self.pos.x
+
+                    # Deadzone : Évite que l'ennemi ne "vibre" s'il est exactement sur le même pixel que le joueur
+                    if abs(diff_x) > 2:
+                        if diff_x > 0:
+                            # Le joueur est à droite
+                            self.vel.x = abs(self.speed) * scene.Time.deltaTime
+                            self.set_direction("right")
+                        else:
+                            # Le joueur est à gauche
+                            self.vel.x = -abs(self.speed) * scene.Time.deltaTime
+                            self.set_direction("left")
+                    else:
+                        # L'ennemi a atteint le joueur sur l'axe X
+                        self.vel.x = 0
+
+                break  # On arrête la boucle après avoir géré le joueur
