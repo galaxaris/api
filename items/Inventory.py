@@ -1,13 +1,8 @@
-class Inventory:
-    def __init__(self):
+from api.UI.GameUI import UIElement, GameUI
+
+
+class Inventory(UIElement):
+    def __init__(self, pos, size):
+        super().__init__(pos, size)
         self.items = []
-
-
-        def add_item(self, item):
-            pass
-
-        def remove_item(self, item):
-            pass
-
-        def display_inventory(self):
-            pass
+        self.UI = GameUI(size)

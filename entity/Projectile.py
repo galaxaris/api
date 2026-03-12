@@ -6,7 +6,7 @@ from api.physics.Collision import get_collided_objects
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, effect: str, target: str, size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10):
         super().__init__(pos, size)
         self.pos = pg.Vector2(pos) - self.size/2
         self.vel = shot_speed * pg.Vector2(math.cos(angle_radians), -math.sin(angle_radians))
@@ -19,6 +19,8 @@ class Projectile(Entity):
         self.set_gravity(gravity)
         self.resistance = 0
         self.damage = damage
+        self.add_tag(effect)
+        self.target = target
 
     def update(self, scene=None) :
         super().update(scene)
@@ -30,6 +32,9 @@ class Projectile(Entity):
             self.collided_objs += enemies_collisions
 
         if self.collided_objs:
+            if "bouncy" in self.tags:
+                pass
+
             self.on_impact()
 
     def on_impact(self):

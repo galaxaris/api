@@ -2,6 +2,7 @@ from api.entity.Entity import Entity
 import pygame as pg
 
 from api.items.Catalog import Pistol
+from api.items.Inventory import Inventory
 from api.physics.Trajectory import Trajectory, free_fall
 from api.utils.Constants import DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 
@@ -18,6 +19,7 @@ class Character(Entity):
         self.hit_cooldown = 0
         self.hit_cooldown_time = 20
         self.equipped_weapon = Pistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
+        self.inventory = Inventory()
 
     def take_damage(self, damage: int):
         if self.invincible or self.hit_cooldown > 0:

@@ -16,14 +16,6 @@ class HealthPotion(Item):
         """Initialize the health potion."""
         super().__init__(name, item_type)
 
-class Grapple(ActiveItem):
-    """Base class for grapple."""
-    def __init__(self, name, item_type, is_equipped: bool):
-        super().__init__(name, item_type, is_equipped)
-        pass
-
-
-
 class Pistol(ActiveItem):
     """Base class for pistol."""
     def __init__(self, trajectory: Trajectory, gravity: float = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True):
