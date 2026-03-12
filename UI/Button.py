@@ -182,7 +182,7 @@ class Button(UIElement):
 
         if self.rect.collidepoint(mouse_pos):
             #Change cursor to pointer when hovering over the button
-            pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
+            #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
 
             #Mouse is over the button
             if Inputs.is_mouse_clicked_once():
@@ -203,7 +203,7 @@ class Button(UIElement):
             #Not over the button
             self.idle(self.bg_color)
             #Reset cursor to default if not hovering over any button
-            pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
+            #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
         #Store current state for next frame
         self._was_clicked_prev_frame = is_currently_clicked
