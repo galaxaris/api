@@ -1,10 +1,7 @@
 # TODO for API
 
-Debug:
-  - Replace print statements in another file
-
 Entity :
-  - Player improvements
+  - Player improvements : reduce the number 
   - Enemy (IA) - Mode : Chase, Pistol
   - Boss - General behavior - Prepare the Boss to be modular and easily customizable for different bosses (different attacks, different patterns, etc.)
 

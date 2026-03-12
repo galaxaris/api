@@ -46,10 +46,8 @@ class Game:
     flags: int
     window: Window
     bound_functions: Dict[int, List[Callable]]
-    debug_list: List[tuple[str, str, int]]
-    debug_font: str
 
-    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120, debug_font: str="arial"):
+    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
 
@@ -72,11 +70,9 @@ class Game:
         self.Time = Time(fps)
         self.running = True
         self.flags = flags
-        self.debug_list : list[tuple[str, str, str, int]] = []
         self.window = Window.from_display_module()
         self.bound_functions = {}
         self.audio_manager = AudioManager()
-        self.debug_font = debug_font
 
     def run(self, game):
         """
@@ -115,7 +111,7 @@ class Game:
                 for func in self.bound_functions.get(event.type, []):
                     func(event)
 
-            self.register_debug()
+            Debug.register_debug(self)
             Inputs.update_input_state()
             game()
 
@@ -129,7 +125,7 @@ class Game:
 
             self.scene.scale_ratio = self.render.get_size()[0] / self.scene.get_size()[0]
 
-            self.launch_debug()
+            Debug.launch_debug(self)
 
             pg.display.update()
 
@@ -194,27 +190,15 @@ class Game:
             self.bound_functions[event_type] = []
         self.bound_functions[event_type].append(func)
 
-    def debug(self, param, side: str = "left", font = "arial", size = 32):
-        """
-        Adds a debug information to be displayed on the screen.
-
-        :param param: The parameter to be displayed.
-        :param side: The screen side where it's displayed: "left" or "right".
-        :param font: The font to be used
-        :param size: Font size
-        :return:
-        """
-        self.debug_list.append((str(param), side, font, size))
-
     def enable_debug(self):
         """
         Enabling debug mode.
 
         :return:
         """
+        Debug.debug_list = []
         Debug.toggle("debug_info")
         Debug.toggle("colliders")
-        self.debug_list = []
 
     def stop(self):
         """
@@ -224,31 +208,6 @@ class Game:
         """
         self.running = False
 
-    def launch_debug(self):
-        """
-        Launches the debug mode
-
-        :return:
-        """
-
-        if Debug.is_enabled("debug_info"):
-            debug_y_left = 5
-            debug_y_right = 5
-
-            for debug_info in self.debug_list:
-                debug_y = debug_y_left if debug_info[1] == "left" else debug_y_right
-
-                debug_el = DebugElement((0, 0), debug_info[3], debug_info[0], debug_info[2])
-
-                debug_x = 5 if debug_info[1] == "left" else self.render.get_width() - debug_el.size[0] - 5
-                debug_el.set_position((debug_x, debug_y))
-                debug_el.draw(self.render)
-
-                if debug_info[1] == "left":
-                    debug_y_left += debug_el.size[1] + 5
-                else:
-                    debug_y_right += debug_el.size[1] + 5
-            self.debug_list.clear()
 
     def toggle_fullscreen(self, mode: bool=None):
         """
@@ -265,83 +224,3 @@ class Game:
             pg.display.toggle_fullscreen()
             self.window = Window.from_display_module()
 
-    def register_debug(self):
-        """
-        Registers debug information, and updates the debug information
-
-        :return:
-        """
-
-        self.debug("Omicronde API - Galaxaris", "left", self.debug_font, 36)
-        self.debug(f"FPS : {int(self.Time.clock.get_fps())} | Render t : {self.Time.clock.get_rawtime()} ms", "left", self.debug_font, 32)
-
-        if self.scene:
-            screen = self.scene
-            if screen.camera:
-                self.debug(f"Camera : {int(screen.camera.position.x)} | {int(screen.camera.position.y)} - {screen.camera.camera_mode}", "left", self.debug_font, 32)
-        
-        keys_pressed = pg.key.get_pressed()
-        active_keys = [pg.key.name(i) for i in range(len(keys_pressed)) if keys_pressed[i]]
-
-
-        if self.scene:
-            screen = self.scene
-            self.debug(f"GameObjects : {int(len(screen.game_objects))}", "left", self.debug_font, 32)
-
-            if screen.layer_order:
-                self.debug(f"Layers :", "left", self.debug_font, 32)
-                for i, layer in enumerate(screen.layer_order):
-                    if "_" not in layer:
-                        self.debug(f"{i} : {layer} - Object : {len(screen.layers[layer])}", "left", self.debug_font, 16)
-                    else:
-                        self.debug(f"{i} : {layer}", "left", self.debug_font, 16)
-
-        #SFX part
-        
-        if len(active_keys) > 0:
-            self.debug("Keys : " + ", ".join(active_keys), "left", self.debug_font, 20)
-
-        if self.audio_manager:
-            audio_manager = self.audio_manager
-            if audio_manager.current_music():
-                self.debug(f"Music :", "left", self.debug_font, 32)
-                self.debug(f"{audio_manager.current_music()} - {'Playing' if audio_manager.is_music_playing() else 'Paused'}", "left", self.debug_font, 16)
-
-            if audio_manager.current_sfx():
-                self.debug(f"SFX :", "left", self.debug_font, 32)
-
-                sfx_debug_str = ""
-                for sfx in audio_manager.current_sfx():
-                    sfx_debug_str += f"{sfx} - {'Playing' if audio_manager.is_sfx_playing(sfx) else 'Paused'} | "
-                self.debug(sfx_debug_str[:-3], "left", self.debug_font, 16) #-3 allows to remove the last " | "
-
-
-    def register_debug_entity(self, entity):
-        """
-        Registers debug information for an entity
-        
-        :param entity: the target entity
-        :return:
-        """
-        self.debug(f"Entity : {entity.__class__.__name__}", "right", self.debug_font, 32)
-        self.debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", self.debug_font, 32)
-
-        if entity:
-            self.debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", self.debug_font, 32)
-            self.debug("Jump : " + ("True" if entity.jump else "False"), "right", self.debug_font, 16)
-            self.debug("Fall : " + ("True" if entity.fall else "False"), "right", self.debug_font, 16)
-            self.debug("Boost : " + ("True" if entity.boost else "False"), "right", self.debug_font, 16)
-            self.debug(f"Gravity : {entity.gravity:.2f}", "right", self.debug_font, 16)
-
-            if hasattr(entity, "equipped_weapon") and entity.equipped_weapon.trajectory and entity.equipped_weapon.is_aiming:
-                angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0
-                ini_speed = entity.equipped_weapon.trajectory.ini_speed if entity.equipped_weapon.trajectory.ini_speed else 0
-                self.debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {ini_speed}", "right", self.debug_font, 32)
-
-            if hasattr(entity, "health"):
-                self.debug(f"Health : {entity.health}", "right", self.debug_font, 32)
-
-        if entity.collided_objs:
-            self.debug("Collisions :", "right", self.debug_font, 32)
-            for collision in entity.collided_objs:
-                self.debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", self.debug_font, 16)
