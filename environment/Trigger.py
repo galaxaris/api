@@ -92,7 +92,7 @@ class Trigger(GameObject):
 
     def remove_trigger(self):
         """
-        Removes the trigger from the game. (TODO: for now, it's just a tag removal and callbacks reset, but it should be removed from the scene's game objects list to free memory)
+        Removes the trigger from the game.
         
         :return:
         """

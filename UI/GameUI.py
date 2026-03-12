@@ -129,14 +129,21 @@ class GameUI(pg.Surface):
                     scene.global_state["player_control"] = True
                     Inputs.prevent_once_key("jump")
 
+        if len(self.active_menus) > 0:
+            scene.global_state["in_menu"] = True
+            scene.global_state["player_control"] = False
+        else:
+            scene.global_state["in_menu"] = False
+            scene.global_state["player_control"] = True
 
         if inputs["pause"] and self.active_menus:
             # Close the most recently opened menu
             last_menu_key = self.active_menus[-1]
             self.hide(last_menu_key)
-            if len(self.active_menus) == 0:
-                scene.global_state["in_menu"] = False
-                scene.global_state["player_control"] = True
+
+
+
+
 
         for key in self.enabled_elements:
             element = self.elements[key]

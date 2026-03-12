@@ -119,7 +119,6 @@ class Scene(pg.Surface):
         """
         self.fill((0, 0, 0))
 
-        #TODO: when pausing the game, stop the FPS completely (no more events)
         self.camera.update()
 
         if self.background:
@@ -150,13 +149,13 @@ class Scene(pg.Surface):
                 layer_surf = self.layer_surfaces[name]
                 layer_surf.fill((0, 0, 0, 0))
                 for obj in self.layers[name]:
-                    obj.update(self)
+                    if not self.global_state["in_menu"]: obj.update(self)
                     obj.draw(layer_surf, self)
                 self.blit(layer_surf, (0, 0))
             else:
                 for obj in self.layers[name]:
                     relative_pos = obj.pos - self.camera.position
-                    obj.update(self)
+                    if not self.global_state["in_menu"]: obj.update(self)
                     if -self.size.x - obj.size.x < relative_pos.x < self.size.x + obj.size.x:
                         obj.draw(self, self)
 
