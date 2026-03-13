@@ -66,8 +66,12 @@ class Player(Character):
                 if Inputs.MOUSE_SCROLL != 0:
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
-                if Inputs.is_controller_connected() and mouse == (0, -1000):
+                if Inputs.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
+                    if get_once_inputs()["aim_up"]:
+                        self.equipped_weapon.trajectory.ini_speed += 1
+                    elif get_once_inputs()["aim_down"]:
+                        self.equipped_weapon.trajectory.ini_speed -= 1
 
                 self.set_direction("left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14/2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14/2 else "right")
 
