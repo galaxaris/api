@@ -1,0 +1,38 @@
+name: Générateur de Diagramme UML
+
+on:
+  push:
+    branches: [ "main", "master" ] # Se déclenche quand on pousse sur ces branches
+
+jobs:
+  generate-uml:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Récupération du code
+      uses: actions/checkout@v4
+
+    - name: Configuration de Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10' # Modifiez selon votre version
+
+    - name: Installation des dépendances (Graphviz et Pylint)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y graphviz
+        python -m pip install --upgrade pip
+        pip install pylint
+
+    - name: Génération du diagramme avec pyreverse
+      # REMPLACEZ 'src/' PAR LE NOM DE VOTRE DOSSIER CONTENANT LE CODE PYTHON
+      run: |
+        pyreverse -o png -p Architecture src/ 
+
+    - name: Sauvegarde du diagramme (Artifact)
+      uses: actions/upload-artifact@v4
+      with:
+        name: diagrammes-uml
+        path: |
+          classes_Architecture.png
+          packages_Architecture.png
