@@ -1,12 +1,13 @@
 # TODO for API
 
 Entity :
-  - Player improvements : reduce the number 
-  - Enemy (IA) - Mode : Chase, Pistol
-  - Boss - General behavior - Prepare the Boss to be modular and easily customizable for different bosses (different attacks, different patterns, etc.)
+  - Player improvements : Redo collision system
+
+Event System :
+   - Subscribe to events,
+   - Link Trigger to events
 
 Environment :
-  - InOut (Doors, Teleporters)
   - Trap
   - Handle Collisions correctly :
      - Stop stick to walls when colliding with them
@@ -15,7 +16,11 @@ Environment :
 Level System :
   - Level loading from JSON files
   - Save file
-  - Level Editor (In-Game or External)
+  - Level Editor
+  - 
+Save systems:
+  - Save player progress (Levels completed, Checkpoints reached, etc.)
+  - Save player stats (Health, Score, etc.)
 
 Dialog System :
   - Choice Systems
@@ -24,6 +29,7 @@ Dialog System :
 Global List of prepared objects :
   - Checkpoint
   - Antenna (Minigame to solve it (At the end))
+  - SolidNoSolid (Platform that can be solid or not depending on the state of a switch)
 
 Objects :
   - GraplingHook
@@ -32,3 +38,4 @@ Objects :
 - Particles :
   - Add more particles (Water splash, Dust, etc.)
   - Add particle effects for different actions (Jumping, Landing, Shooting, etc.)
+

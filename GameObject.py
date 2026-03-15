@@ -53,7 +53,7 @@ class GameObject:
         self.interact = False
         self.destroyed = False
         self.in_trigger_interact = False
-    #TODO: Faire un texture repeat pour les objets qui ont une texture plus petite que leur taille
+
     def set_texture(self, texture:Texture, rescale: bool = False):
         """
         Sets the texture for the GameObject.
@@ -71,6 +71,9 @@ class GameObject:
         self.rect = self.image.get_rect(topleft=self.pos)
 
     def repeat_texture(self, surface: pg.Surface, size:pg.Vector2 | tuple[int, int]) -> pg.Surface:
+        #Avoid division by zero
+        if surface.get_width() == 0 or surface.get_height() == 0:
+            return surface
         s_size = pg.Vector2(surface.get_size())
         new_image = pg.Surface(size, pg.SRCALPHA, 32).convert_alpha()
 
@@ -107,7 +110,8 @@ class GameObject:
         self.size = pg.Vector2(size)
         self.image = self.repeat_texture(self.image, size)
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.animation.calculate_frame_size(self.size)
+        if self.size and self.size != (0, 0) and self.animation:
+            self.animation.calculate_frame_size(self.size)
 
     def set_color(self, color: tuple[int, int, int]):
         """
@@ -124,7 +128,8 @@ class GameObject:
         :param animation: The animation to be set
         """
         self.animation = animation
-        self.animation.calculate_frame_size(self.size)
+        if self.size and self.size != (0, 0) and self.animation:
+            self.animation.calculate_frame_size(self.size)
 
     def add_tag(self, tag: str):
         """
@@ -165,7 +170,7 @@ class GameObject:
 
     def draw(self, surface: pg.Surface, scene=None):
         """
-        Draws the GameObject. Offsets taken into accccccount!
+        Draws the GameObject. Offsets taken into account!
         In debug mode, also draws the collider rect underlined in red.
 
         :param scene:

@@ -49,11 +49,8 @@ class Player(Character):
         was_falling = self.fall
         Time = scene.Time if scene and scene.Time else None
 
-        self.equipped_weapon.update(scene)
 
         if not Debug.is_enabled("freecam"):
-
-
             if inputs["aim"] and scene.global_state["player_control"]:
                 self.speed_malus = self.max_velocity//2
                 mouse = pg.Vector2(Inputs.get_mouse(Inputs.get_key_pressed("aim")))
@@ -73,13 +70,11 @@ class Player(Character):
                     elif get_once_inputs()["aim_down"]:
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
-                self.set_direction("left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14/2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14/2 else "right")
-
-                if get_once_inputs()["shoot"] and  scene.global_state["player_control"]:
-                    self.equipped_weapon.shoot(self.pos + self.size//2)
+                if get_once_inputs()["shoot"] and scene.global_state["player_control"]:
+                    haveShooted = self.equipped_weapon.shoot(self.pos + self.size//2)
                     #self.equipped_weapon.is_aiming = False
                     #SFX
-                    if self.sfx_list:
+                    if self.sfx_list and haveShooted:
                         if "fire" in self.sfx_list:
                             audio_manager = scene.audio_manager
                             if audio_manager:
@@ -134,24 +129,6 @@ class Player(Character):
                         audio_manager = scene.audio_manager
                         if audio_manager:
                             audio_manager.play_sfx("hit_ground")
-
-    def draw(self, surface: pg.Surface, scene=None):
-        """
-        Draws the player on the given surface.
-        
-        :param scene: Scene where is being drawn, used to draw the trajectory on top of the player when aiming
-        :param surface: Surface to draw on (usually the game's surface)
-        :param offset: Offset to apply to the player's position (for moving camera)
-        :return:
-        """
-
-        if self.equipped_weapon.is_aiming:
-            surface_trajectory = pg.Surface((scene.get_width(), scene.get_height()), pg.SRCALPHA).convert_alpha()
-            self.equipped_weapon.trajectory.draw(surface_trajectory, scene, self.pos)
-            scene.add_surface(surface_trajectory, "_trajectory")
-
-        super().draw(surface, scene)
-
 
 
 

@@ -35,4 +35,4 @@ class Text(UIElement):
         self.text = text
         self.image = get_font(self.font, self.size_text).render(self.text, False, self.color)
         self.rect = self.image.get_rect(topleft=self.pos)
-        self.size = self.image.get_size()
+        self.size = pg.Vector2(self.image.get_size())

@@ -1,7 +1,9 @@
 import pygame as pg
 from api.UI.GameUI import UIElement
+from api.UI.Text import Text
 
 from api.engine.Scene import Scene
+from api.utils import Fonts
 
 
 class ProgressBar(UIElement):
@@ -34,6 +36,11 @@ class ProgressBar(UIElement):
         """Set the position of the progress bar."""
         super().set_position(pos)
 
+    def set_size(self, size: tuple[int, int] | tuple[float, float] | pg.Vector2):
+        """Set the size of the progress bar."""
+        super().set_size(size)
+        self.border_radius = size[1] // 2  # Update border radius for new height
+
     def set_color(self, color_fg: tuple[int, int, int] = None, color_bg: tuple[int, int, int] = None):
         """Update the colors of the progress bar."""
         if color_fg: self.color_fg = color_fg
@@ -60,3 +67,32 @@ class ProgressBar(UIElement):
 
         # 5. Optional: Thin Border for definition
         pg.draw.rect(surface, (20, 20, 20), bg_rect, width=2, border_radius=self.border_radius)
+
+
+class EntityProgressBar(ProgressBar):
+    def __init__(self, color_bg: tuple[int, int, int], color_fg: tuple[int, int, int], name: str = "Boss", progress_max: int=100):
+        super().__init__((0, 0), (0, 0), color_bg, color_fg, progress_max)
+        self.name = name
+        self.enemy_text = Text((0, 0), 24, self.name, font=Fonts.DEFAULT_FONT, color=(255, 255, 255))
+
+
+    def update(self, scene = None):
+        super().update(scene)
+        if not scene:
+            return
+        self.set_position(((scene.size.x - self.size.x) // 2, 10))
+        self.set_size(((scene.size.x - scene.size.x * 0.5), 10))
+        self.border_radius = 20
+        self.enemy_text.set_position(
+            (scene.size.x // 2 - self.enemy_text.size.x // 2, 15 + self.size.y))
+
+    def show(self, scene: Scene):
+        self.update(scene)
+        scene.UI.add(self.id, self)
+        scene.UI.add(self.enemy_text.id, self.enemy_text)
+        scene.UI.show(self.id)
+        scene.UI.show(self.enemy_text.id)
+
+    def hide(self, scene: Scene):
+        scene.UI.hide(self.id)
+        scene.UI.hide(self.enemy_text.id)

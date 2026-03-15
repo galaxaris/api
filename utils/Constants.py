@@ -8,8 +8,8 @@ from api.physics.Trajectory import Trajectory
 OFFSET_X = 0
 OFFSET_Y = 0
 
-MIN_SHOT_SPEED = 1
-MAX_SHOT_SPEED = 15
+MIN_SHOT_SPEED = 3
+MAX_SHOT_SPEED = 10
 DEFAULT_SHOT_SPEED = 7
 
 
