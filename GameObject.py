@@ -46,6 +46,7 @@ class GameObject:
         self.rect = self.image.get_rect(topleft=pos)
         self.animation = None
         self.id = id(self)
+        self.textures = {}
         self.tags = set()
         self.direction = "right"
         self.surface = None
@@ -148,6 +149,35 @@ class GameObject:
         :param tag: The tag to be removed
         """
         self.tags.discard(tag)
+
+    def bind_texture(self, name: str, texture: Texture):
+        """
+        Binds a texture to a name for easy retrieval later.
+
+        :param name: The name to bind the texture to
+        :param texture: The texture to be bound
+        """
+        self.textures[name] = texture
+
+    def bind_textures(self, textures: dict[str, Texture]):
+        """
+        Binds multiple textures to names for easy retrieval later.
+
+        :param textures: A dictionary of name-texture pairs to be bound
+        """
+        for name, texture in textures.items():
+            self.bind_texture(name, texture)
+
+    def set_texture_bound(self, name: str, rescale: bool = False):
+        """
+        Set a texture bound to a name.
+
+        :param name: The name of the texture to retrieve
+        :return: The texture bound to the name, or None if not found
+        """
+        texture = self.textures.get(name, self.image)
+        self.set_texture(texture, rescale)
+
 
     def update(self, scene=None):
         """

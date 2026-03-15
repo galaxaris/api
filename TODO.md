@@ -1,22 +1,14 @@
 # TODO for API
 
-Entity :
-  - Player improvements : Redo collision system
-
 Event System :
    - Subscribe to events,
    - Link Trigger to events
-
-Environment :
-  - Trap
-  - Handle Collisions correctly :
-     - Stop stick to walls when colliding with them
-  - Particle
 
 Level System :
   - Level loading from JSON files
   - Save file
   - Level Editor
+
 Save systems:
   - Save player progress (Levels completed, Checkpoints reached, etc.)
   - Save player stats (Health, Score, etc.)
