@@ -22,6 +22,8 @@ class Level:
         self.header = header
         self.body = body
 
+        #Thanks to json.dump, we don't have to manage the saving of files, and it will do it for us.
+
         try:
             with open(os.path.join(self.path,"header")) as h_file:
                 json.dump(self.header, h_file, indent=2)
