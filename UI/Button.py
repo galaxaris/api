@@ -168,10 +168,7 @@ class Button(UIElement):
         """
         super().update(scene)
 
-        if Inputs.is_controller_connected():
-            return
-
-        raw_mouse = Inputs.get_mouse() - self.menu_offset
+        raw_mouse = Inputs.get_mouse(True) - self.menu_offset
         ratio = scene.scale_ratio
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
         self.rect.topleft = self.pos + self.menu_offset//2
@@ -200,8 +197,13 @@ class Button(UIElement):
                 #hovering  without clicking
                 self.hover(self.bg_color_hover)
         else:
+
             #Not over the button
-            self.idle(self.bg_color)
+            if not Inputs.is_controller_connected():
+                self.idle(self.bg_color)
+            else:
+                self.rect = self.image.get_rect(topleft=self.pos)
+
             #Reset cursor to default if not hovering over any button
             #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 

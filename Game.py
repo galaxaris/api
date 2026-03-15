@@ -11,8 +11,6 @@ v. Beta (in development) -
 Copyright (c) 2026 Galaxaris & Associates. All rights reserved.
 """
 
-### TODO: should we pass all the API instances to the Game class? (Could make it easier to access everything from one class)
-
 import pygame as pg
 
 from api.assets.AudioManager import AudioManager

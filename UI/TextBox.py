@@ -110,6 +110,7 @@ class TextBox(UIElement):
         self.add_tag("ui_textbox")
         self.add_tag("ui_block")
         self.add_tag("ui_closable")
+        self.add_tag("ui_bypassdebug")
 
     def set_text(self, text: str, font: str = None):
         """Set textbox content and invalidate cached line rendering.

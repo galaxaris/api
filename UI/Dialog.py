@@ -18,6 +18,7 @@ class Dialog(UIElement):
         self.dialogs: list[tuple[str, str]] = []
         self.font = font
         self.add_tag("ui_dialog")
+        self.add_tag("ui_bypassdebug")
 
     def add_character(self, name: str, texture: Texture, side: str = "left"):
         """Register a character entry for dialog rendering.

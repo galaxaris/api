@@ -148,6 +148,7 @@ def launch_debug(self):
     """
 
     if is_enabled("debug_info"):
+
         debug_y_left = 5
         debug_y_right = 5
 

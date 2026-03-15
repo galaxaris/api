@@ -80,6 +80,7 @@ class Trajectory:
 
         render_width, render_height = scene.get_width(), scene.get_height()
 
+        to_enemy = 0
         while not collided and max_points > 0:
             pos = self.get_pos(step)
             draw_pos = pos + offset2
@@ -92,9 +93,15 @@ class Trajectory:
             else:
                 virtual_point = pg.Rect(pos.x, pos.y, 4, 4)
                 for obstacle in obstacles:
-                    if obstacle.tags and virtual_point.colliderect(obstacle.rect):
+                    if "entity" in obstacle.tags and virtual_point.colliderect(obstacle.rect):
+                        to_enemy += 1
+                        if to_enemy > 1: collided = True
+                        break
+                    elif obstacle.tags and virtual_point.colliderect(obstacle.rect):
                         collided = True
                         break
+
+
 
 
 

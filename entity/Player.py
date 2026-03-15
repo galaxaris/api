@@ -65,9 +65,9 @@ class Player(Character):
 
                 if Inputs.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
-                    if get_once_inputs()["aim_up"]:
+                    if get_once_inputs()["aim_up"] and self.equipped_weapon.trajectory.ini_speed < MAX_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed += 1
-                    elif get_once_inputs()["aim_down"]:
+                    elif get_once_inputs()["aim_down"] and self.equipped_weapon.trajectory.ini_speed > MIN_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
                 if get_once_inputs()["shoot"] and scene.global_state["player_control"]:

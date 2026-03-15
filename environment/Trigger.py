@@ -220,7 +220,6 @@ class TriggerInteract(Trigger):
         if self.trigger_surface:
             self.BOX_DIM = pg.Vector2(self.trigger_surface.get_size())
 
-        #TODO: Fix wrong interract hint
         def interact_callback(obj: GameObject):
             """
             Apply a box upper the object to indicate the interaction, and wait for the player to press the "interact" key (default: E) to execute the interaction. The callback function must be passed with the interaction logic (via lambda or partial) and will be executed when the key is pressed.
@@ -230,18 +229,16 @@ class TriggerInteract(Trigger):
             :return:
             """
             obj.in_trigger_interact = True
-            if not self.trigger_surface:
-                self.BOX_DIM = pg.Vector2(20, 20)
-                self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
-                self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
-                correct_text = Inputs.get_str_input("interact")
-                text = Fonts.get_font(Fonts.DEFAULT_FONT, 16).render(correct_text, False,
-                                                                               (0, 0, 0))
-                self.trigger_surface.blit(text, (self.BOX_DIM.x // 2 - text.get_width() // 2,
-                                                 self.BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
+            correct_text = Inputs.get_str_input("interact")
+            self.BOX_DIM = pg.Vector2(20, 20)
+            self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
+            self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
+            text = Fonts.get_font(Fonts.DEFAULT_FONT, 16).render(correct_text, False,
+                                                                           (0, 0, 0))
+            self.trigger_surface.blit(text, (self.BOX_DIM.x // 2 - text.get_width() // 2,
+                                             self.BOX_DIM.y // 2 - text.get_height() // 2.5))  # Center the "E" text in the box
 
             if not self.enabled and self.surface:
-
                 self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (self.BOX_DIM.x//2,self.BOX_DIM.y//2) ) # Position the box above the trigger
 
                 #Wait for the player to press the "interact" key

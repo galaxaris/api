@@ -28,6 +28,7 @@ class Modal(UIElement):
         self.border_radius = border_radius
         self.add_tag("ui_menu")
         self.add_tag("ui_block")
+        self.add_tag("ui_bypassdebug")
 
     def add_element(self, element: UIElement, x: int = 0):
         """Add an element and optionally register it in a button column.

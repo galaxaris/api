@@ -1,7 +1,7 @@
 """UI orchestration surface for dialogs, menus, and overlays."""
 
 from api.GameObject import GameObject
-from api.utils import Inputs
+from api.utils import Inputs, Debug
 from api.utils.Inputs import get_once_inputs
 import pygame as pg
 
@@ -169,6 +169,9 @@ class GameUI(pg.Surface):
 
         for key in self.enabled_elements:
             element = self.elements[key]
+
+            if Debug.is_enabled("debug_info") and "ui_bypassdebug" not in element.tags:
+                continue
 
             # If it's the active dialog/textbox, draw the specific current box
             if self.active_textbox and key == self.active_textbox[0]:

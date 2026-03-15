@@ -6,7 +6,6 @@ from api.GameObject import GameObject
 from api.UI.GameUI import GameUI
 from api.assets.AudioManager import AudioManager
 from api.engine.GameCamera import GameCamera
-from api.entity.EntityManager import EntityManager
 from api.environment.Background import Background
 from api.environment.Parallax import ParallaxBackground
 from api.physics.Time import Time
@@ -31,7 +30,6 @@ class Scene(pg.Surface):
         self.layer_surfaces: Dict[str, pg.Surface] = {}
         self.game_objects: List[GameObject] = []
         self.camera : GameCamera = GameCamera((0, 0))
-        self.entities : EntityManager = EntityManager(self)
         self.background: Optional[Background | ParallaxBackground] = None
         self.audio_manager : AudioManager = None
         self.Time : Time = None
@@ -42,7 +40,8 @@ class Scene(pg.Surface):
         self.global_state = {
             "player_control": True,
             "override_player_control": False,
-            "in_menu": False
+            "in_menu": False,
+            "levelTime": 0
         }
 
 
@@ -121,6 +120,10 @@ class Scene(pg.Surface):
 
         self.camera.update()
 
+        if self.Time:
+            self.global_state["levelTime"] = self.Time.get_chrono("levelTime")
+
+
         if self.background:
             if isinstance(self.background, Background):
                 self.set_layer(0, "_background")
@@ -188,6 +191,7 @@ class Scene(pg.Surface):
         :param audio_manager: The AudioManager instance to be assigned to the scene
         """
         self.Time = Time
+        self.Time.start_chrono("levelTime")
         self.audio_manager = audio_manager
 
 
