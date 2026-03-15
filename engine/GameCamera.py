@@ -115,8 +115,8 @@ class GameCamera:
                 target_y = self.focused_object.pos.y - self.offset.y
 
             self.camera_mode = self.focused_object.__class__.__name__
-            self.position.x = target_x
-            self.position.y = target_y
+            self.position.x = int(target_x)
+            self.position.y = int(target_y)
         else:
             if self.freecam_old:
                 self.position = self.freecam_old.copy()

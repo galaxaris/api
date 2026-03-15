@@ -121,15 +121,16 @@ class Entity(GameObject):
         """
         super().update(scene)
         if self.destroyed: return
-
         self.update_sprite()
+
+        if scene.global_state["in_menu"]:
+            return
+
 
         # Récupération des objets solides
         others = [obj for obj in scene.game_objects if obj.id != self.id and "solid" in obj.tags]
         self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x * scene.Time.deltaTime, self.vel.y * scene.Time.deltaTime)
         Time = scene.Time
-
-
 
         if not Debug.is_enabled("freecam") and not self.is_controlled:
             if self.vel.x > 0:

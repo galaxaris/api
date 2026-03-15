@@ -2,13 +2,10 @@
 API's Player utilities
 """
 from api.entity.Character import Character
-from api.items.Catalog import Pistol
 from api.physics.Collision import get_collided_objects
-from api.physics.Trajectory import Trajectory, free_fall
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, Inputs
 
-from api.entity.Entity import Entity
 from api.utils.Inputs import get_inputs, get_once_inputs
 
 import pygame as pg
@@ -44,6 +41,7 @@ class Player(Character):
 
         :return:
         """
+
         inputs = get_inputs()
 
         was_falling = self.fall

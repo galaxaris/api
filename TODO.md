@@ -17,7 +17,6 @@ Level System :
   - Level loading from JSON files
   - Save file
   - Level Editor
-  - 
 Save systems:
   - Save player progress (Levels completed, Checkpoints reached, etc.)
   - Save player stats (Health, Score, etc.)
