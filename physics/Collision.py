@@ -1,4 +1,5 @@
 """Collision helper functions for game objects."""
+import math
 
 import pygame as pg
 from pygame import Rect
@@ -21,8 +22,12 @@ def get_collided_objects(obj: GameObject, tag: str, others: list[GameObject], dx
     """
     collided_objects = []
 
-    # TODO: remove wall jump
-    future_rect = obj.rect.move(dx, dy)
+    # Correction du "piège des entiers" : on force un mouvement d'au moins 1 pixel
+    # ou -1 pixel dans la hitbox prédictive si une vélocité existe.
+    move_x = math.ceil(dx) if dx > 0 else math.floor(dx)
+    move_y = math.ceil(dy) if dy > 0 else math.floor(dy)
+
+    future_rect = obj.rect.move(move_x, move_y)
 
     targets = [o for o in others if o.id != obj.id and (tag is None or tag in o.tags)]
 

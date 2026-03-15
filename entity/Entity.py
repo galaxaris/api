@@ -107,7 +107,6 @@ class Entity(GameObject):
         Handles the entity hitting its head on a ceiling or platform above it.
         """
         self.vel.y = 0
-        self.jump = False
     
     def hit_wall(self):
         """
@@ -117,19 +116,20 @@ class Entity(GameObject):
 
     def update(self, scene=None):
         """
-        Updates the entity's position, velocity, and animation. 
+        Updates the entity's position, velocity, and animation.
         Should be called every frame
         """
         super().update(scene)
-        if self.destroyed:
-            return
-        self.update_sprite()
-        others = [obj for obj in scene.game_objects if obj.id != self.id]
-        on_ground = False
+        if self.destroyed: return
 
-        # Gets normalized frame factor (1.0 ~= one frame at target FPS).
+        self.update_sprite()
+
+        # Récupération des objets solides
+        others = [obj for obj in scene.game_objects if obj.id != self.id and "solid" in obj.tags]
+        self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x * scene.Time.deltaTime, self.vel.y * scene.Time.deltaTime)
         Time = scene.Time
-        
+
+
 
         if not Debug.is_enabled("freecam") and not self.is_controlled:
             if self.vel.x > 0:
@@ -137,56 +137,58 @@ class Entity(GameObject):
             elif self.vel.x < 0:
                 self.vel.x = min(self.vel.x + self.resistance * Time.deltaTime, 0)
 
-        next_dx = self.vel.x * Time.deltaTime
-        next_dy = self.vel.y * Time.deltaTime
-        self.collided_objs = get_collided_objects(self, "solid", others, next_dx, next_dy)
+        self.pos.x += self.vel.x * Time.deltaTime
+        self.rect.x = round(self.pos.x)
 
-        for obj in self.collided_objs:
-            if obj[1] == "top" and obj[1] not in ["left", "right"]:
-                self.land()
+        for other in others:
+            if self.rect.colliderect(other.rect):
+                if self.vel.x > 0:
+                    self.rect.right = other.rect.left
+                    self.pos.x = self.rect.x
+                    self.vel.x = 0
+                    self.hit_wall()
+                elif self.vel.x < 0:
+                    self.rect.left = other.rect.right
+                    self.pos.x = self.rect.x
+                    self.vel.x = 0
+                    self.hit_wall()
+
+
+        self.pos.y += self.vel.y * Time.deltaTime
+        self.rect.y = round(self.pos.y)
+
+        for other in others:
+            if self.rect.colliderect(other.rect):
+                if self.vel.y > 0:  # Chute (touche le sol)
+                    self.rect.bottom = other.rect.top
+                    self.pos.y = self.rect.y
+                    self.land()  # Met vel.y à 0, jump/fall à False
+                elif self.vel.y < 0:  # Saut (touche le plafond)
+                    self.rect.top = other.rect.bottom
+                    self.pos.y = self.rect.y
+                    self.hit_head()  # Met vel.y à 0
+
+
+        self.rect.y += 1
+
+        on_ground = False
+        for other in others:
+            if self.rect.colliderect(other.rect):
                 on_ground = True
-            if obj[1] == "bottom":
-                self.hit_head()
-            if obj[1] == "left":
-                self.hit_wall()
-                self.vel.x = 0
-                if self.direction == "left":
-                    self.vel.x = -0.1
-            if obj[1] == "right":
-                self.hit_wall()
-                self.vel.x = 0
-                if self.direction == "right":
-                    self.vel.x = 0.1
+                break
 
-        if not on_ground:
-            self.fall = True
-        else:
-            self.fall = False
-
-        if self.gravity and self.fall:
+        if self.gravity and not on_ground:
             self.vel.y += self.gravity * Time.deltaTime
 
-        if self.vel.x != 0 and self.collided_objs:
-            for obj in self.collided_objs:
-                if obj[1] in ["left", "right"]:
-                    if obj[1] == "left":
-                        self.set_position((obj[0].rect.left - self.rect.width, self.pos.y))
-                    else:
-                        self.set_position((obj[0].rect.right, self.pos.y))
+        self.rect.y -= 1
 
-        if self.vel.y != 0 and self.collided_objs:
-            for obj in self.collided_objs:
-                if obj[1] in ["top", "bottom"]:
-                    if obj[1] == "top":
-                        self.set_position((self.pos.x, obj[0].rect.top - self.rect.height))
-                    else:
-                        self.set_position((self.pos.x, obj[0].rect.bottom))
-                    break
+        if on_ground:
+            self.fall = False
+            self.is_hitting_ground = True
+        else:
+            self.fall = True
+            self.is_hitting_ground = False
 
-
-        self.set_position((self.pos.x + self.vel.x * Time.deltaTime, self.pos.y + self.vel.y * Time.deltaTime))
-
-        self.is_hitting_ground = False
         self.is_controlled = False
 
     def update_sprite(self):

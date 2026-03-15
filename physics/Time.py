@@ -31,6 +31,7 @@ class Time:
         """
 
         #NOTE: All clock properties are still accessessible through Time.clock
+        self.timeScale = 1
         self.clock = pg.time.Clock()
         #Let escape the True power of computers!!
         #Without limit, the Game Engine is more precise but more hazardous
@@ -99,7 +100,7 @@ class Time:
             raw_delta = self.clock.tick() / 1000 #1000 for making 1s
 
         self._deltaTime = min(raw_delta, self.maxDeltaTime)
-        self.frameScale = self._deltaTime * max(1, self.maxFps)
+        self.frameScale = self._deltaTime * max(1, self.maxFps) * self.timeScale
 
         #NOTE: deltaTime = frameScale for clarity reason and harmonization with Unity's Time class
         self.deltaTime = self.frameScale
