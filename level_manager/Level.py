@@ -1,4 +1,5 @@
 from utils import *
+import json
 
 class Level:
     """
@@ -9,8 +10,6 @@ class Level:
         """
         Any object of the class is initialized with the path that brings to the level's file and the name of the file.
         :param name: Name of the directory you are aiming.
-        :param header: A dictionary that contains data needed to save or load the header.
-        :param body: A dictionary that contains data needed to save or load the body.
         """
 
         self.name = name
@@ -18,9 +17,20 @@ class Level:
         self.header= None
         self.body= None
 
-    def save_level (self):
-        if (self.new):
-            pass
+    def save_level (self, header:dict, body:dict):
+
+        self.header = header
+        self.body = body
+
+        try:
+            with open(os.path.join(self.path,"header")) as h_file:
+                json.dump(self.header, h_file, indent=2)
+            with open(os.path.join(self.path,"body")) as b_file:
+                json.dump(self.body, b_file, indent=2)
+
+        except FileNotFoundError:
+            print("ERROR : The procedure to save file failed. Please verify the integrity of the file at : "+self.path+";")
+
         pass
 
     def load_level (self):
