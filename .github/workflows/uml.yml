@@ -27,7 +27,7 @@ jobs:
     - name: Génération du diagramme avec pyreverse
       # REMPLACEZ 'src/' PAR LE NOM DE VOTRE DOSSIER CONTENANT LE CODE PYTHON
       run: |
-        pyreverse -o png -p Architecture src/ 
+        pyreverse -o png -p Architecture ./
 
     - name: Sauvegarde du diagramme (Artifact)
       uses: actions/upload-artifact@v4
