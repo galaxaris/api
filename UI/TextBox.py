@@ -183,10 +183,10 @@ class TextBox(UIElement):
             content_surface.blit(line, (0, line_y))
             line_y += line.get_height() + 4
 
-
-        hint_text = Inputs.get_hint_input("interact")
-        hint_surface = get_font(self.font, 16).render(hint_text, False, (180, 180, 180))
-        content_surface.blit(hint_surface, (content_surface.get_width() - hint_surface.get_width(), content_surface.get_height() - hint_surface.get_height()))
+        if self.closable:
+            hint_text = Inputs.get_hint_input("interact")
+            hint_surface = get_font(self.font, 16).render(hint_text, False, (180, 180, 180))
+            content_surface.blit(hint_surface, (content_surface.get_width() - hint_surface.get_width(), content_surface.get_height() - hint_surface.get_height()))
 
         # 6. Assemblage final (Image + Contenu)
         if self.image:

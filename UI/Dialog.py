@@ -57,7 +57,7 @@ class Dialog(UIElement):
                     character_side = side
                     break
             goal_dialog = "continuer" if self.dialogs.index((character_name, dialog)) < len(self.dialogs) - 1 else "fermer"
-            textbox = TextBox(character_name, dialog, texture=character_texture, image_side=character_side, goal=goal_dialog, font=self.font)
+            textbox = TextBox(character_name, dialog, texture=character_texture, image_side=character_side, goal=goal_dialog, font=self.font, closable=True)
             dialogs.append(textbox)
         return dialogs
 
