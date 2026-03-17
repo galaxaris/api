@@ -90,7 +90,7 @@ class Modal(UIElement):
         for element in self.elements:
             element.update(scene)
 
-    def draw(self, surface: pg.Surface, offset=None):
+    def draw(self, surface: pg.Surface, offset=None, scene=None):
         """Render modal and all child elements.
 
         :param scene:
