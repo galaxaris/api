@@ -81,7 +81,7 @@ class TextBox(UIElement):
     goal: str
 
     def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left",
-                 texture: Texture = None, closable: bool = True, goal="fermer", border_radius: int = 10):
+                 texture: Texture = None, closable: bool = True, goal="fermer", border_radius: int = 10, margin: pg.Vector2 = pg.Vector2(0,0)):
         """Initialize a textbox.
 
         :param title: Displayed title, usually speaker name.
@@ -98,6 +98,7 @@ class TextBox(UIElement):
         self.title_surface = process_title(title, font)
         self.image_side = image_side
         self.closable = closable
+        self.margin = margin
         self.goal = goal
         self.image = None
         self.text_surfaces = []  # Sera généré au premier draw selon la largeur disponible
@@ -204,4 +205,4 @@ class TextBox(UIElement):
             text_box_bg.blit(content_surface, (margin, margin))
 
         # 7. Affichage sur l'écran principal (en bas)
-        surface.blit(text_box_bg, (margin, surface.get_height() - height - margin))
+        surface.blit(text_box_bg, (margin + self.margin.x, surface.get_height() - height - margin + self.margin.y))

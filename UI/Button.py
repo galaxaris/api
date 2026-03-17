@@ -133,7 +133,7 @@ class Button(UIElement):
         self.image = pg.Surface((self.size.x, self.size.y), pg.SRCALPHA)
         button_rect = pg.Rect(0, 0, self.size.x, self.size.y)
         pg.draw.rect(self.image, color, button_rect, border_radius=self.border_radius)
-        text = get_font(self.font, 20).render(self.text, True, text_color)  # True is for antialiasing
+        text = get_font(self.font, 20).render(self.text, False, text_color)
         text_rect = text.get_rect(center=(self.size.x // 2, self.size.y // 2))
         self.image.blit(text, text_rect)
         self.rect = self.image.get_rect(topleft=self.pos)
@@ -168,10 +168,10 @@ class Button(UIElement):
         """
         super().update(scene)
 
-        raw_mouse = Inputs.get_mouse(True) - self.menu_offset
+        raw_mouse = pg.Vector2(Inputs.get_mouse(True)) - pg.Vector2(self.menu_offset)
         ratio = scene.scale_ratio
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
-        self.rect.topleft = self.pos + self.menu_offset//2
+        self.rect.topleft = self.pos + pg.Vector2(self.menu_offset)//2
 
         #Track previous frame state for edge detection (click release)
         prev_was_clicked = getattr(self, '_was_clicked_prev_frame', False)
