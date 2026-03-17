@@ -1,25 +1,18 @@
 import math
 
 import pygame as pg
+from dataclasses import dataclass
 
-from api.GameObject import GameObject
-from api.items.ActiveItem import ActiveItem
+
 from api.items.Item import Item
 from api.entity.Projectile import Projectile
 from api.physics.Trajectory import Trajectory
 from api.utils.Constants import DEFAULT_GRAVITY
 
-class HealthPotion(Item):
-    """Base class for health potion."""
-    quantity: int
-    def __init__(self, name, item_type):
-        """Initialize the health potion."""
-        super().__init__(name, item_type)
-
-class Pistol(ActiveItem):
+class Pistol(Item):
     """Base class for pistol."""
-    def __init__(self, trajectory: Trajectory, gravity: float|int = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", is_equipped: bool = True, target: str = "enemy", cooldown: int = 500):
-        super().__init__(name, item_type, is_equipped)
+    def __init__(self, trajectory: Trajectory, gravity: float|int = DEFAULT_GRAVITY, name: str = "gun", item_type: str = "active_gun", target: str = "enemy", cooldown: int = 500):
+        super().__init__(name, item_type)
         self.show_trajectory = True
         self.projectiles = []
         self.trajectory = trajectory
@@ -51,4 +44,18 @@ class Pistol(ActiveItem):
             else:
                 scene.remove(projectiles[i], "#projectile")
                 projectiles.remove(projectiles[i])
+
+class ProjectileEssence(Item):
+    """Base class for projectile essence, it is what will give a projectile its gravity, effect, target, sprite"""
+    def __init__(self, name, item_type, gravity, effect, target, sprite):
+        super().__init__(name, item_type)
+        self.gravity = gravity
+        self.effect = effect
+        self.target = target
+        self.sprite = sprite
+
+
+
+
+
 
