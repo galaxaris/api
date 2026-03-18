@@ -48,7 +48,7 @@ class Level:
 
     def get_level(self):
         """
-        This function load the JSON file wich contains the datas about the level.
+        This function load the JSON file containing the datas about the level.
         :return:
         """
         with open(os.path.join(self.path, "header"), 'r', encoding="utf-8") as h_file:
