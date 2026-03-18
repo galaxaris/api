@@ -2,13 +2,14 @@ from api.UI.Button import Button
 from api.UI.GameUI import UIElement
 from api.UI.Modal import Modal
 from api.UI.TextBox import TextBox
+from api.assets.Texture import Texture
 from api.utils import Fonts, Inputs
 import pygame as pg
 
 class Choice(UIElement):
     """Textbox with buttons for branching dialog or menu options."""
 
-    def __init__(self, font=Fonts.DEFAULT_FONT, title: str = "Title", text: str = "text"):
+    def __init__(self, font=Fonts.DEFAULT_FONT, title: str = "Title", text: str = "text", texture: Texture = None):
         """Initialize a choice container.
 
         :param pos: Top-left position of the choice box.
@@ -20,14 +21,18 @@ class Choice(UIElement):
         self.title = title
         self.text = text
         self.active_button_index_x = 0
+        self.choice_index = -1
+        self.choice_goal = None
+        self.text_image = texture
         self.add_tag("ui_textbox")
         self.add_tag("ui_choice")
         self.add_tag("ui_block")
 
 
-    def add_choice(self, text: str, goal: str = "continue"):
+    def add_choice(self, text: str, goal: str = "continue", callback = lambda e: None):
         """Add a button to the choice container.
 
+        :param callback:
         :param button: Button element representing a choice.
         :return:
         """
@@ -37,6 +42,8 @@ class Choice(UIElement):
         button.bg_color = (30, 30, 30, 220)
         button.bg_color_focus = (30, 30, 30, 170)
         button.bg_color_hover = (40, 40, 40, 200)
+        button.goal = goal
+        button.callback = lambda e: (setattr(self, "choice_index", self.active_button_index_x), setattr(self, "choice_goal", goal), callback(e))
         self.buttons.append(button)
 
     def update(self, scene=None):
@@ -63,7 +70,10 @@ class Choice(UIElement):
                 actual_button.hover(actual_button.bg_color_hover)
 
                 if inputs["menu_select"]:
-                    actual_button.click()
+                    print(scene.Time.get_ticks())
+                    actual_button.click(actual_button.bg_color_focus)
+                    self.choice_index = self.active_button_index_x
+                    self.choice_goal = actual_button.goal
                     Inputs.prevent_once_key("jump")
                     if actual_button.callback:
                         actual_button.callback(actual_button)
@@ -82,7 +92,7 @@ class Choice(UIElement):
         posx = margin
         posy = surface.get_height() - height - margin
 
-        text_box = TextBox(self.title, self.text, self.font, closable=False)
+        text_box = TextBox(self.title, self.text, self.font, closable=False, texture=self.text_image)
         text_box.margin = pg.Vector2(0, -height - margin//len(self.buttons))
         text_box.draw(surface, scene)
 
