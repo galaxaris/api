@@ -2,6 +2,12 @@ import json
 
 
 class GlobalHeader:
+    """
+    This class is used to match some GameObject to their properties to remove possible redundancy in the level's file.
+
+    Structure : The JSON file can be represented as a list of dictionaries that have as a key the name of the GameObject, and as value all it properties;
+
+    """
 
     def __init__(self, path:str):
 
