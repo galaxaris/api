@@ -19,6 +19,9 @@ class UIElement(GameObject):
         self.goal = None
         self.add_tag("ui")
 
+    def draw(self, surface: pg.Surface, scene=None):
+        super().draw(surface, scene=scene)
+
 class GameUI(pg.Surface):
     """Manages UI elements visibility, interaction flow, and rendering."""
 
@@ -140,10 +143,6 @@ class GameUI(pg.Surface):
             # Close the most recently opened menu
             last_menu_key = self.active_menus[-1]
             self.hide(last_menu_key)
-
-
-
-
 
         for key in self.enabled_elements:
             element = self.elements[key]

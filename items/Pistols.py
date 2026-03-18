@@ -1,0 +1,126 @@
+import math
+
+import pygame as pg
+
+from api.entity.Projectile import Projectile
+from api.physics.Trajectory import Trajectory
+
+class WaterPistol:
+    """Base class for a pistol whose projectile is water."""
+    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500):
+        self.name = "water gun"
+        self.target = "enemy" #dirty
+        self.cooldown = cooldown
+        self.show_trajectory = True
+        self.projectiles = []
+        self.trajectory = trajectory
+        self.is_aiming = False
+        self.gravity = 0.5
+        self.Time = None
+        self.last = - self.cooldown
+
+    def shoot(self, shoot_pos: pg.Vector2)->bool:
+        game_projectiles = self.projectiles
+        now = pg.time.get_ticks()
+
+        if now - self.last >= self.cooldown:
+            self.last = now
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target)
+            game_projectiles.append(projectile)
+            return True
+        return False
+
+    def update(self, scene=None):
+        self.Time = scene.Time
+        projectiles = self.projectiles
+        length = len(projectiles) - 1
+        for i in range(length, -1, -1):
+            if not projectiles[i].to_kill:
+                scene.add(projectiles[i], "#projectile")
+            else:
+                scene.remove(projectiles[i], "#projectile")
+                projectiles.remove(projectiles[i])
+
+
+
+class EarthPistol:
+    """Base class for a pistol whose projectile is dirt."""
+
+    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500):
+        self.name = "earth gun"
+        self.target = "enemy"
+        self.cooldown = cooldown
+        self.show_trajectory = True
+        self.projectiles = []
+        self.trajectory = trajectory
+        self.is_aiming = False
+        self.gravity = 1
+        self.Time = None
+        self.last = - self.cooldown
+
+
+    def shoot(self, shoot_pos: pg.Vector2) -> bool:
+        game_projectiles = self.projectiles
+        now = pg.time.get_ticks()
+
+        if now - self.last >= self.cooldown:
+            self.last = now
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
+                                    target=self.target)
+            game_projectiles.append(projectile)
+            return True
+        return False
+
+    def update(self, scene=None):
+        self.Time = scene.Time
+        projectiles = self.projectiles
+        length = len(projectiles) - 1
+        for i in range(length, -1, -1):
+            if not projectiles[i].to_kill:
+                scene.add(projectiles[i], "#projectile")
+            else:
+                scene.remove(projectiles[i], "#projectile")
+                projectiles.remove(projectiles[i])
+
+
+class GrapplingPistol:
+    """Base class for a pistol that acts as a grappling hook."""
+
+    def __init__(self, trajectory: Trajectory):
+        self.name = "grappling gun"
+        self.target = "dirty"
+        self.cooldown = 500
+        self.show_trajectory = True
+        self.projectiles = []
+        self.trajectory = trajectory
+        self.is_aiming = False
+        self.gravity = 0.5
+        self.Time = None
+        self.last = - self.cooldown
+
+    def shoot(self, shoot_pos: pg.Vector2) -> bool:
+        game_projectiles = self.projectiles
+        now = pg.time.get_ticks()
+
+        if now - self.last >= self.cooldown:
+            self.last = now
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
+                                    target=self.target)
+            game_projectiles.append(projectile)
+            return True
+        return False
+
+    def update(self, scene=None):
+        self.Time = scene.Time
+        projectiles = self.projectiles
+        length = len(projectiles) - 1
+        for i in range(length, -1, -1):
+            if not projectiles[i].to_kill:
+                scene.add(projectiles[i], "#projectile")
+            else:
+                scene.remove(projectiles[i], "#projectile")
+                projectiles.remove(projectiles[i])
+
+
+
+
