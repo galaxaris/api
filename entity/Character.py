@@ -18,8 +18,16 @@ class Character(Entity):
         self.damage_resistance = 0
         self.hit_cooldown = 0
         self.hit_cooldown_time = 20
-        self.equipped_weapon = WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY))
-        # self.inventory = Inventory()
+        self.inventory = Inventory()
+        self.inventory.weapons.append(WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
+        self.inventory.weapons.append(WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
+        self.inventory.weapons.append(
+            WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
+        self.inventory.weapons.append(
+            WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
+        self.inventory.weapons.append(
+            WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
+        self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
     def take_damage(self, damage: int):
         if self.invincible or self.hit_cooldown > 0:
