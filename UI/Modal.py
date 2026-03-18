@@ -80,7 +80,7 @@ class Modal(UIElement):
                 actual_button.hover(actual_button.bg_color_hover)
 
                 if inputs["menu_select"]:
-                    actual_button.click()
+                    actual_button.click(actual_button.bg_color_focus)
                     Inputs.prevent_once_key("jump")
                     if actual_button.callback:
                         actual_button.callback(actual_button)
