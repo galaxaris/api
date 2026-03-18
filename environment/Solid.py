@@ -7,7 +7,7 @@ class Solid(GameObject):
     """Static collider object tagged as solid."""
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int]):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] | pg.Vector2):
         """Initialize a solid collider.
 
         :param pos: Collider position.
