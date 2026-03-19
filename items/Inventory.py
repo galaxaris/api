@@ -18,12 +18,17 @@ class Inventory(GameObject):
         self.player_pos = pg.Vector2(0,0)
         self.player_size = pg.Vector2(0,0)
         self.mouse = pg.Vector2(0, 0)
+        self.all_inventory_slots = []
+        self.index_to_switch = 0
 
     def add_weapon(self, pistol):
         self.weapons.append(pistol)
 
     def get_current(self):
         return self.weapons[self.active_index] if self.weapons else None
+
+    def switch_weapon(self):
+        self.active_index = self.index_to_switch
 
     def update(self, scene=None):
         super().update(self)
@@ -48,7 +53,6 @@ class Inventory(GameObject):
 
             angle_step = math.pi / 4
 
-            all_circle_pos = []
 
             for i, weapon in enumerate(self.weapons):
 
@@ -63,8 +67,7 @@ class Inventory(GameObject):
                     player_center.y + offset_y
                 )
 
-                all_circle_pos.append(circle_pos)
-
+                self.all_inventory_slots.append([i,circle_pos])
 
                 if i == self.active_index:
                     colour = "red"
@@ -72,12 +75,15 @@ class Inventory(GameObject):
                 else:
                     colour = "blue"
 
-                if angle - 0.15 <= - math.atan2(self.mouse_angle_radians.x, self.mouse_angle_radians.y) + math.pi/2 <= angle + 0.15:
+                if angle - 0.3 <= - math.atan2(self.mouse_angle_radians.x, self.mouse_angle_radians.y) + math.pi/2 <= angle + 0.3:
+                    self.index_to_switch = i
                     colour = "green"
 
 
                 camera_offset = scene.camera.position if scene else pg.Vector2(0, 0)
                 pg.draw.circle(surface, colour, circle_pos - camera_offset, 10  )
+
+                # in player : if mouse_pos +- zone in self.inventory.all_mouse angles -> get_current
 
 
             super().draw(surface)

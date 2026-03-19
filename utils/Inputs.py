@@ -25,6 +25,7 @@ INPUTS = {
     "aim_down": [],
     "shoot": ["MOUSE_LEFT"],
     "show_inventory": [pg.K_TAB],
+    "select_weapon": ["MOUSE_LEFT"],
     "interact": [pg.K_e],
     "pause": [pg.K_ESCAPE],
     "menu_up": [],

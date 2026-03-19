@@ -138,10 +138,12 @@ class Player(Character):
             self.inventory.player_pos = self.pos
             self.inventory.player_size = self.size
 
-
             self.inventory.update(scene)
             self.inventory.player_rect = self.rect
             self.inventory.draw(surface, scene)
+
+            if inputs["select_weapon"] and scene.global_state["player_control"]:
+                self.inventory.switch_weapon()
 
 
 
