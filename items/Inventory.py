@@ -41,8 +41,8 @@ class Inventory(GameObject):
             cam_pos = scene.camera.position
             player_screen_pos = self.player_pos - cam_pos + self.player_size / 2
             self.mouse_angle_radians = self.mouse / scene.scale_ratio - player_screen_pos
-            math.radians(self.mouse_angle_radians.x)
-            math.radians(self.mouse_angle_radians.y)
+            self.mouse_angle_radians.x = math.radians(self.mouse_angle_radians.x)
+            self.mouse_angle_radians.y = math.radians(self.mouse_angle_radians.y)
 
             player_center = pg.Vector2(self.player_rect.center)
 
@@ -72,12 +72,8 @@ class Inventory(GameObject):
                 else:
                     colour = "blue"
 
-                # FIXME: the mouse angle and the circle position angle don't match, making weapon selection impossible
-                if angle - math.radians(10) <= math.atan2(self.mouse_angle_radians.x, self.mouse_angle_radians.y) <= angle + math.radians(10):
+                if angle - 0.15 <= - math.atan2(self.mouse_angle_radians.x, self.mouse_angle_radians.y) + math.pi/2 <= angle + 0.15:
                     colour = "green"
-                    print(angle)
-                    print(self.mouse_angle_radians)
-
 
 
                 camera_offset = scene.camera.position if scene else pg.Vector2(0, 0)
