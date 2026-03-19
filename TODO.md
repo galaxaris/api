@@ -14,7 +14,6 @@ Save systems:
   - Save player stats (Health, Score, etc.)
 
 Dialog System :
-  - Choice Systems
   - Load Dialog from JSON files 
 
 Global List of prepared objects :
