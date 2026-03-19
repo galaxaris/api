@@ -31,7 +31,7 @@ INPUTS = {
     "menu_down": [],
     "menu_left": [],
     "menu_right": [],
-    "menu_select": [pg.K_RETURN]
+    "menu_select": [pg.K_RETURN, "MOUSE_LEFT"]
 }
 
 CONTROLLER_INPUTS = {
