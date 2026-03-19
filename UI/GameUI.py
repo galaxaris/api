@@ -114,7 +114,7 @@ class GameUI(pg.Surface):
             Inputs.prevent_once_key("jump")
 
         # 1. Dialog and Textbox Progression
-        if inputs["interact"] and not scene.global_state.get("in_menu"):
+        if (Inputs.get_once_inputs()["menu_select"] or inputs["interact"]) and not scene.global_state.get("in_menu"):
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 is_waiting_for_choice = hasattr(self.active_textbox[1], "choice_goal")
@@ -125,6 +125,18 @@ class GameUI(pg.Surface):
                         self.active_dialog = (key, boxes, new_index)
                         next_box = boxes[new_index]
 
+                        if next_box and "ui_dialog_goto" in next_box.tags:
+                            target_index = next(
+                                (i for i, box in enumerate(boxes)
+                                 # ADD THE CONDITION BELOW: ignore other goto markers
+                                 if box and getattr(box, "key_point",
+                                                    None) == next_box.key_point and "ui_dialog_goto" not in box.tags),None
+                            )
+                            if target_index is not None:
+                                next_box = boxes[target_index]
+                                self.active_dialog = (key, boxes, target_index)  # Update the actual index!
+                            else:
+                                next_box = None
                         if next_box is not None:
                             self.active_textbox = (key, next_box)
                             Inputs.prevent_input("menu_select")

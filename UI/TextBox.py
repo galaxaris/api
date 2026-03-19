@@ -27,6 +27,8 @@ def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
     space_width = font.size(' ')[0]
 
     # On sépare d'abord par les paragraphes manuels
+    if not text:
+        return [pg.Surface((0, 0)).convert_alpha()]
     paragraphs = text.split("\n")
 
     for paragraph in paragraphs:
