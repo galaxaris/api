@@ -34,6 +34,7 @@ class Button(UIElement):
         self.menu_offset = (0, 0)
         self.state = "default"
         self.border_radius = border_radius
+        self.was_clicked_prev_frame = False
         self.add_tag("ui_button")
 
     ### PUBLIC METHODS ###
@@ -174,7 +175,7 @@ class Button(UIElement):
         self.rect.topleft = self.pos + pg.Vector2(self.menu_offset)//2
 
         #Track previous frame state for edge detection (click release)
-        prev_was_clicked = getattr(self, '_was_clicked_prev_frame', False)
+        prev_was_clicked = getattr(self, 'was_clicked_prev_frame', False)
         is_currently_clicked = Inputs.is_mouse_clicked()
 
         if self.rect.collidepoint(mouse_pos):
@@ -208,5 +209,5 @@ class Button(UIElement):
             #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_ARROW)
 
         #Store current state for next frame
-        self._was_clicked_prev_frame = is_currently_clicked
+        self.was_clicked_prev_frame = is_currently_clicked
 

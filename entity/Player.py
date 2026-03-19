@@ -87,6 +87,7 @@ class Player(Character):
                 self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
                 self.equipped_weapon.is_aiming = False
 
+
             if inputs["right"] and scene.global_state["player_control"]:
                 self.is_controlled = True
                 self.do_right(Time)
@@ -130,6 +131,20 @@ class Player(Character):
 
 
 
+    def draw(self, surface: pg.Surface, scene=None):
+        super().draw(surface, scene)
+        inputs = get_inputs()
+        if inputs["show_inventory"] and scene.global_state["player_control"]:
+            self.inventory.player_pos = self.pos
+            self.inventory.player_size = self.size
+
+            self.inventory.update(scene)
+            self.inventory.player_rect = self.rect
+            self.inventory.draw(surface, scene)
+
+            if inputs["select_weapon"] and scene.global_state["player_control"]:
+                self.inventory.switch_weapon()
+                self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
 
 

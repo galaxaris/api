@@ -27,6 +27,8 @@ def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
     space_width = font.size(' ')[0]
 
     # On sépare d'abord par les paragraphes manuels
+    if not text:
+        return [pg.Surface((0, 0)).convert_alpha()]
     paragraphs = text.split("\n")
 
     for paragraph in paragraphs:
@@ -78,10 +80,8 @@ class TextBox(UIElement):
     closable: bool
     font: str
     raw_text: str
-    goal: str
-
     def __init__(self, title: str, text: str = "", font: str = "aptos", image_side: str = "left",
-                 texture: Texture = None, closable: bool = True, goal="fermer", border_radius: int = 10, margin: pg.Vector2 = pg.Vector2(0,0)):
+                 texture: Texture = None, closable: bool = True, border_radius: int = 10, margin: pg.Vector2 = pg.Vector2(0,0)):
         """Initialize a textbox.
 
         :param title: Displayed title, usually speaker name.
@@ -90,7 +90,6 @@ class TextBox(UIElement):
         :param image_side: Portrait side when an image is provided.
         :param texture: Optional portrait texture.
         :param closable: Whether interaction can close this textbox.
-        :param goal: Semantic goal marker used by UI flow.
         """
         super().__init__((0, 0), (0, 0))
         self.raw_text = text
@@ -99,7 +98,6 @@ class TextBox(UIElement):
         self.image_side = image_side
         self.closable = closable
         self.margin = margin
-        self.goal = goal
         self.image = None
         self.text_surfaces = []  # Sera généré au premier draw selon la largeur disponible
         self.color = (30, 30, 30, 220)
@@ -146,6 +144,9 @@ class TextBox(UIElement):
         :return:
         """
         self.title_surface = process_title(title, font)
+
+    def update(self, scene=None):
+        pass
 
     def draw(self, surface: pg.Surface, scene=None):
         """Render textbox content at the bottom of the destination surface.

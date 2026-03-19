@@ -2,7 +2,7 @@
 
 from api.GameObject import GameObject
 from api.utils import Inputs, Debug
-from api.utils.Inputs import get_once_inputs
+from api.utils.Inputs import get_once_inputs, prevent_once_key
 import pygame as pg
 
 class UIElement(GameObject):
@@ -16,7 +16,6 @@ class UIElement(GameObject):
         :param is_blocking: Reserved flag for blocking behavior.
         """
         super().__init__(pos, size)
-        self.goal = None
         self.add_tag("ui")
 
     def draw(self, surface: pg.Surface, scene=None):
@@ -43,10 +42,13 @@ class GameUI(pg.Surface):
         self.convert_alpha()
         self.elements = {}
         self.enabled_elements = []
+
         self.active_textbox = None
         self.active_dialog = None
-        self.size = pg.Vector2(size)
         self.active_menus = []
+
+        self.size = pg.Vector2(size)
+
 
     def add(self, key: str, element: UIElement):
         """Register a UI element under a key.
@@ -55,8 +57,7 @@ class GameUI(pg.Surface):
         :param element: UI element instance.
         :return:
         """
-        if key not in self.elements:
-            self.elements[key] = element
+        self.elements[key] = element
 
     def show(self, key: str):
         """Enable a UI element and initialize related runtime state.
@@ -103,50 +104,100 @@ class GameUI(pg.Surface):
                 self.active_menus.remove(key)
 
     def update(self, scene):
-        """Advance UI interaction state from one-shot player inputs.
-
-        This method handles dialog progression, closable textboxes, and menu
-        stack closing while synchronizing gameplay state flags.
-
-        :return:
-        """
+        """Advance UI interaction state from one-shot player inputs."""
         inputs = get_once_inputs()
-        if inputs["interact"] and not scene.global_state["in_menu"]:
+
+        # Helper to DRY up repetitive UI closing and state restoration
+        def close_ui(ui_key):
+            self.hide(ui_key)
+            scene.global_state["player_control"] = True
+            Inputs.prevent_once_key("jump")
+
+        # 1. Dialog and Textbox Progression
+        if (Inputs.get_once_inputs()["menu_select"] or inputs["interact"]) and not scene.global_state.get("in_menu"):
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
-                if index < len(boxes) - 1:
-                    # Move to next box in dialog
-                    new_index = index + 1
-                    self.active_dialog = (key, boxes, new_index)
-                    self.active_textbox = (key, boxes[new_index])
-                else:
-                    # End of dialog reached
-                    self.hide(key)
-                    scene.global_state["player_control"] = True
-                    Inputs.prevent_once_key("jump")
+                is_waiting_for_choice = hasattr(self.active_textbox[1], "choice_goal")
+
+                if not is_waiting_for_choice:
+                    if index < len(boxes) - 1:
+                        new_index = index + 1
+                        self.active_dialog = (key, boxes, new_index)
+                        next_box = boxes[new_index]
+
+                        if next_box and "ui_dialog_goto" in next_box.tags:
+                            target_index = next(
+                                (i for i, box in enumerate(boxes)
+                                 # ADD THE CONDITION BELOW: ignore other goto markers
+                                 if box and getattr(box, "key_point",
+                                                    None) == next_box.key_point and "ui_dialog_goto" not in box.tags),None
+                            )
+                            if target_index is not None:
+                                next_box = boxes[target_index]
+                                self.active_dialog = (key, boxes, target_index)  # Update the actual index!
+                            else:
+                                next_box = None
+                        if next_box is not None:
+                            self.active_textbox = (key, next_box)
+                            Inputs.prevent_input("menu_select")
+                        else:
+                            close_ui(key)
+                    else:
+                        close_ui(key)
+
             elif self.active_textbox:
-                # Single Textbox Logic
                 key, element = self.active_textbox
-                if "ui_closable" in element.tags:
-                    self.hide(key)
-                    scene.global_state["player_control"] = True
-                    Inputs.prevent_once_key("jump")
+                is_waiting_for_choice = hasattr(element, "choice_goal")
 
-        if len(self.active_menus) > 0:
-            scene.global_state["in_menu"] = True
-            scene.global_state["player_control"] = False
-        else:
-            scene.global_state["in_menu"] = False
-            scene.global_state["player_control"] = True
+                if not is_waiting_for_choice and "ui_closable" in element.tags:
+                    close_ui(key)
 
+        # 2. Choice Handling
+        if self.active_textbox and "ui_choice" in self.active_textbox[1].tags:
+            _, element = self.active_textbox
+            choice_target = getattr(element, "choice_goal", None)
+
+            if choice_target is not None and self.active_dialog:
+                key, boxes, index = self.active_dialog
+                element.choice_goal = None  # Consume the choice
+
+                # Safely find the target index, avoiding IndexError if not found
+                target_index = next(
+                    (i for i, box in enumerate(boxes)
+                     if box and getattr(box, "key_point", None) == choice_target),
+                    None
+                )
+                Inputs.prevent_input("menu_select")
+
+                if target_index is not None and target_index != index:
+                    self.active_dialog = (key, boxes, target_index)
+                    if boxes[target_index] is not None:
+                        self.active_textbox = (key, boxes[target_index])
+                    else:
+                        if index + 1 < len(boxes):
+                            self.active_textbox = (key, boxes[index + 1])
+                        else:
+                            close_ui(key)
+                else:
+                    if index + 1 < len(boxes):
+                        self.active_textbox = (key, boxes[index + 1])
+                    else:
+                        close_ui(key)
+
+        # 3. Menu Interactions
         if inputs["pause"] and self.active_menus:
             # Close the most recently opened menu
-            last_menu_key = self.active_menus[-1]
-            self.hide(last_menu_key)
+            self.hide(self.active_menus[-1])
 
+        # 4. Global State Synchronization
+        # Evaluated AFTER inputs so state is accurate on the current frame
+        in_menu = len(self.active_menus) > 0
+        scene.global_state["in_menu"] = in_menu
+        scene.global_state["player_control"] = not in_menu
+
+        # 5. Update Elements
         for key in self.enabled_elements:
-            element = self.elements[key]
-            element.update(scene)
+            self.elements[key].update(scene)
 
     def draw(self, surface: pg.Surface, scene=None):
         """Render enabled UI elements onto the destination surface.
@@ -175,6 +226,7 @@ class GameUI(pg.Surface):
             # If it's the active dialog/textbox, draw the specific current box
             if self.active_textbox and key == self.active_textbox[0]:
                 self.active_textbox[1].draw(self)
+                self.active_textbox[1].update(scene)
                 if "ui_block" in self.active_textbox[1].tags:
                     scene.global_state["player_control"] = False
                 continue

@@ -13,10 +13,6 @@ Save systems:
   - Save player progress (Levels completed, Checkpoints reached, etc.)
   - Save player stats (Health, Score, etc.)
 
-Dialog System :
-  - Choice Systems
-  - Load Dialog from JSON files 
-
 Global List of prepared objects :
   - Checkpoint
   - Antenna (Minigame to solve it (At the end))
