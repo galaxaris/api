@@ -15,7 +15,7 @@ class Trigger(GameObject):
     """
     _EDITOR = "placeable"
     def __init__(self, pos: tuple[int, int], size: tuple[int, int], 
-                 target_tags: list[str], callbacks: list[callable], once: bool = False):
+                 target_tags: set[str], callbacks: list[callable], once: bool = False):
         """
         Initializes the trigger with the given attributes.
 
@@ -75,8 +75,8 @@ class Trigger(GameObject):
         :return:
         """
         if not hasattr(self, "target_tags"):
-            self.target_tags = []
-        self.target_tags.append(tag)
+            self.target_tags = set()
+        self.target_tags.add(tag)
 
     def remove_target_tag(self, tag):
         """
@@ -168,7 +168,7 @@ class TriggerKillBox(Trigger):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], once: bool = False, sfx: list[str] | None = None):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: set[str], once: bool = False, sfx: list[str] | None = None):
         """
         Initializes the trigger with the given attributes.
 
@@ -205,7 +205,7 @@ class TriggerKillBox(Trigger):
         super().__init__(pos, size, target_tags, [kill_callback], once)
 
 class TriggerInteract(Trigger):
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: list[str], callbacks: list[callable], once: bool = False, sfx: str | None = None, trigger_surface: pg.Surface | None = None):
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int], target_tags: set[str], callbacks: list[callable], once: bool = False, sfx: str | None = None, trigger_surface: pg.Surface | None = None):
         """
             Trigger which need the player to interact (press a key) to be activated. Used for doors, levers, NPC interactions...
 
