@@ -1,8 +1,6 @@
 import pygame as pg
 import math
 
-from pygame import Vector2
-
 from api.GameObject import GameObject
 from api.utils import Inputs
 
@@ -83,10 +81,6 @@ class Inventory(GameObject):
                 camera_offset = scene.camera.position if scene else pg.Vector2(0, 0)
                 pg.draw.circle(surface, colour, circle_pos - camera_offset, 10  )
 
-                # in player : if mouse_pos +- zone in self.inventory.all_mouse angles -> get_current
-
 
             super().draw(surface)
-
-        #utilise les propriétés des gameobject pour dessiner l'ui
 

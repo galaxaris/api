@@ -25,7 +25,7 @@ class WaterPistol:
 
         if now - self.last >= self.cooldown:
             self.last = now
-            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target)
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target, colour = "blue")
             game_projectiles.append(projectile)
             return True
         return False
@@ -66,7 +66,7 @@ class EarthPistol:
         if now - self.last >= self.cooldown:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    target=self.target)
+                                    target=self.target, colour = "red")
             game_projectiles.append(projectile)
             return True
         return False
@@ -105,7 +105,7 @@ class GrapplingPistol:
         if now - self.last >= self.cooldown:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    target=self.target)
+                                    target=self.target, colour = "green")
             game_projectiles.append(projectile)
             return True
         return False

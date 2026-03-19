@@ -144,6 +144,7 @@ class Player(Character):
 
             if inputs["select_weapon"] and scene.global_state["player_control"]:
                 self.inventory.switch_weapon()
+                self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
 
 
