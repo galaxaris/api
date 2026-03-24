@@ -22,7 +22,7 @@ from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
 from api.events.EventManager import EventManager
-from api.utils import Debug, Inputs
+from api.utils import Debug, InputManager
 from api.utils.DebugElement import DebugElement
 from api.physics.Time import Time
 from api.utils.Console import *
@@ -46,7 +46,7 @@ class Game:
     window: Window
     bound_functions: Dict[int, List[Callable]]
 
-    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120):
+    def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120, register_default_events: bool=True):
         """
         Initializes the game, creating the window and setting up the rendering surface and the scene
 
@@ -73,6 +73,10 @@ class Game:
         self.bound_functions = {}
         self.audio_manager = AudioManager()
         self.event_manager = EventManager()
+
+        #WARNING NOTE: register_default_events should be set to True. Otherwise, the default events may not work properly, and then the player, scene, game, menu
+        #May not work as expected (but remind there is always a 'hard coded' equivalent if not registered...)
+        self.event_manager.registerDefaultEventCollection() if register_default_events else None
 
     def run(self, game):
         """
@@ -106,13 +110,13 @@ class Game:
                             self.audio_manager.toggle_audio()
 
                 if event.type == pg.MOUSEWHEEL:
-                    Inputs.MOUSE_SCROLL += event.y
+                    InputManager.MOUSE_SCROLL += event.y
 
                 for func in self.bound_functions.get(event.type, []):
                     func(event)
 
             Debug.register_debug(self)
-            Inputs.update_input_state()
+            InputManager.update_input_state()
             game()
 
             self.scene.assign_game_instances(self.Time, self.audio_manager)
@@ -129,7 +133,7 @@ class Game:
 
             pg.display.update()
 
-            Inputs.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
+            InputManager.MOUSE_SCROLL = 0 #we need to reset mouse scroll at each frame
             Time.update(self.Time) #Time    
 
 

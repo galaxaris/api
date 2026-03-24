@@ -7,7 +7,7 @@ from pygame.surface import Surface
 from api.UI.GameUI import UIElement
 from api.assets.Texture import Texture
 from api.utils.Fonts import get_font
-from api.utils import Inputs
+from api.utils import InputManager
 
 
 def process_text(font_name: str, text: str, max_width: int) -> list[Surface]:
@@ -186,7 +186,7 @@ class TextBox(UIElement):
             line_y += line.get_height() + 4
 
         if self.closable:
-            hint_text = Inputs.get_hint_input("interact")
+            hint_text = InputManager.get_hint_input("interact")
             hint_surface = get_font(self.font, 16).render(hint_text, False, (180, 180, 180))
             content_surface.blit(hint_surface, (content_surface.get_width() - hint_surface.get_width(), content_surface.get_height() - hint_surface.get_height()))
 

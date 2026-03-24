@@ -5,7 +5,7 @@ API's Triggers definition, collection & implementation
 import random as rd
 
 from api.GameObject import GameObject
-from api.utils import Inputs, Fonts
+from api.utils import InputManager, Fonts
 from api.utils.Console import *
 import pygame as pg
 
@@ -229,7 +229,7 @@ class TriggerInteract(Trigger):
             :return:
             """
             obj.in_trigger_interact = True
-            correct_text = Inputs.get_str_input("interact")
+            correct_text = InputManager.get_str_input("interact")
             self.BOX_DIM = pg.Vector2(20, 20)
             self.trigger_surface = pg.Surface(self.BOX_DIM, pg.SRCALPHA, 32).convert_alpha()
             self.trigger_surface.fill((255, 255, 255, 128))  # White box with 50% opacity
@@ -242,7 +242,7 @@ class TriggerInteract(Trigger):
                 self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (self.BOX_DIM.x//2,self.BOX_DIM.y//2) ) # Position the box above the trigger
 
                 #Wait for the player to press the "interact" key
-            inputs = Inputs.get_inputs()
+            inputs = InputManager.get_inputs()
             if obj.interact and not self.enabled:
 
                 self.enabled = True

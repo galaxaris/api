@@ -4,9 +4,9 @@ API's Player utilities
 from api.entity.Character import Character
 from api.physics.Collision import get_collided_objects
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
-from api.utils import Debug, Inputs
+from api.utils import Debug, InputManager
 
-from api.utils.Inputs import get_inputs, get_once_inputs
+from api.utils.InputManager import get_inputs, get_once_inputs
 
 import pygame as pg
 import math
@@ -51,17 +51,17 @@ class Player(Character):
         if not Debug.is_enabled("freecam"):
             if inputs["aim"] and scene.global_state["player_control"]:
                 self.speed_malus = self.max_velocity//2
-                mouse = pg.Vector2(Inputs.get_mouse(Inputs.get_key_pressed("aim")))
+                mouse = pg.Vector2(InputManager.get_mouse(InputManager.get_key_pressed("aim")))
                 cam_pos = scene.camera.position
                 player_screen_pos = self.pos - cam_pos + self.size/2
                 angle_with_player = mouse / scene.scale_ratio - player_screen_pos
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
-                if Inputs.MOUSE_SCROLL != 0:
-                    self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + Inputs.MOUSE_SCROLL, MAX_SHOT_SPEED))
+                if InputManager.MOUSE_SCROLL != 0:
+                    self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
-                if Inputs.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
+                if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
                     if get_once_inputs()["aim_up"] and self.equipped_weapon.trajectory.ini_speed < MAX_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed += 1
@@ -101,7 +101,7 @@ class Player(Character):
                 if not inputs["aim"]:
                     self.set_direction("left")
 
-            if inputs["jump"] and scene.global_state["player_control"] and (not self.in_trigger_interact or not Inputs.is_controller_connected()) :
+            if inputs["jump"] and scene.global_state["player_control"] and (not self.in_trigger_interact or not InputManager.is_controller_connected()) :
                 self.do_jump()
 
 

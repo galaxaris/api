@@ -4,7 +4,7 @@ from api.UI.GameUI import UIElement
 from api.assets.Texture import Texture
 import pygame as pg
 
-from api.utils import Inputs
+from api.utils import InputManager
 from api.utils.Fonts import get_font
 
 
@@ -169,21 +169,21 @@ class Button(UIElement):
         """
         super().update(scene)
 
-        raw_mouse = pg.Vector2(Inputs.get_mouse(True)) - pg.Vector2(self.menu_offset)
+        raw_mouse = pg.Vector2(InputManager.get_mouse(True)) - pg.Vector2(self.menu_offset)
         ratio = scene.scale_ratio
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
         self.rect.topleft = self.pos + pg.Vector2(self.menu_offset)//2
 
         #Track previous frame state for edge detection (click release)
         prev_was_clicked = getattr(self, 'was_clicked_prev_frame', False)
-        is_currently_clicked = Inputs.is_mouse_clicked()
+        is_currently_clicked = InputManager.is_mouse_clicked()
 
         if self.rect.collidepoint(mouse_pos):
             #Change cursor to pointer when hovering over the button
             #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
 
             #Mouse is over the button
-            if Inputs.is_mouse_clicked_once():
+            if InputManager.is_mouse_clicked_once():
                 #Just pressed on the button
                 self.focus(self.bg_color_focus)
             elif is_currently_clicked:
@@ -200,7 +200,7 @@ class Button(UIElement):
         else:
 
             #Not over the button
-            if not Inputs.is_controller_connected():
+            if not InputManager.is_controller_connected():
                 self.idle(self.bg_color)
             else:
                 self.rect = self.image.get_rect(topleft=self.pos)

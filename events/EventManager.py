@@ -95,3 +95,11 @@ class EventManager:
                 callback(event if event is not None else self)
         else:
             print_warning(f"Event '{event_name}' not found in EventManager.")
+
+    def getRegisteredEvents(self):
+        """
+        Returns a list of all registered event names.
+
+        :return: List of registered event names
+        """
+        return list(self.events.keys())

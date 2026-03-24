@@ -3,8 +3,8 @@
 import pygame as pg
 
 from api.UI.GameUI import UIElement
-from api.utils import Inputs
-from api.utils.Inputs import prevent_input
+from api.utils import InputManager
+from api.utils.InputManager import prevent_input
 
 
 class Modal(UIElement):
@@ -58,8 +58,8 @@ class Modal(UIElement):
         if self.buttons:
             actual_button = self.buttons[self.active_button_index_x][self.active_button_index_y%len(self.buttons[self.active_button_index_x])]
 
-            if Inputs.is_controller_connected():
-                inputs = Inputs.get_once_inputs()
+            if InputManager.is_controller_connected():
+                inputs = InputManager.get_once_inputs()
 
                 for lines in self.buttons:
                     for button in lines:
@@ -81,7 +81,7 @@ class Modal(UIElement):
 
                 if inputs["menu_select"]:
                     actual_button.click(actual_button.bg_color_focus)
-                    Inputs.prevent_once_key("jump")
+                    InputManager.prevent_once_key("jump")
                     if actual_button.callback:
                         actual_button.callback(actual_button)
             else:

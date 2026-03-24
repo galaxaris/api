@@ -6,7 +6,7 @@ import pygame as pg
 
 from api.GameObject import GameObject
 from api.utils import Debug
-from api.utils.Inputs import get_inputs
+from api.utils.InputManager import get_inputs
 
 
 class GameCamera:

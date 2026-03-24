@@ -3,7 +3,7 @@ from api.UI.GameUI import UIElement
 from api.UI.Modal import Modal
 from api.UI.TextBox import TextBox
 from api.assets.Texture import Texture
-from api.utils import Fonts, Inputs
+from api.utils import Fonts, InputManager
 import pygame as pg
 
 class Choice(UIElement):
@@ -55,8 +55,8 @@ class Choice(UIElement):
         if self.buttons:
             actual_button = self.buttons[self.active_button_index_x]
 
-            if Inputs.is_controller_connected():
-                inputs = Inputs.get_once_inputs()
+            if InputManager.is_controller_connected():
+                inputs = InputManager.get_once_inputs()
 
                 for button in self.buttons:
                     if button != actual_button:
@@ -74,7 +74,7 @@ class Choice(UIElement):
                     actual_button.click(actual_button.bg_color_focus)
                     self.choice_index = self.active_button_index_x
                     self.choice_goal = actual_button.goal
-                    Inputs.prevent_once_key("jump")
+                    InputManager.prevent_once_key("jump")
                     if actual_button.callback:
                         actual_button.callback(actual_button)
             else:

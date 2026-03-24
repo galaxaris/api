@@ -1,8 +1,8 @@
 """UI orchestration surface for dialogs, menus, and overlays."""
 
 from api.GameObject import GameObject
-from api.utils import Inputs, Debug
-from api.utils.Inputs import get_once_inputs, prevent_once_key
+from api.utils import InputManager, Debug
+from api.utils.InputManager import get_once_inputs, prevent_once_key
 import pygame as pg
 
 class UIElement(GameObject):
@@ -111,10 +111,10 @@ class GameUI(pg.Surface):
         def close_ui(ui_key):
             self.hide(ui_key)
             scene.global_state["player_control"] = True
-            Inputs.prevent_once_key("jump")
+            InputManager.prevent_once_key("jump")
 
         # 1. Dialog and Textbox Progression
-        if (Inputs.get_once_inputs()["menu_select"] or inputs["interact"]) and not scene.global_state.get("in_menu"):
+        if (InputManager.get_once_inputs()["menu_select"] or inputs["interact"]) and not scene.global_state.get("in_menu"):
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 is_waiting_for_choice = hasattr(self.active_textbox[1], "choice_goal")
@@ -139,7 +139,7 @@ class GameUI(pg.Surface):
                                 next_box = None
                         if next_box is not None:
                             self.active_textbox = (key, next_box)
-                            Inputs.prevent_input("menu_select")
+                            InputManager.prevent_input("menu_select")
                         else:
                             close_ui(key)
                     else:
@@ -167,7 +167,7 @@ class GameUI(pg.Surface):
                      if box and getattr(box, "key_point", None) == choice_target),
                     None
                 )
-                Inputs.prevent_input("menu_select")
+                InputManager.prevent_input("menu_select")
 
                 if target_index is not None and target_index != index:
                     self.active_dialog = (key, boxes, target_index)

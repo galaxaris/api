@@ -2,7 +2,7 @@ import pygame as pg
 import math
 
 from api.GameObject import GameObject
-from api.utils import Inputs
+from api.utils import InputManager
 
 
 class Inventory(GameObject):
@@ -39,7 +39,7 @@ class Inventory(GameObject):
 
         else:
 
-            self.mouse = pg.Vector2(Inputs.get_mouse(Inputs.get_key_pressed("show_inventory")))
+            self.mouse = pg.Vector2(InputManager.get_mouse(InputManager.get_key_pressed("show_inventory")))
 
             cam_pos = scene.camera.position
             player_screen_pos = self.player_pos - cam_pos + self.player_size / 2
