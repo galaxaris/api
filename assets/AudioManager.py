@@ -151,6 +151,8 @@ class AudioManager:
         if name in self.sfx:
             if allow_overlap or self.sfx[name].get_num_channels() == 0:
                 self.sfx[name].play(loops=loops)
+        else:
+            print_warning(f"Sound effect '{name}' not found in AudioManager! Cannot play.")
 
     def stop_sfx(self, name: str):
         """
@@ -160,6 +162,8 @@ class AudioManager:
         """
         if name in self.sfx:
             self.sfx[name].stop()
+        else:
+            print_warning(f"Sound effect '{name}' not found in AudioManager! Cannot stop.")
 
 
     def play_music(self, name: str, loops=-1):
@@ -177,6 +181,8 @@ class AudioManager:
             else:
                 self.current_music_name = f"missing_music_{name}"
                 self.pause_music()
+        else:
+            print_warning(f"Music '{name}' not found in AudioManager! Cannot play.")
 
 
     def stop_music(self):

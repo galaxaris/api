@@ -5,7 +5,9 @@ Manages events (can be input, mouse, in-game event, etc.) for the game, providin
 A map associating an event type with a callback function when triggered, gathered under a name
 """
 
-from api.events.DefaultEventCollection import DefaultEventCollection
+from typing import Callable
+
+from api.utils.Console import *
 
 class EventManager:
     """
@@ -17,6 +19,9 @@ class EventManager:
         self.events = {}    
 
     class Instances:
+        """
+        Class to bind instances to the EventManager, to call their methods when an event is triggered.
+        """
         def __init__(self):
             self.game = None
             self.scene = None
@@ -47,16 +52,19 @@ class EventManager:
             for attrName, instance in instances.items():
                 self.bindInstance(attrName, instance)
 
-
     def registerDefaultEventCollection(self):
         """
         Registers default events from `DefaultEventCollection` to the `EventManager`.
-
         """
+        #LAZY IMPORT to avoid circular imports
+        from api.events.DefaultEventCollection import get_default_events
 
-        self.events.update(DefaultEventCollection)
+        #Injecting directly the EventManager        
+        for event_name, callbacks in get_default_events(self).items():
+            for callback in callbacks:
+                self.registerEvent(event_name, callback)
 
-    def registerEvent(self, event_name: str, callback: callable):
+    def registerEvent(self, event_name: str, callback: Callable | list[Callable] | tuple[Callable, ...]):
         """
         Registers a single event to the `EventManager`.
 
@@ -64,7 +72,26 @@ class EventManager:
         :param callback: Callback function when event happens. should take an `event` object as parameter (ex: lambda event: event.Instances.player.do_jump())
         """
 
-        if event_name in self.events:
-            self.events[event_name].append(callback)
+        #Register new event if doesn't exist yet
+        if event_name not in self.events:
+            self.events[event_name] = []
+
+
+        if isinstance(callback, (tuple, list)):
+            self.events[event_name].extend(callback)
         else:
-            self.events[event_name] = [callback]
+            self.events[event_name].append(callback)
+
+    def triggerEvent(self, event_name: str, event=None):
+        """
+        Triggers an event, calling all its associated callback functions.
+
+        :param event_name: Name of the event to be triggered
+        :param event: Event object to be passed to the callback functions (optional). If None, passes the EventManager itself.
+        """
+
+        if event_name in self.events:
+            for callback in self.events[event_name]:
+                callback(event if event is not None else self)
+        else:
+            print_warning(f"Event '{event_name}' not found in EventManager.")

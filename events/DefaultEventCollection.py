@@ -13,7 +13,21 @@ Structure:
 }
 """
 
-DefaultEventCollection = {
-    "QUIT": [lambda event: event.Instances.game.stop()],
-    "player_jump": [lambda event: event.Instances.player.do_jump()],
-}
+"""
+Default Event Collection dictionary...
+"""
+
+def get_default_events(manager):
+    """
+    Generates the default event collection for the EventManager.
+
+    :param manager: The EventManager instance to which the events will be registered.
+
+    :return: A dictionary containing the default events and their associated callback functions.
+    """
+    return {
+        #manager = the EventManager instance
+        #e = the event (ex: mouse click) passed by triggerEvent
+        "QUIT":[lambda e=None: manager.Instances.game.stop()],
+        "player_jump":[lambda e=None: manager.Instances.player.do_jump()],
+    }
