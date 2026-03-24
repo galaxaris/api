@@ -21,6 +21,7 @@ from typing import Callable, List, Dict
 from api.engine.Scene import Scene
 from pygame._sdl2.video import Window
 from pygame._sdl2 import controller
+from api.events.EventManager import EventManager
 from api.utils import Debug, Inputs
 from api.utils.DebugElement import DebugElement
 from api.physics.Time import Time
@@ -71,6 +72,7 @@ class Game:
         self.window = Window.from_display_module()
         self.bound_functions = {}
         self.audio_manager = AudioManager()
+        self.event_manager = EventManager()
 
     def run(self, game):
         """
