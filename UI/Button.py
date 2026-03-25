@@ -169,7 +169,7 @@ class Button(UIElement):
         """
         super().update(scene)
 
-        raw_mouse = pg.Vector2(InputManager.get_mouse(True)) - pg.Vector2(self.menu_offset)
+        raw_mouse = pg.Vector2(InputManager.get_player_aim_vector(True)) - pg.Vector2(self.menu_offset)
         ratio = scene.scale_ratio
         mouse_pos = (raw_mouse[0] // ratio, raw_mouse[1] // ratio)
         self.rect.topleft = self.pos + pg.Vector2(self.menu_offset)//2

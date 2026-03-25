@@ -51,7 +51,7 @@ class Player(Character):
         if not Debug.is_enabled("freecam"):
             if inputs["aim"] and scene.global_state["player_control"]:
                 self.speed_malus = self.max_velocity//2
-                mouse = pg.Vector2(InputManager.get_mouse(InputManager.get_key_pressed("aim")))
+                mouse = pg.Vector2(InputManager.get_player_aim_vector(InputManager.get_key_pressed("aim")))
                 cam_pos = scene.camera.position
                 player_screen_pos = self.pos - cam_pos + self.size/2
                 angle_with_player = mouse / scene.scale_ratio - player_screen_pos
