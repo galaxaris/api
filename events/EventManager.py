@@ -66,7 +66,7 @@ class EventManager:
 
     def registerEvent(self, event_name: str, callback: Callable | list[Callable] | tuple[Callable, ...]):
         """
-        Registers a single event to the `EventManager`.
+        Registers a single event to the `EventManager`, providing callback(s). If event already exists, adds callback(s)
 
         :param event_name: Name of the event to be registered (ex: "player_jump", "enemy_attack", etc.)
         :param callback: Callback function when event happens. should take an `event` object as parameter (ex: lambda event: event.Instances.player.do_jump())
@@ -82,6 +82,18 @@ class EventManager:
         else:
             self.events[event_name].append(callback)
 
+    def unregisterEvent(self, event_name: str):
+        """
+        Unregisters an event from the `EventManager`.
+
+        :param event_name: Name of the event to be unregistered
+        """
+
+        if event_name in self.events:
+            del self.events[event_name]
+        else:
+            print_warning(f"Event '{event_name}' not found in EventManager! Cannot unregister.")
+
     def triggerEvent(self, event_name: str, event=None):
         """
         Triggers an event, calling all its associated callback functions.
@@ -91,8 +103,16 @@ class EventManager:
         """
 
         if event_name in self.events:
+            count = 0
             for callback in self.events[event_name]:
-                callback(event if event is not None else self)
+                count += 1
+                try:
+                    callback(event if event is not None else self)
+                except AttributeError:
+                    print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to access an non-existent instance method or an instance that is not bound to EventManager.Instances.") 
+                except NameError:
+                    print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to call a non-existent function.")
+                
         else:
             print_warning(f"Event '{event_name}' not found in EventManager.")
 

@@ -13,6 +13,9 @@ MOUSE_SCROLL = 0
 PREVIOUS_INPUTS = None
 PREVENTED_INPUTS = {}
 
+#%%#################### INPUT MAP ########################
+##########################################################
+
 INPUTS = {
     "right": [pg.K_RIGHT, pg.K_d],
     "left": [pg.K_LEFT, pg.K_q],
@@ -83,6 +86,15 @@ BRAND_MAPS = {
     }
 }
 
+#%%#################### INPUT LOGIC ########################
+############################################################
+
+
+#%%#################### Editor Input Overrides ########################
+#######################################################################
+
+#We have indeed to override because of TKinter (ask to Axel)
+
 def editor_edit_key(key,value):
     """Override a key state when running through the editor layer.
 
@@ -100,6 +112,9 @@ def editor_release_key():
     global EDITOR_KEYS
     EDITOR_KEYS = {}
 
+
+#%%#################### Console (XBOX & PS) #########################
+#####################################################################
 def get_controller_brand(joy):
     """Infer controller branding from device name.
 
@@ -111,7 +126,8 @@ def get_controller_brand(joy):
         return "ps"
     return "xbox"
 
-
+#### Moteur de calcul d'inputs, appelée dans update_input_state().
+#Base de tous les inputs du jeu (ex: get_inputs(), get_once_inputs(), etc.)
 def get_inputs():
     """Compute current action states from all connected input devices.
 
@@ -184,8 +200,10 @@ def get_inputs():
 
 _cached_once_state = {}
 _cached_current_state = {}
+_cached_released_state = {}
 
 
+###### Sauvegarde l'état précédent et calcule l'état actuel pour définir ce qui est maintenu, ce qui vient d'être pressé ou ce qui a été relâché
 def update_input_state():
     """
     Refresh cached input snapshots for the current frame.
@@ -196,7 +214,7 @@ def update_input_state():
 
     :return:
     """
-    global _cached_once_state, _cached_current_state, PREVIOUS_INPUTS
+    global _cached_once_state, _cached_current_state, _cached_released_state, PREVIOUS_INPUTS
 
     # 1. Get what is currently held down
     current_state = get_inputs()
@@ -212,7 +230,14 @@ def update_input_state():
         for action in current_state
     }
 
-    # 4. Save for the next frame
+    # 4. Calculate 'just released'
+    _cached_released_state = {
+        action: not current_state[action] and previous_inputs.get(action, False)
+        for action in current_state
+    }
+
+
+    # 5. Save for the next frame
 
     _cached_current_state = current_state
     PREVIOUS_INPUTS = current_state
@@ -220,25 +245,97 @@ def update_input_state():
 
 
 
-
-def get_once_inputs():
-    """Return edge-triggered inputs for the current frame.
-
-    :return: Mapping `{action: bool}` for just-pressed actions.
-    """
-    return _cached_once_state
-
+#%%#### Get the current input states (held, once, released & mouse/aim coordinates & controller inputs) #######
+###############################################################################################################
 
 def get_held_inputs():
-    """Return held inputs for the current frame.
+    """
+    Returns the mapping of actions that are CURRENTLY held down
+    ==> Continously at each frame as long as the key/button is pressed
+
+    ==> 'onkeypress', JavaScript
 
     :return: Mapping `{action: bool}` for currently held actions.
     """
     return _cached_current_state
 
+
+def get_once_inputs():
+    """
+    Returns the mapping of actions that were pressed for the FIRST TIME in the current frame.
+    ==> 'onKeyDown', JavaScript
+
+    :return: Mapping `{action: bool}` for just-pressed actions.
+    """
+    return _cached_once_state
+
+def get_released_inputs():
+    """
+    Returns the mapping of actions that were just RELEASED in the current frame.
+    ==> 'onKeyUp', JavaScript
+
+    :return: Mapping `{action: bool}` for just-released actions.
+    """
+    return _cached_released_state
+
+
+#TODO: get_mouse() should be split into get_mouse_position() & get_player_aim_vector()
+def get_mouse(forced=False):
+    """Return mouse-like aiming coordinates for current control scheme.
+
+    :param forced: Force real mouse coordinates even when controller is active.
+    :return: Mouse position or synthetic stick-based vector.
+    """
+    if len(_controllers) == 0 or forced:
+        return pg.mouse.get_pos()
+    else:
+        axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
+        axis_y = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTY)
+        deadzone = 0.2
+        if abs(axis_x) < deadzone:
+            axis_x = 0
+        if abs(axis_y) < deadzone:
+            axis_y = 0
+        return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
+    
+def get_mouse_position(forced=False):
+    """Return the current position of the mouse cursor.
+
+    :return: Tuple (x, y) representing mouse coordinates.
+    """
+    if len(_controllers) == 0 or forced:
+        return pg.mouse.get_pos()
+    else:
+        return None  #When controller
+    
+def get_player_aim_vector(forced=False):
+    """Return a vector representing the player's aiming direction based on input.
+
+    :return: Vector2 representing aim direction and intensity.
+    """
+    mouse_position = get_mouse_position(forced)
+    if mouse_position is not None:
+        return mouse_position
+    else:
+        axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
+        axis_y = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTY)
+        deadzone = 0.2
+        if abs(axis_x) < deadzone:
+            axis_x = 0
+        if abs(axis_y) < deadzone:
+            axis_y = 0
+        return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
+    
+
+#%%#################### INPUT DISPLAY (ON SCREEN) ########################
+##########################################################################
+
 #Be sure that it's updated when controller is up
 def get_str_input(selected_input: str) -> str:
-    """Return a human-readable label for an action binding.
+    """
+    Displays an adapted label according to the current input method (ex: "A" for Xbox, "X" for PS, "L-CLICK" for mouse, etc.)
+
+    Returns a human-readable label for an action binding.
 
     :param selected_input: Action name.
     :return: Label adapted to controller/keyboard context.
@@ -274,7 +371,10 @@ def get_str_input(selected_input: str) -> str:
     return "None"
 
 def get_hint_input(selected_input: str)->str:
-    """Return an on-screen hint wrapper for an action label.
+    """
+    Displays on screen an adapted hint label (ex: above an interactable object: [E] for PC, (A) for Xbox, etc.)
+
+    Returns an on-screen hint wrapper for an action label, adapting to the current input method
 
     Uses `(X)` style on controller and `[X]` style on keyboard.
 
@@ -285,25 +385,6 @@ def get_hint_input(selected_input: str)->str:
         return "(" + get_str_input(selected_input) + ")"
     else:
         return "[" + get_str_input(selected_input) + "]"
-
-
-def get_mouse(forced=False):
-    """Return mouse-like aiming coordinates for current control scheme.
-
-    :param forced: Force real mouse coordinates even when controller is active.
-    :return: Mouse position or synthetic stick-based vector.
-    """
-    if len(_controllers) == 0 or forced:
-        return pg.mouse.get_pos()
-    else:
-        axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
-        axis_y = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTY)
-        deadzone = 0.2
-        if abs(axis_x) < deadzone:
-            axis_x = 0
-        if abs(axis_y) < deadzone:
-            axis_y = 0
-        return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
 
 
 def get_key_pressed(param):

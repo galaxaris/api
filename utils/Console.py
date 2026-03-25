@@ -49,6 +49,22 @@ def __print_message(msg, title, color, width=60):
     except Exception:
         print(f"[{title}] {msg}")
 
+def to_ordinal_number(n):
+    """
+    Converts an integer to its ordinal representation as a string (e.g., 1 -> "1st", 2 -> "2nd", etc.)
+
+    :param n: The integer to convert
+    :return: The ordinal representation of the integer as a string
+    """
+    if 10 <= n % 100 <= 20:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+    return str(n) + suffix
+
+#%%#################### RICH CONSOLE OUTPUT ########################
+####################################################################
+
 def print_info(msg, width=60):
     """
     Prints an informational message to the console in blue color.

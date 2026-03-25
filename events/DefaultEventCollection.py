@@ -28,6 +28,6 @@ def get_default_events(manager):
     return {
         #manager = the EventManager instance
         #e = the event (ex: mouse click) passed by triggerEvent
-        "QUIT":[lambda e=None: manager.Instances.game.stop()],
-        "player_jump":[lambda e=None: manager.Instances.player.do_jump()],
+        "QUIT": [lambda e=None: manager.Instances.game.stop()],
+        "player_jump": [lambda e=None: manager.Instances.player.do_jump()],
     }
