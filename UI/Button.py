@@ -134,7 +134,8 @@ class Button(UIElement):
         self.image = pg.Surface((self.size.x, self.size.y), pg.SRCALPHA)
         button_rect = pg.Rect(0, 0, self.size.x, self.size.y)
         pg.draw.rect(self.image, color, button_rect, border_radius=self.border_radius)
-        text = get_font(self.font, 20).render(self.text, False, text_color)
+        auto_size = min(int(len(self.text)**(-0.3)*50),20) # Simple heuristic for font size based on button height and text length
+        text = get_font(self.font, auto_size).render(self.text, False, text_color)
         text_rect = text.get_rect(center=(self.size.x // 2, self.size.y // 2))
         self.image.blit(text, text_rect)
         self.rect = self.image.get_rect(topleft=self.pos)
