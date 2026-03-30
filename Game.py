@@ -27,6 +27,8 @@ from api.utils.DebugElement import DebugElement
 from api.physics.Time import Time
 from api.utils.Console import *
 
+from api.utils.InputManager import get_inputs, onKeyDown, onKeyPress, onKeyUp
+
 
 class Game:
     """
@@ -78,6 +80,28 @@ class Game:
         #May not work as expected (but remind there is always a 'hard coded' equivalent if not registered...)
         self.event_manager.registerDefaultEventCollection() if register_default_events else None
 
+    def debug_keys(self):
+        """
+        Function to centralize the debug keys
+         
+        :return:
+        """
+
+        if onKeyDown(pg.K_F10):
+            self.Time.lockedFPS = not self.Time.lockedFPS #Time
+        if onKeyDown(pg.K_F11):
+            self.toggle_fullscreen()
+        if onKeyDown(pg.K_F12):
+            self.enable_debug()
+        if onKeyDown(pg.K_F8):
+            if self.scene and self.scene.camera:
+                Debug.toggle("freecam")
+        if onKeyDown(pg.K_F9):
+            if self.audio_manager:
+                self.audio_manager.toggle_audio()
+        
+
+
     def run(self, game):
         """
         Runs the game loop, handling events, updating the scene, and rendering the game.
@@ -85,29 +109,11 @@ class Game:
         :param game: pg function to be called at each frame ==> should update the game state
         :return:
         """
+
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
-
-                elif event.type == pg.KEYDOWN:
-                    if event.key == pg.K_F10:
-                        self.Time.lockedFPS = not self.Time.lockedFPS #Time
-
-                    if event.key == pg.K_F11:
-                        self.toggle_fullscreen()
-
-                    if event.key == pg.K_F12:
-                        self.enable_debug()
-
-                    if event.key == pg.K_F8:
-                        if self.scene:
-                            if self.scene.camera:
-                                Debug.toggle("freecam")
-
-                    if event.key == pg.K_F9:
-                        if self.audio_manager:
-                            self.audio_manager.toggle_audio()
 
                 if event.type == pg.MOUSEWHEEL:
                     InputManager.MOUSE_SCROLL += event.y
@@ -117,6 +123,11 @@ class Game:
 
             Debug.register_debug(self)
             InputManager.update_input_state()
+
+            #Debug keys, to be called after update_input_state
+            #NOTE: to be removed in production
+            self.debug_keys() 
+
             game()
 
             self.scene.assign_game_instances(self.Time, self.audio_manager)
