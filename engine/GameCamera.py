@@ -6,7 +6,7 @@ import pygame as pg
 
 from api.GameObject import GameObject
 from api.utils import Debug
-from api.utils.InputManager import get_inputs
+from api.utils.InputManager import get_inputs, onKeyDown, onKeyUp, onKeyPress
 
 
 class GameCamera:
@@ -94,16 +94,16 @@ class GameCamera:
                 self.freecam_old = self.position.copy()
 
 
-            inputs = get_inputs()
-            boost = 5 if inputs["boost"] else 0
+            
+            boost = 5 if onKeyPress("boost") else 0
 
-            if inputs["right"]:
+            if onKeyPress("right"):
                 self.move(5+boost, 0)
-            if inputs["left"]:
+            if onKeyPress("left"):
                 self.move(-5-boost, 0)
-            if inputs["down"]:
+            if onKeyPress("down"):
                 self.move(0, 5+boost)
-            if inputs["up"]:
+            if onKeyPress("up"):
                 self.move(0, -5-boost)
 
         elif self.focused_object and hasattr(self.focused_object, 'pos'):

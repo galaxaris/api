@@ -5,6 +5,7 @@ from api.assets.Texture import Texture
 import pygame as pg
 
 from api.utils import InputManager
+from api.utils.InputManager import get_inputs, onKeyDown, onKeyPress, onKeyUp
 from api.utils.Fonts import get_font
 
 
@@ -177,14 +178,15 @@ class Button(UIElement):
 
         #Track previous frame state for edge detection (click release)
         prev_was_clicked = getattr(self, 'was_clicked_prev_frame', False)
-        is_currently_clicked = InputManager.is_mouse_clicked()
+        #is_currently_clicked = InputManager.is_mouse_clicked()
+        is_currently_clicked = onKeyPress("click")
 
         if self.rect.collidepoint(mouse_pos):
             #Change cursor to pointer when hovering over the button
             #pg.mouse.set_cursor(pg.SYSTEM_CURSOR_HAND)
 
             #Mouse is over the button
-            if InputManager.is_mouse_clicked_once():
+            if not prev_was_clicked and is_currently_clicked:
                 #Just pressed on the button
                 self.focus(self.bg_color_focus)
             elif is_currently_clicked:

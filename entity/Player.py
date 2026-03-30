@@ -6,7 +6,7 @@ from api.physics.Collision import get_collided_objects
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, InputManager
 
-from api.utils.InputManager import get_inputs, get_once_inputs, onKeyDown, onKeyPress, onKeyPress
+from api.utils.InputManager import get_inputs, get_once_inputs, onKeyDown, onKeyPress, onKeyPress, onKeyUp
 
 
 import pygame as pg
@@ -52,7 +52,7 @@ class Player(Character):
         if not Debug.is_enabled("freecam"):
             if onKeyPress("aim") and scene.global_state["player_control"]:
                 self.speed_malus = self.max_velocity//2
-                mouse = pg.Vector2(InputManager.get_player_aim_vector(InputManager.get_key_pressed("aim")))
+                mouse = pg.Vector2(InputManager.get_player_aim_vector(onKeyDown("aim")))
                 cam_pos = scene.camera.position
                 player_screen_pos = self.pos - cam_pos + self.size/2
                 angle_with_player = mouse / scene.scale_ratio - player_screen_pos
@@ -107,7 +107,7 @@ class Player(Character):
 
 
             self.boost = onKeyPress("boost") and scene.global_state["player_control"] and not onKeyPress("aim")
-            self.interact = onKeyPress("interact") and scene.global_state["player_control"]
+            self.interact = onKeyUp("interact") and scene.global_state["player_control"]
 
         if Debug.is_enabled("freecam"):
             self.vel = pg.Vector2(0, 0)
@@ -134,7 +134,6 @@ class Player(Character):
 
     def draw(self, surface: pg.Surface, scene=None):
         super().draw(surface, scene)
-        #inputs = get_inputs()
         if onKeyPress("show_inventory") and scene.global_state["player_control"]:
             self.inventory.player_pos = self.pos
             self.inventory.player_size = self.size
@@ -143,7 +142,7 @@ class Player(Character):
             self.inventory.player_rect = self.rect
             self.inventory.draw(surface, scene)
 
-            if onKeyPress("select_weapon") and scene.global_state["player_control"]:
+            if onKeyUp("select_weapon") and scene.global_state["player_control"]:
                 self.inventory.switch_weapon()
                 self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 

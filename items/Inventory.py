@@ -3,6 +3,7 @@ import math
 
 from api.GameObject import GameObject
 from api.utils import InputManager
+from api.utils.InputManager import get_inputs, onKeyDown, onKeyPress, onKeyUp
 
 
 class Inventory(GameObject):
@@ -39,7 +40,7 @@ class Inventory(GameObject):
 
         else:
 
-            self.mouse = pg.Vector2(InputManager.get_player_aim_vector(InputManager.get_key_pressed("show_inventory")))
+            self.mouse = pg.Vector2(InputManager.get_player_aim_vector(onKeyDown("show_inventory")))
 
             cam_pos = scene.camera.position
             player_screen_pos = self.player_pos - cam_pos + self.player_size / 2

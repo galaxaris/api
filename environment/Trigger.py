@@ -241,8 +241,7 @@ class TriggerInteract(Trigger):
             if not self.enabled and self.surface:
                 self.surface.blit(self.trigger_surface, self.pos - self.offset + (self.size.x//2,-self.size.y//2) - (self.BOX_DIM.x//2,self.BOX_DIM.y//2) ) # Position the box above the trigger
 
-                #Wait for the player to press the "interact" key
-            inputs = InputManager.get_inputs()
+            #Wait for the player to press the "interact" key
             if obj.interact and not self.enabled:
 
                 self.enabled = True

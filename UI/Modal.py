@@ -4,7 +4,7 @@ import pygame as pg
 
 from api.UI.GameUI import UIElement
 from api.utils import InputManager
-from api.utils.InputManager import prevent_input
+from api.utils.InputManager import prevent_input, get_inputs, onKeyDown, onKeyPress, onKeyUp
 
 
 class Modal(UIElement):
@@ -59,27 +59,27 @@ class Modal(UIElement):
             actual_button = self.buttons[self.active_button_index_x][self.active_button_index_y%len(self.buttons[self.active_button_index_x])]
 
             if InputManager.is_controller_connected():
-                inputs = InputManager.get_once_inputs()
+                #inputs = InputManager.get_once_inputs()
 
                 for lines in self.buttons:
                     for button in lines:
                         if button != actual_button:
                             button.idle(button.bg_color)
 
-                if inputs["menu_down"]:
+                if onKeyDown("menu_down"):
                     self.active_button_index_y = (self.active_button_index_y + 1) % len(self.buttons[self.active_button_index_x])
-                elif inputs["menu_up"]:
+                elif onKeyDown("menu_up"):
                     self.active_button_index_y = (self.active_button_index_y - 1) % len(self.buttons[self.active_button_index_x])
-                elif inputs["menu_right"]:
+                elif onKeyDown("menu_right"):
                     if self.active_button_index_x + 1 < len(self.buttons) and len(self.buttons[self.active_button_index_x + 1]) > 0:
                         self.active_button_index_x = (self.active_button_index_x + 1) % len(self.buttons)
-                elif inputs["menu_left"]:
+                elif onKeyDown("menu_left"):
                     if self.active_button_index_x - 1 >= 0 and len(self.buttons[self.active_button_index_x - 1]) > 0:
                         self.active_button_index_x = (self.active_button_index_x - 1) % len(self.buttons)
 
                 actual_button.hover(actual_button.bg_color_hover)
 
-                if inputs["menu_select"]:
+                if onKeyUp("menu_select"):
                     actual_button.click(actual_button.bg_color_focus)
                     InputManager.prevent_once_key("jump")
                     if actual_button.callback:

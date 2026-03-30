@@ -2,7 +2,7 @@
 
 from api.GameObject import GameObject
 from api.utils import InputManager, Debug
-from api.utils.InputManager import get_once_inputs, prevent_once_key, onKeyDown, onKeyUp
+from api.utils.InputManager import prevent_once_key, onKeyUp
 import pygame as pg
 
 class UIElement(GameObject):
@@ -105,7 +105,11 @@ class GameUI(pg.Surface):
 
     def update(self, scene):
         """Advance UI interaction state from one-shot player inputs."""
-        #inputs = get_once_inputs()
+
+        #consume=False is essential because several cases are checked in the same time.
+        release_menu_select = onKeyUp("menu_select", consume=False)
+        release_interact = onKeyUp("interact", consume=False)
+        confirm_released = release_menu_select or release_interact
 
         # Helper to DRY up repetitive UI closing and state restoration
         def close_ui(ui_key):
@@ -113,13 +117,21 @@ class GameUI(pg.Surface):
             scene.global_state["player_control"] = True
             InputManager.prevent_once_key("jump")
 
+        #Consumes effectively after the choice.
+        def consume_confirm_release():
+            if release_menu_select:
+                InputManager.prevent_released_key("menu_select")
+            if release_interact:
+                InputManager.prevent_released_key("interact")
+
         # 1. Dialog and Textbox Progression
-        if (onKeyDown("menu_select") or onKeyDown("interact")) and not scene.global_state.get("in_menu"):
+        if confirm_released and not scene.global_state.get("in_menu"):
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 is_waiting_for_choice = hasattr(self.active_textbox[1], "choice_goal")
 
                 if not is_waiting_for_choice:
+                    consume_confirm_release()
                     if index < len(boxes) - 1:
                         new_index = index + 1
                         self.active_dialog = (key, boxes, new_index)
@@ -150,6 +162,7 @@ class GameUI(pg.Surface):
                 is_waiting_for_choice = hasattr(element, "choice_goal")
 
                 if not is_waiting_for_choice and "ui_closable" in element.tags:
+                    consume_confirm_release()
                     close_ui(key)
 
         # 2. Choice Handling

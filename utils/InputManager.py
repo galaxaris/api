@@ -19,10 +19,6 @@ PREVENTED_INPUTS = {}
 #%%#################### INPUT MAP ########################
 ##########################################################
 
-#TODO: The Inputs should be defined with more freedom: we should be able to get keys from an input action, but also directly from pg.K_*, MOUSE_LEFT, CONTROLLER_BUTTON_A, etc. 
-#==> Redefine get_inputs() to check the INPUT_ACTIONS but also the direct keys, and redefine get_str_input() to be able to display them (ex: "L-CLICK" for MOUSE_LEFT, "A" for CONTROLLER_BUTTON_A, etc.)
-#==> get_***_inputs() should ONLY return the actions or keys triggered, and not the whole mapping of actions (here set to True or False...)
-
 INPUT_ACTIONS = {
     "right": [pg.K_RIGHT, pg.K_d],
     "left": [pg.K_LEFT, pg.K_q],
@@ -31,6 +27,8 @@ INPUT_ACTIONS = {
     "up": [pg.K_UP, pg.K_z],
     "down": [pg.K_DOWN, pg.K_s],
     "aim": ["MOUSE_RIGHT", pg.K_LALT],
+    "click": ["MOUSE_LEFT"],
+    "right_click": ["MOUSE_RIGHT"],
     "aim_up": [],
     "aim_down": [],
     "shoot": ["MOUSE_LEFT"],
@@ -165,7 +163,7 @@ def get_inputs() -> set:
             if val:
                 triggered.add(key)
     else:
-        # Keyboard
+        #Keyboard
         pg.event.pump()
         pg_keys = pg.key.get_pressed()
         for key_code in _PG_KEY_CONSTANTS:
@@ -175,7 +173,7 @@ def get_inputs() -> set:
             except (IndexError, TypeError):
                 continue
                 
-        # Mouse
+        #Mouse
         mouse_pressed = pg.mouse.get_pressed()
         if len(mouse_pressed) > 0 and mouse_pressed[0]: triggered.add("MOUSE_LEFT")
         if len(mouse_pressed) > 1 and mouse_pressed[1]: triggered.add("MOUSE_MIDDLE")
@@ -190,8 +188,8 @@ def get_inputs() -> set:
         _controllers.clear()
 
     if _controllers:
-        joy = _controllers[0]  # Focus on primary player
-        # Generic check for all standard controller buttons (0 to 20)
+        joy = _controllers[0]  #Focus on primary player
+        #Generic check for all standard controller buttons (0 to 20)
         for btn_idx in range(21):
             try:
                 if joy.get_button(btn_idx):
@@ -215,7 +213,7 @@ def get_inputs() -> set:
                     if (0 > threshold > val) or (0 < threshold < val):
                         triggered.add(action)
 
-    # Convert native triggered keys directly into generic actions based on map
+    #Convert native triggered keys directly into generic actions based on map
     for action, keys in INPUT_ACTIONS.items():
         for key in keys:
             if key in triggered:
@@ -463,8 +461,13 @@ def prevent_released_key(param):
     """
     _cached_released_state.discard(param)
 
+
+##Deprecated, use onKeyPress("click") instead
 def is_mouse_clicked(number=0):
-    """Return `True` while a mouse button is held down.
+    """
+    == DEPRECATED, use onKeyPress("click") instead ==
+
+    Return `True` while a mouse button is held down.
 
     :param number: Mouse button index.
     :return: Held click state.
@@ -472,8 +475,12 @@ def is_mouse_clicked(number=0):
     mouse_pressed = pg.mouse.get_pressed()
     return number < len(mouse_pressed) and mouse_pressed[number]
 
+##Deprecated, use onKeyDown("click") instead
 def is_mouse_clicked_once(number=0):
-    """Return `True` only on the frame where a mouse button starts pressing.
+    """
+    == DEPRECATED, use onKeyDown("click") instead ==
+
+    Return `True` only on the frame where a mouse button starts pressing.
 
     :param number: Mouse button index.
     :return: Edge-triggered click state.
@@ -499,6 +506,8 @@ def onKeyPress(key: int | str) -> bool:
 
     :param key: Key code (pg.K_*) or action name (INPUT_ACTIONS[action_name])
     """
+    #Does not raise a warning bcs would be printed each frame when holding or not...
+
     return key in get_held_inputs()
 
 def onKeyDown(key: int | str, consume: bool = True) -> bool:
@@ -513,6 +522,11 @@ def onKeyDown(key: int | str, consume: bool = True) -> bool:
     is_pressed = key in get_once_inputs()
     if is_pressed and consume:
         prevent_input(key) # Consomme l'input
+
+    #Raises a warning if the input_action does not exist in the INPUT_ACTIONS map
+    if is_pressed and key not in INPUT_ACTIONS and not isinstance(key, int):
+        print_warning(f"Input '{key}' is not defined in INPUT_ACTIONS map.")
+
     return is_pressed
 
 def onKeyUp(key: int | str, consume: bool = True) -> bool:
@@ -525,16 +539,13 @@ def onKeyUp(key: int | str, consume: bool = True) -> bool:
     :param consume: If `True`, the detected input will be consumed and won't trigger again until released and pressed again.
 
     """
-    
 
     is_released = key in get_released_inputs()
     if is_released and consume:
         prevent_released_key(key) # Consomme l'input
 
-        if key == "pause":
-            print_info("Menu key released, toggling menu state.")
+    #Raises a warning if the input_action does not exist in the INPUT_ACTIONS map
+    if is_released and key not in INPUT_ACTIONS and not isinstance(key, int):
+        print_warning(f"Input '{key}' is not defined in INPUT_ACTIONS map.")
 
-    if is_released:
-        print_info(f"Input '{get_str_input(key)}' was released.")
-    
     return is_released

@@ -4,6 +4,7 @@ from api.UI.Modal import Modal
 from api.UI.TextBox import TextBox
 from api.assets.Texture import Texture
 from api.utils import Fonts, InputManager
+from api.utils.InputManager import get_inputs, onKeyDown, onKeyPress, onKeyUp
 import pygame as pg
 
 class Choice(UIElement):
@@ -56,20 +57,19 @@ class Choice(UIElement):
             actual_button = self.buttons[self.active_button_index_x]
 
             if InputManager.is_controller_connected():
-                inputs = InputManager.get_once_inputs()
 
                 for button in self.buttons:
                     if button != actual_button:
                         button.idle(button.bg_color)
 
-                if inputs["menu_right"]:
+                if onKeyUp("menu_right"):
                     self.active_button_index_x = (self.active_button_index_x + 1) % len(self.buttons)
-                elif inputs["menu_left"]:
+                elif onKeyUp("menu_left"):
                     self.active_button_index_x = (self.active_button_index_x - 1) % len(self.buttons)
 
                 actual_button.hover(actual_button.bg_color_hover)
 
-                if inputs["menu_select"]:
+                if onKeyUp("menu_select"):
                     print(scene.Time.get_ticks())
                     actual_button.click(actual_button.bg_color_focus)
                     self.choice_index = self.active_button_index_x
