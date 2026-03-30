@@ -2,7 +2,7 @@
 
 from api.GameObject import GameObject
 from api.utils import InputManager, Debug
-from api.utils.InputManager import get_once_inputs, prevent_once_key
+from api.utils.InputManager import get_once_inputs, prevent_once_key, onKeyDown, onKeyUp
 import pygame as pg
 
 class UIElement(GameObject):
@@ -105,7 +105,7 @@ class GameUI(pg.Surface):
 
     def update(self, scene):
         """Advance UI interaction state from one-shot player inputs."""
-        inputs = get_once_inputs()
+        #inputs = get_once_inputs()
 
         # Helper to DRY up repetitive UI closing and state restoration
         def close_ui(ui_key):
@@ -114,7 +114,7 @@ class GameUI(pg.Surface):
             InputManager.prevent_once_key("jump")
 
         # 1. Dialog and Textbox Progression
-        if (InputManager.get_once_inputs()["menu_select"] or inputs["interact"]) and not scene.global_state.get("in_menu"):
+        if (onKeyDown("menu_select") or onKeyDown("interact")) and not scene.global_state.get("in_menu"):
             if self.active_dialog:
                 key, boxes, index = self.active_dialog
                 is_waiting_for_choice = hasattr(self.active_textbox[1], "choice_goal")
@@ -185,7 +185,7 @@ class GameUI(pg.Surface):
                         close_ui(key)
 
         # 3. Menu Interactions
-        if inputs["pause"] and self.active_menus:
+        if self.active_menus and onKeyUp("pause"):
             # Close the most recently opened menu
             self.hide(self.active_menus[-1])
 

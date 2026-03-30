@@ -6,7 +6,8 @@ from api.physics.Collision import get_collided_objects
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, InputManager
 
-from api.utils.InputManager import get_inputs, get_once_inputs
+from api.utils.InputManager import get_inputs, get_once_inputs, onKeyDown, onKeyPress, onKeyPress
+
 
 import pygame as pg
 import math
@@ -42,14 +43,14 @@ class Player(Character):
         :return:
         """
 
-        inputs = get_inputs()
+        #inputs = get_inputs()
 
         was_falling = self.fall
         Time = scene.Time if scene and scene.Time else None
 
 
         if not Debug.is_enabled("freecam"):
-            if inputs["aim"] and scene.global_state["player_control"]:
+            if onKeyPress("aim") and scene.global_state["player_control"]:
                 self.speed_malus = self.max_velocity//2
                 mouse = pg.Vector2(InputManager.get_player_aim_vector(InputManager.get_key_pressed("aim")))
                 cam_pos = scene.camera.position
@@ -58,17 +59,17 @@ class Player(Character):
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
-                if InputManager.MOUSE_SCROLL != 0:
+                if "mouse_scroll" in InputManager.get_once_inputs():
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
                 if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
-                    if get_once_inputs()["aim_up"] and self.equipped_weapon.trajectory.ini_speed < MAX_SHOT_SPEED:
+                    if onKeyPress("aim_up") and self.equipped_weapon.trajectory.ini_speed < MAX_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed += 1
-                    elif get_once_inputs()["aim_down"] and self.equipped_weapon.trajectory.ini_speed > MIN_SHOT_SPEED:
+                    elif onKeyPress("aim_down") and self.equipped_weapon.trajectory.ini_speed > MIN_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
-                if get_once_inputs()["shoot"] and scene.global_state["player_control"]:
+                if onKeyPress("shoot") and scene.global_state["player_control"]:
                     haveShooted = self.equipped_weapon.shoot(self.pos + self.size//2)
                     #self.equipped_weapon.is_aiming = False
                     #SFX
@@ -88,25 +89,25 @@ class Player(Character):
                 self.equipped_weapon.is_aiming = False
 
 
-            if inputs["right"] and scene.global_state["player_control"]:
+            if onKeyPress("right") and scene.global_state["player_control"]:
                 self.is_controlled = True
                 self.do_right(Time)
-                if not inputs["aim"]:
+                if not onKeyPress("aim"):
                     self.set_direction("right")
 
 
-            if inputs["left"] and scene.global_state["player_control"]:
+            if onKeyPress("left") and scene.global_state["player_control"]:
                 self.is_controlled = True
                 self.do_left(Time)
-                if not inputs["aim"]:
+                if not onKeyPress("aim"):
                     self.set_direction("left")
 
-            if inputs["jump"] and scene.global_state["player_control"] and (not self.in_trigger_interact or not InputManager.is_controller_connected()) :
+            if onKeyPress("jump") and scene.global_state["player_control"] and (not self.in_trigger_interact or not InputManager.is_controller_connected()) :
                 self.do_jump()
 
 
-            self.boost = inputs["boost"] and scene.global_state["player_control"] and not inputs["aim"]
-            self.interact = inputs["interact"] and scene.global_state["player_control"]
+            self.boost = onKeyPress("boost") and scene.global_state["player_control"] and not onKeyPress("aim")
+            self.interact = onKeyPress("interact") and scene.global_state["player_control"]
 
         if Debug.is_enabled("freecam"):
             self.vel = pg.Vector2(0, 0)
@@ -133,8 +134,8 @@ class Player(Character):
 
     def draw(self, surface: pg.Surface, scene=None):
         super().draw(surface, scene)
-        inputs = get_inputs()
-        if inputs["show_inventory"] and scene.global_state["player_control"]:
+        #inputs = get_inputs()
+        if onKeyPress("show_inventory") and scene.global_state["player_control"]:
             self.inventory.player_pos = self.pos
             self.inventory.player_size = self.size
 
@@ -142,7 +143,7 @@ class Player(Character):
             self.inventory.player_rect = self.rect
             self.inventory.draw(surface, scene)
 
-            if inputs["select_weapon"] and scene.global_state["player_control"]:
+            if onKeyPress("select_weapon") and scene.global_state["player_control"]:
                 self.inventory.switch_weapon()
                 self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
