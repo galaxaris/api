@@ -10,6 +10,7 @@ import pygame as pg
 from pygame._sdl2 import controller
 
 MOUSE_SCROLL = 0
+MOUSE_CLICKED = set()
 PREVIOUS_INPUTS = None
 PREVENTED_INPUTS = {}
 
@@ -115,6 +116,13 @@ def editor_release_key():
 
 #%%#################### Console (XBOX & PS) #########################
 #####################################################################
+def is_controller_connected():
+    """Return whether at least one controller is tracked.
+
+    :return: `True` when a controller is available.
+    """
+    return len(_controllers) > 0
+
 def get_controller_brand(joy):
     """Infer controller branding from device name.
 
@@ -277,26 +285,6 @@ def get_released_inputs():
     :return: Mapping `{action: bool}` for just-released actions.
     """
     return _cached_released_state
-
-
-#TODO: get_mouse() should be split into get_mouse_position() & get_player_aim_vector()
-def get_mouse(forced=False):
-    """Return mouse-like aiming coordinates for current control scheme.
-
-    :param forced: Force real mouse coordinates even when controller is active.
-    :return: Mouse position or synthetic stick-based vector.
-    """
-    if len(_controllers) == 0 or forced:
-        return pg.mouse.get_pos()
-    else:
-        axis_x = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTX)
-        axis_y = _controllers[0].get_axis(pg.CONTROLLER_AXIS_RIGHTY)
-        deadzone = 0.2
-        if abs(axis_x) < deadzone:
-            axis_x = 0
-        if abs(axis_y) < deadzone:
-            axis_y = 0
-        return pg.Vector2(axis_x, axis_y) * 1000  # Scale for
     
 def get_mouse_position(forced=False):
     """Return the current position of the mouse cursor.
@@ -404,16 +392,11 @@ def get_key_pressed(param):
                 return key
     return None
 
-
-def is_controller_connected():
-    """Return whether at least one controller is tracked.
-
-    :return: `True` when a controller is available.
-    """
-    return len(_controllers) > 0
-
 def prevent_input(key):
-    """Consume a just-pressed input for the current frame.
+    """
+    Prevents the get_once_inputs ('onKeyDown') for the current frame
+
+    Consume a just-pressed input for the current frame.
 
     :param key: Action key to clear from once-state.
     :return:
@@ -421,7 +404,25 @@ def prevent_input(key):
     if _cached_once_state:
         _cached_once_state[key] = False
 
-MOUSE_CLICKED = set()
+def prevent_once_key(param):
+    """
+    Prevents the get_once_inputs ('onKeyDown') WHILE the key is held down, not just for the current frame
+
+    Clear the just-pressed state of an action to prevent it from triggering in the current frame.
+    
+    :param param:
+    :return:
+    """
+    PREVENTED_INPUTS[param] = True
+
+def is_mouse_clicked(number=0):
+    """Return `True` while a mouse button is held down.
+
+    :param number: Mouse button index.
+    :return: Held click state.
+    """
+    mouse_pressed = pg.mouse.get_pressed()
+    return number < len(mouse_pressed) and mouse_pressed[number]
 
 def is_mouse_clicked_once(number=0):
     """Return `True` only on the frame where a mouse button starts pressing.
@@ -438,21 +439,3 @@ def is_mouse_clicked_once(number=0):
     else:
         MOUSE_CLICKED.discard(number)
     return False
-
-def is_mouse_clicked(number=0):
-    """Return `True` while a mouse button is held down.
-
-    :param number: Mouse button index.
-    :return: Held click state.
-    """
-    mouse_pressed = pg.mouse.get_pressed()
-    return number < len(mouse_pressed) and mouse_pressed[number]
-
-
-def prevent_once_key(param):
-    """
-    Clear the just-pressed state of an action to prevent it from triggering in the current frame.
-    :param param:
-    :return:
-    """
-    PREVENTED_INPUTS[param] = True
