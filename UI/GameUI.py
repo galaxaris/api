@@ -153,9 +153,14 @@ class GameUI(pg.Surface):
                             self.active_textbox = (key, next_box)
                             InputManager.prevent_input("menu_select")
                         else:
+                            #Do not forget to consume input, otherwise the first key press after closing the dialog will be lost
+                            InputManager.prevent_input("menu_select")
                             close_ui(key)
+                            
                     else:
+                        InputManager.prevent_input("menu_select")
                         close_ui(key)
+                        
 
             elif self.active_textbox:
                 key, element = self.active_textbox
@@ -190,11 +195,13 @@ class GameUI(pg.Surface):
                         if index + 1 < len(boxes):
                             self.active_textbox = (key, boxes[index + 1])
                         else:
+                            InputManager.prevent_input("menu_select")
                             close_ui(key)
                 else:
                     if index + 1 < len(boxes):
                         self.active_textbox = (key, boxes[index + 1])
                     else:
+                        InputManager.prevent_input("menu_select")
                         close_ui(key)
 
         # 3. Menu Interactions

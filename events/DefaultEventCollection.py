@@ -8,7 +8,7 @@ PLEASE place the main associated event first, then the additional ones, for clar
 Structure:
 
 {
-    "event_name": [lambda event: event.Instances.some_instance.some_method(), ...],
+    "event_name": ([lambda event: event.Instances.some_instance.some_method(), ...], [condition1, condition2, ...]) (optional)
     ...
 }
 """
@@ -23,11 +23,11 @@ def get_default_events(manager):
 
     :param manager: The EventManager instance to which the events will be registered.
 
-    :return: A dictionary containing the default events and their associated callback functions.
+    :return: A dictionary containing the default events and their associated callback functions, with optional conditions.
     """
     return {
         #manager = the EventManager instance
         #e = the event (ex: mouse click) passed by triggerEvent
-        "QUIT": [lambda e=None: manager.Instances.game.stop()],
-        "player_jump": [lambda e=None: manager.Instances.player.do_jump()],
+        "QUIT": ([lambda e=None: manager.Instances.game.stop()], None),
+        "player_jump": ([lambda e=None: manager.Instances.player.do_jump()], [False]),
     }

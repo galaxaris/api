@@ -59,28 +59,37 @@ class EventManager:
         #LAZY IMPORT to avoid circular imports
         from api.events.DefaultEventCollection import get_default_events
 
-        #Injecting directly the EventManager        
-        for event_name, callbacks in get_default_events(self).items():
-            for callback in callbacks:
-                self.registerEvent(event_name, callback)
+        #Injecting directly the EventManager     
+        #conditions are optional, so we check if they exist or not in the tuple :
+        for event_name, (callbacks, conditions) in get_default_events(self).items():
+            if conditions:
+                self.registerEvent(event_name, callbacks, conditions)
+            else:
+                self.registerEvent(event_name, callbacks)
 
-    def registerEvent(self, event_name: str, callback: Callable | list[Callable] | tuple[Callable, ...]):
+    def registerEvent(self, event_name: str, callback: list[Callable], conditions: list[Callable] | list[bool] = None):
         """
         Registers a single event to the `EventManager`, providing callback(s). If event already exists, adds callback(s)
 
         :param event_name: Name of the event to be registered (ex: "player_jump", "enemy_attack", etc.)
-        :param callback: Callback function when event happens. should take an `event` object as parameter (ex: lambda event: event.Instances.player.do_jump())
+        :param callback: List of callback functions when event happens. should take an `event` object as parameter (ex: lambda event: event.Instances.player.do_jump())
+        :param conditions: List of conditions to check if the callback must be called (optionnal). Should be callbacks since their values can change,
+          following the game state.
+          NOTE: the conditions could be instead checked in-game, depending on what config we chose
+
+          Exemple: if (onGame) => toggleGameMenu()
         """
 
         #Register new event if doesn't exist yet
         if event_name not in self.events:
-            self.events[event_name] = []
+            self.events[event_name] = ([], [])
 
 
-        if isinstance(callback, (tuple, list)):
-            self.events[event_name].extend(callback)
-        else:
-            self.events[event_name].append(callback)
+        self.events[event_name][0].extend(callback)
+
+        if conditions:
+            self.events[event_name][1].extend(conditions)
+
 
     def unregisterEvent(self, event_name: str):
         """
@@ -104,15 +113,29 @@ class EventManager:
 
         if event_name in self.events:
             count = 0
-            for callback in self.events[event_name]:
-                count += 1
-                try:
-                    callback(event if event is not None else self)
-                except AttributeError:
-                    print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to access an non-existent instance method or an instance that is not bound to EventManager.Instances.") 
-                except NameError:
-                    print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to call a non-existent function.")
+
+            conditions_result = True
+
+            #Calculates the conditions result to check if the function is triggered...
+            if self.events[event_name][1] != None:
+                for condition in self.events[event_name][1]:
+                    if isinstance(condition, bool):
+                        conditions_result = conditions_result and condition
+                    elif isinstance(condition, Callable):
+                        conditions_result = conditions_result and condition(self)
+
+            if conditions_result:
+                for callback in self.events[event_name][0]:
+                    count += 1
+                    try:
+                        callback(event if event is not None else self)
+                    except AttributeError:
+                        print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to access an non-existent instance method or an instance that is not bound to EventManager.Instances.") 
+                    except NameError:
+                        print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to call a non-existent function.")
                 
+            else:
+                print_info(f"Event '{event_name}' not triggered because asked conditions have not been met.")
         else:
             print_warning(f"Event '{event_name}' not found in EventManager.")
 
