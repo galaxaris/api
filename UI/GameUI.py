@@ -205,9 +205,9 @@ class GameUI(pg.Surface):
                         close_ui(key)
 
         # 3. Menu Interactions
-        if self.active_menus and onKeyUp("pause"):
-            # Close the most recently opened menu
-            self.hide(self.active_menus[-1])
+        #if self.active_menus and onKeyUp("pause"):
+        #    # Close the most recently opened menu
+        #    self.hide(self.active_menus[-1])
 
         # 4. Global State Synchronization
         # Evaluated AFTER inputs so state is accurate on the current frame

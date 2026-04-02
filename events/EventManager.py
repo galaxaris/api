@@ -73,9 +73,14 @@ class EventManager:
 
         :param event_name: Name of the event to be registered (ex: "player_jump", "enemy_attack", etc.)
         :param callback: List of callback functions when event happens. should take an `event` object as parameter (ex: lambda event: event.Instances.player.do_jump())
-        :param conditions: List of conditions to check if the callback must be called (optionnal). Should be callbacks since their values can change,
+        :param conditions: List of conditions to check if the callback must be called (optional). Should be callbacks since their values must change,
           following the game state.
-          NOTE: the conditions could be instead checked in-game, depending on what config we chose
+
+          --- NOTE ---
+            - WARNING - Avoid using direct boolean vals
+            - To pass a variable condtion, use a lambda function that returns the variable (ex: lambda manager: manager.Instances.scene.global_state["in_menu"] == False)
+            - You can pass also one single lambda function, checking itself multiple conditions (ex: lambda manager: manager.Instances.scene.global_state["in_menu"] == False and em.player.health > 0)
+            - NOTE - the conditions could be instead checked in-game, depending on what config we chose
 
           Exemple: if (onGame) => toggleGameMenu()
         """
