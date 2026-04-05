@@ -18,9 +18,12 @@ class Player(Character):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction: str = "right"):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int], direction: str = "right", 
+                 health: int=100, damage_resistance: int=0, damage_force: int=10, max_velocity: float|int = 2, acceleration: float|int = 0.5, resistance:float|int = 0.2, 
+                 force:float|int = 20):
         """
         Initializes the player with the given attributes.
+        => Full param are inherited from Character & Entity
 
         :param pos: Player position
         :param size: Player size
@@ -31,7 +34,8 @@ class Player(Character):
         :param force: Player force
         :param sfx_list: List of sound effects. (key: name)
         """
-        super().__init__(pos, size)
+        super().__init__(pos, size, health=health, damage_resistance=damage_resistance, 
+                         damage_force=damage_force, max_velocity=max_velocity, acceleration=acceleration, resistance=resistance, force=force)
         self.add_tag("player")
         self.set_direction(direction)
 

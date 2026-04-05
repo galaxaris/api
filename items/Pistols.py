@@ -7,7 +7,7 @@ from api.physics.Trajectory import Trajectory
 
 class WaterPistol:
     """Base class for a pistol whose projectile is water."""
-    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500):
+    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500, projectile_damage = 10):
         self.name = "water gun"
         self.target = "enemy" #dirty
         self.cooldown = cooldown
@@ -18,6 +18,7 @@ class WaterPistol:
         self.gravity = 0.5
         self.Time = None
         self.last = - self.cooldown
+        self.projectile_damage = projectile_damage
 
     def shoot(self, shoot_pos: pg.Vector2)->bool:
         game_projectiles = self.projectiles
@@ -25,7 +26,7 @@ class WaterPistol:
 
         if now - self.last >= self.cooldown:
             self.last = now
-            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target, colour = "blue")
+            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target, damage=self.projectile_damage, colour = "blue")
             game_projectiles.append(projectile)
             return True
         return False
@@ -46,7 +47,7 @@ class WaterPistol:
 class EarthPistol:
     """Base class for a pistol whose projectile is dirt."""
 
-    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500):
+    def __init__(self, trajectory: Trajectory, target = "enemy", cooldown = 500, projectile_damage = 10):
         self.name = "earth gun"
         self.target = "enemy"
         self.cooldown = cooldown
@@ -57,6 +58,7 @@ class EarthPistol:
         self.gravity = 1
         self.Time = None
         self.last = - self.cooldown
+        self.projectile_damage = projectile_damage
 
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
@@ -66,7 +68,7 @@ class EarthPistol:
         if now - self.last >= self.cooldown:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    target=self.target, colour = "red")
+                                    target=self.target, damage=self.projectile_damage, colour = "red")
             game_projectiles.append(projectile)
             return True
         return False
@@ -86,12 +88,13 @@ class EarthPistol:
 class GrapplingPistol:
     """Base class for a pistol that acts as a grappling hook."""
 
-    def __init__(self, trajectory: Trajectory):
+    def __init__(self, trajectory: Trajectory, cooldown=500, projectile_damage = 10):
         self.name = "grappling gun"
         self.target = "dirty"
-        self.cooldown = 500
+        self.cooldown = cooldown
         self.show_trajectory = True
         self.projectiles = []
+        self.projectile_damage = projectile_damage
         self.trajectory = trajectory
         self.is_aiming = False
         self.gravity = 0.5
@@ -105,7 +108,7 @@ class GrapplingPistol:
         if now - self.last >= self.cooldown:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    target=self.target, colour = "green")
+                                    target=self.target, damage=self.projectile_damage, colour = "green")
             game_projectiles.append(projectile)
             return True
         return False
