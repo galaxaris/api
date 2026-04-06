@@ -1,5 +1,11 @@
+
 from utils import *
 import json
+from api.engine.Scene import *
+import importlib
+from global_header import *
+from api.GameObject import *
+from api.assets.Resource import *
 
 class Level:
     """
@@ -27,8 +33,9 @@ class Level:
         self.path , self.new= treat_path(name)
         self.header= None
         self.body= None
+        self.global_header = GlobalHeader().content
 
-    def save_level (self, header:dict, body:dict):
+    def save_level (self, header:dict, body:list):
 
         self.header = header
         self.body = body
@@ -57,6 +64,43 @@ class Level:
             self.body = json.load(b_file)
 
     def load_level (self):
+        """
+        This method will load the level given and make a scene based on this level.
+        :return:
+        """
+        self.get_level()
+
+        party = Scene(self.header["scene"])
+
+        for elem in self.body:
+            prop = dict(self.global_header[elem["name"]])
+
+            brut_path = prop["class_ref"]
+            path = brut_path.split("'")[1]
+
+            module_path, class_name = path.rsplit(".",1)
+
+            module = importlib.import_module(module_path)
+            current_class = getattr(module, class_name)
+
+            params = prop["params"]
+
+            new_obj = current_class(elem["pos"], elem["size"], **params)
 
 
+            path_to_assets = os.getcwd()
+            path_to_assets.replace(r"api\level_manager",r"game\assets")
+            ress = Resource(ResourceType.GLOBAL, path_to_assets)
+
+            if (prop["textures"] != [] and prop["textures"] != None ):
+                texture = Texture(prop["textures"]["path"], ress)
+                new_obj.set_texture(texture, rescale=prop["textures"]["rescale"])
+            elif(prop["animation"] != []):
+                texture = Texture(prop["animation"]["path"], ress)
+                anim = Animation(texture,prop["animation"]["frame_count"], delay=prop["animation"]["delay"])
+                new_obj.set_animation(anim)
+
+
+
+            party.add(new_obj)
         pass
