@@ -98,6 +98,15 @@ BRAND_MAPS = {
     }
 }
 
+def set_input_actions(input_actions: dict[str, list[int | str]]):
+    """
+    Sets the global input actions map to a new dictionary, allowing to override default input settings
+
+    :param input_actions: Dictionary mapping action names to lists of key codes or input ids
+    """
+    global INPUT_ACTIONS
+    INPUT_ACTIONS = input_actions
+
 #%%#################### INPUT LOGIC ########################
 ############################################################
 
