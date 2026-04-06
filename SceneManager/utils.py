@@ -2,6 +2,8 @@
 
 import os
 
+from api.utils.Console import print_warning
+
 def treat_path(name:str)->tuple[str, bool]:
     """
     This function returns a path pointing to the levels directory.
@@ -11,11 +13,11 @@ def treat_path(name:str)->tuple[str, bool]:
     """
 
     path = os.getcwd()
-    path.replace("api\level_manager", "game\levels")
+    path.replace("api\SceneManager", "game\levels")
     try:
         os.mkdir(os.path.join(path, name))
         new = True
     except OSError:
-        print("This file already exists")
+        print_warning("This file already exists")
         new= False
     return os.path.join(path,name), new

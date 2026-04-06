@@ -1,3 +1,4 @@
+from api.utils.Console import print_error
 from utils import *
 import json
 
@@ -42,7 +43,7 @@ class Level:
                 json.dump(self.body, b_file, indent=2)
 
         except FileNotFoundError:
-            print("ERROR : The procedure to save file failed. Please verify the integrity of the file at : "+self.path+";")
+            print_error("ERROR : The procedure to save file failed. Please verify the integrity of the file at : "+self.path+";")
 
         pass
 
