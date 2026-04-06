@@ -1,4 +1,5 @@
 import json
+import os
 
 
 class GlobalHeader:
@@ -9,8 +10,10 @@ class GlobalHeader:
 
     """
 
-    def __init__(self, path:str):
+    def __init__(self):
 
+        path = os.getcwd()
+        path.replace("api\level_manager", "game\levels\global_header")
         self.path=path
         self.known = set()
         self.content = {}
