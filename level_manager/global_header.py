@@ -13,7 +13,7 @@ class GlobalHeader:
 
         self.path=path
         self.known = set()
-        self.content = []
+        self.content = {}
 
     def add_to_known(self, new_prop_name: str):
         """
@@ -31,8 +31,8 @@ class GlobalHeader:
         with open(self.path, 'r', encoding="utf-8") as file:
             self.content = json.load(file)
 
-        for dico in self.content:
-            self.add_to_known(dico["name"])
+        for key in self.content.keys():
+            self.add_to_known(key)
 
 
 
@@ -50,8 +50,11 @@ class GlobalHeader:
         if(len(self.known) == len(self.known | set(new_prop["name"]))):
             return False
 
+        name = new_prop["name"]
+        del new_prop["name"]
+        self.content[name]= new_prop
+        new_prop["name"]=name
 
-        self.content.append(new_prop)
         with open(self.path, 'w', encoding="utf-8") as file:
             json.dump(self.content, file , indent=2)
         return True
