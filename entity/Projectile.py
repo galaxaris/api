@@ -6,7 +6,7 @@ from api.physics.Collision import get_collided_objects
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, effect: str=None, target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white"):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, effect : str = "damage",  target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white"):
         super().__init__(pos, size)
         self.pos = pg.Vector2(pos) - self.size/2
         self.add_tag("projectile")
@@ -61,7 +61,6 @@ class Projectile(Entity):
 
     def on_impact(self):
         self.to_kill = True
-        print("ji mi sens partir")
 
 
 

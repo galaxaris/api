@@ -88,46 +88,38 @@ class EarthPistol:
 class GrapplingPistol:
     """Base class for a pistol that acts as a grappling hook."""
 
-    def __init__(self, trajectory: Trajectory, cooldown=500, projectile_damage = 10):
+    def __init__(self, trajectory: Trajectory, projectile_damage = 0):
         self.name = "grappling gun"
-        self.target = "dirty"
-        self.cooldown = cooldown
         self.show_trajectory = True
-        self.projectiles = []
         self.projectile_damage = projectile_damage
         self.trajectory = trajectory
         self.is_aiming = False
         self.gravity = 0.5
-        self.Time = None
-        self.last = - self.cooldown
+        self.projectile = None
         self.current_trajectory_ini_speed = 0
         self.current_trajectory_angle_radians = 0
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
-        game_projectiles = self.projectiles
-        now = pg.time.get_ticks()
 
-        if not self.projectiles:
-            self.last = now
+        if not self.projectile:
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    target=self.target, damage=self.projectile_damage, colour = "green")
-            projectile.add_tag("grappling")
+                                    damage=self.projectile_damage, colour = "green", effect = "grappling")
+
             self.current_trajectory_ini_speed = self.trajectory.ini_speed
             self.current_trajectory_angle_radians = self.trajectory.angle_radians
-            game_projectiles.append(projectile)
+            self.projectile = projectile
             return True
         return False
 
     def update(self, scene=None):
-        self.Time = scene.Time
-        projectiles = self.projectiles
-        length = len(projectiles) - 1
-        for i in range(length, -1, -1):
-            if not projectiles[i].to_kill:
-                scene.add(projectiles[i], "#projectile")
+        if self.projectile:
+            projectile = self.projectile
+            if not projectile.to_kill:
+                scene.add(projectile, "#projectile")
             else:
-                scene.remove(projectiles[i], "#projectile")
-                projectiles.remove(projectiles[i])
+                scene.remove(projectile, "#projectile")
+                self.projectile = None
+
 
 
 
