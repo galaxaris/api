@@ -3,6 +3,7 @@ API's Player utilities
 """
 from api.entity.Character import Character
 from api.physics.Collision import get_collided_objects
+from api.utils.Console import print_info, print_warning, print_error
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, InputManager
 
@@ -63,7 +64,7 @@ class Player(Character):
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
-                if "mouse_scroll" in InputManager.get_once_inputs():
+                if InputManager.MOUSE_SCROLL != 0:
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
                     print("ji scroll")
 
