@@ -100,6 +100,8 @@ class GrapplingPistol:
         self.gravity = 0.5
         self.Time = None
         self.last = - self.cooldown
+        self.current_trajectory_ini_speed = 0
+        self.current_trajectory_angle_radians = 0
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
         game_projectiles = self.projectiles
@@ -109,6 +111,9 @@ class GrapplingPistol:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
                                     target=self.target, damage=self.projectile_damage, colour = "green")
+            projectile.add_tag("grappling")
+            self.current_trajectory_ini_speed = self.trajectory.ini_speed
+            self.current_trajectory_angle_radians = self.trajectory.angle_radians
             game_projectiles.append(projectile)
             return True
         return False

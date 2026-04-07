@@ -66,7 +66,6 @@ class Player(Character):
 
                 if InputManager.MOUSE_SCROLL != 0:
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
-                    print("ji scroll")
 
                 if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
