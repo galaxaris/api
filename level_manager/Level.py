@@ -100,7 +100,12 @@ class Level:
                 anim = Animation(texture,prop["animation"]["frame_count"], delay=prop["animation"]["delay"])
                 new_obj.set_animation(anim)
 
+            for tag in prop["tags"]:
+                new_obj.add_tag(tag)
 
 
-            party.add(new_obj)
+
+
+
+            party.add(new_obj,elem["layer"])
         pass
