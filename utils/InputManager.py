@@ -11,6 +11,7 @@ from pygame._sdl2 import controller
 
 from api.utils.Console import *
 
+#Detect mouse scroll with MOUSE_SCROLL != 0
 MOUSE_SCROLL = 0
 MOUSE_CLICKED = set()
 PREVIOUS_INPUTS = None
@@ -97,6 +98,17 @@ BRAND_MAPS = {
         pg.CONTROLLER_BUTTON_RIGHTSHOULDER: "R1", pg.CONTROLLER_BUTTON_LEFTSHOULDER: "L1"
     }
 }
+
+def set_input_actions(input_actions: dict[str, list[int | str]]):
+    """
+    Sets the global input actions map to a new dictionary, allowing to override default input settings
+
+    NOTE: be cautious when using this function, as it will completely replace the existing input actions map
+
+    :param input_actions: Dictionary mapping action names to lists of key codes or input ids
+    """
+    global INPUT_ACTIONS
+    INPUT_ACTIONS = input_actions
 
 #%%#################### INPUT LOGIC ########################
 ############################################################

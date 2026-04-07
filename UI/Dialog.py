@@ -2,8 +2,9 @@
 from api.UI.Choice import Choice
 from api.UI.TextBox import TextBox
 from api.UI.GameUI import UIElement
-from api.assets.Resource import ResourceType, Resource
+from api.assets.ResourceManager import ResourceType, Resource
 from api.assets.Texture import Texture
+from api.utils.Console import print_warning
 
 
 class Dialog(UIElement):
@@ -135,9 +136,9 @@ class Dialog(UIElement):
                     # Format: ("STOP",)
                     self.add_stop()
                 else:
-                    print(f"[Dialog.setup] Warning: Unrecognized 1-length command: {entry}")
+                    print_warning(f"[Dialog.setup] Warning: Unrecognized 1-length command: {entry}")
             else:
-                print(f"[Dialog.setup] Warning: Invalid dialog entry format: {entry}")
+                print_warning(f"[Dialog.setup] Warning: Invalid dialog entry format: {entry}")
 
 
     def get_dialogs(self):
@@ -149,7 +150,6 @@ class Dialog(UIElement):
         :return: Ordered list of `TextBox` objects.
         """
         dialogs = []
-        print(self.dialogs)
         for character_name, dialog, key_point in self.dialogs:
             if character_name is None:
                 if key_point == "stop":

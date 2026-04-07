@@ -46,7 +46,19 @@ class Projectile(Entity):
             if "bouncy" in self.tags:
                 pass
 
-            self.on_impact()
+            if "grappling" in self.tags:
+                for collided_obj in self.collided_objs:
+                    print("ji souis le tag", collided_obj[0].tags)
+                    if "anchor" in collided_obj[0].tags:
+                        self.gravity = 0
+                        self.vel.y = 0
+                        self.add_tag("anchored")
+                        print("ji souis anchored")
+
+
+
+            else:
+                self.on_impact()
 
     def on_impact(self):
         self.to_kill = True

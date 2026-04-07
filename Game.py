@@ -26,6 +26,7 @@ from api.utils import Debug, InputManager
 from api.utils.DebugElement import DebugElement
 from api.physics.Time import Time
 from api.utils.Console import *
+from api.assets.Texture import Texture
 
 from api.utils.InputManager import get_inputs, onKeyDown, onKeyPress, onKeyUp
 
@@ -161,19 +162,27 @@ class Game:
         modes = pg.display.list_modes(display=index)
         return modes[0]
 
-    def set_icon(self, path: str):
+    def set_icon(self, icon: str | Texture | pg.Surface):
         """
         Defines an icon for the game window
 
-        :param path: Path to the icon file
+        :param icon: Path to the icon file or a Texture or a pg.Surface to use as the icon
         :return:
         """
-        if path.endswith(".png") or path.endswith(".jpg"):
-            try:
-                self.icon = pg.image.load(path)
-                pg.display.set_icon(self.icon)
-            except Exception as e:
-                print_error(f"Error loading game icon from {path}: {e}")
+
+        if isinstance(icon, str):
+            if icon.endswith(".png") or icon.endswith(".jpg"):
+                try:
+                    self.icon = pg.image.load(icon)
+                    pg.display.set_icon(self.icon)
+                except Exception as e:
+                    print_error(f"Error loading game icon from {icon}: {e}")
+        elif isinstance(icon, Texture):
+            self.icon = icon.image
+            pg.display.set_icon(self.icon) #Texture.image is a pg.Surface
+        elif isinstance(icon, pg.Surface):
+            self.icon = icon
+            pg.display.set_icon(self.icon)
 
     def move_window(self, position: tuple[int,int] | pg.Vector2):
         """

@@ -3,6 +3,7 @@ API's Player utilities
 """
 from api.entity.Character import Character
 from api.physics.Collision import get_collided_objects
+from api.utils.Console import print_info, print_warning, print_error
 from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
 from api.utils import Debug, InputManager
 
@@ -18,9 +19,12 @@ class Player(Character):
     """
 
     _EDITOR = "placeable"
-    def __init__(self, pos: tuple[int, int], size: tuple[int, int], direction: str = "right"):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int], direction: str = "right", 
+                 health: int=100, damage_resistance: int=0, damage_force: int=10, max_velocity: float|int = 2, acceleration: float|int = 0.5, resistance:float|int = 0.2, 
+                 force:float|int = 20):
         """
         Initializes the player with the given attributes.
+        => Full param are inherited from Character & Entity
 
         :param pos: Player position
         :param size: Player size
@@ -31,7 +35,8 @@ class Player(Character):
         :param force: Player force
         :param sfx_list: List of sound effects. (key: name)
         """
-        super().__init__(pos, size)
+        super().__init__(pos, size, health=health, damage_resistance=damage_resistance, 
+                         damage_force=damage_force, max_velocity=max_velocity, acceleration=acceleration, resistance=resistance, force=force)
         self.add_tag("player")
         self.set_direction(direction)
 
@@ -59,7 +64,7 @@ class Player(Character):
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
-                if "mouse_scroll" in InputManager.get_once_inputs():
+                if InputManager.MOUSE_SCROLL != 0:
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
                 if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
@@ -83,10 +88,27 @@ class Player(Character):
                     self.equipped_weapon.is_aiming = True
 
 
+
             else:
+                self.is_aiming = False
                 self.speed_malus = 0
                 self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
                 self.equipped_weapon.is_aiming = False
+
+            for projectile in self.equipped_weapon.projectiles:
+                if "anchored" in projectile.tags:
+                    grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                    angle_radians = self.equipped_weapon.current_trajectory_angle_radians * 0.7
+
+                    self.vel = pg.Vector2(
+                        math.cos(angle_radians) * grappling_speed,
+                        -math.sin(angle_radians) * grappling_speed)
+                    current_player_posx = self.pos.x + self.size.x // 2
+                    current_projectile_posx = self.equipped_weapon.projectiles[0].pos.x
+
+                    if current_player_posx >= current_projectile_posx:
+                        self.vel = pg.Vector2(0, 0)
+                        self.equipped_weapon.projectiles[0].to_kill = True
 
 
             if onKeyPress("right") and scene.global_state["player_control"]:

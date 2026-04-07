@@ -5,26 +5,24 @@ from api.items.Pistols import WaterPistol, EarthPistol, GrapplingPistol
 from api.items.Inventory import Inventory
 from api.physics.Trajectory import Trajectory, free_fall
 from api.utils.Constants import DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
+from api.utils.Console import print_warning
 
 
 class Character(Entity):
-    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] = (32, 32), health: int=100):
-        super().__init__(pos, size)
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] = (32, 32),
+                  health: int=100, damage_resistance: int=0, damage_force: int=10, max_velocity: float|int = 2, 
+                  acceleration: float|int = 0.5, resistance:float|int = 0.2, force:float|int = 20):
+        
+        super().__init__(pos, size, max_velocity=max_velocity, acceleration=acceleration, resistance=resistance, force=force)
         self.add_tag("character")
         self.original_health = health
         self.health = health
         self.invincible = False
-        self.damage_force = 10
-        self.damage_resistance = 0
+        self.damage_force = damage_force
+        self.damage_resistance = damage_resistance
         self.hit_cooldown = 0
         self.hit_cooldown_time = 20
         self.inventory = Inventory()
-        self.inventory.weapons.append(WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
-        self.inventory.weapons.append(EarthPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
-        self.inventory.weapons.append(
-            GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY)))
-
-        self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
     def take_damage(self, damage: int):
         if self.invincible or self.hit_cooldown > 0:
@@ -61,3 +59,27 @@ class Character(Entity):
             self.set_sprite("hit")
         else:
             super().update_sprite()
+    
+    def equip_weapon(self, name: str, cooldown: int = None, damage: int = None):
+        if name == "WaterPistol":
+            if cooldown is None: cooldown = 200
+            if damage is None: damage = 15
+            self.inventory.weapons.append(WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, 
+                DEFAULT_GRAVITY), cooldown=cooldown, projectile_damage=damage))
+            
+        elif name == "EarthPistol":
+            if cooldown is None: cooldown = 200
+            if damage is None: damage = 15
+            self.inventory.weapons.append(EarthPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY), 
+                cooldown=cooldown, projectile_damage=damage))
+            
+        elif name=="GrapplingPistol":
+            if cooldown is None: cooldown = 500
+            if damage is None: damage = 15
+            self.inventory.weapons.append(
+                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY), projectile_damage=damage))
+            
+        else:
+            print_warning(f"Failed to equip '{name}' to Character: this weapon doesn't exist.")
+
+        self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
