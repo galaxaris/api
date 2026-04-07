@@ -105,7 +105,7 @@ class GrapplingPistol:
         game_projectiles = self.projectiles
         now = pg.time.get_ticks()
 
-        if now - self.last >= self.cooldown:
+        if not self.projectiles:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
                                     target=self.target, damage=self.projectile_damage, colour = "green")

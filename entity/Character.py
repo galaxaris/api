@@ -77,7 +77,7 @@ class Character(Entity):
             if cooldown is None: cooldown = 500
             if damage is None: damage = 15
             self.inventory.weapons.append(
-                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY), cooldown=cooldown, projectile_damage=damage))
+                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY), projectile_damage=damage))
             
         else:
             print_warning(f"Failed to equip '{name}' to Character: this weapon doesn't exist.")

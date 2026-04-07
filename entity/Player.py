@@ -65,6 +65,7 @@ class Player(Character):
 
                 if "mouse_scroll" in InputManager.get_once_inputs():
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
+                    print("ji scroll")
 
                 if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
                     self.equipped_weapon.trajectory.angle_radians = 0.56
@@ -87,10 +88,27 @@ class Player(Character):
                     self.equipped_weapon.is_aiming = True
 
 
+
             else:
+                self.is_aiming = False
                 self.speed_malus = 0
                 self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
                 self.equipped_weapon.is_aiming = False
+
+            for projectile in self.equipped_weapon.projectiles:
+                if "anchored" in projectile.tags:
+                    grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                    angle_radians = self.equipped_weapon.current_trajectory_angle_radians * 0.7
+
+                    self.vel = pg.Vector2(
+                        math.cos(angle_radians) * grappling_speed,
+                        -math.sin(angle_radians) * grappling_speed)
+                    current_player_posx = self.pos.x + self.size.x // 2
+                    current_projectile_posx = self.equipped_weapon.projectiles[0].pos.x
+
+                    if current_player_posx >= current_projectile_posx:
+                        self.vel = pg.Vector2(0, 0)
+                        self.equipped_weapon.projectiles[0].to_kill = True
 
 
             if onKeyPress("right") and scene.global_state["player_control"]:
