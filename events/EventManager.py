@@ -153,8 +153,8 @@ class EventManager:
                     except NameError:
                         print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to call a non-existent function.")
                 
-            else:
-                print_info(f"Event '{event_name}' not triggered because asked conditions have not been met.")
+            #else:
+            #    print_info(f"Event '{event_name}' not triggered because asked conditions have not been met.")
         else:
             print_warning(f"Event '{event_name}' not found in EventManager.")
 
