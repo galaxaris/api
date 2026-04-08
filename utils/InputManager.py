@@ -321,7 +321,7 @@ def get_mouse_position(forced=False):
     :return: Tuple (x, y) representing mouse coordinates.
     """
     if len(_controllers) == 0 or forced:
-        return pg.mouse.get_pos()
+        return pg.Vector2(pg.mouse.get_pos())
     else:
         return None  #When controller
     
