@@ -11,6 +11,7 @@ from pygame._sdl2 import controller
 
 from api.utils.Console import *
 
+#Detect mouse scroll with MOUSE_SCROLL != 0
 MOUSE_SCROLL = 0
 MOUSE_CLICKED = set()
 PREVIOUS_INPUTS = None

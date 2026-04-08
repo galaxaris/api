@@ -4,7 +4,7 @@ import pygame as pg
 from api.items.Pistols import WaterPistol, EarthPistol, GrapplingPistol
 from api.items.Inventory import Inventory
 from api.physics.Trajectory import Trajectory, free_fall
-from api.utils.Constants import DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
+from api.utils.Constants import DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, DEFAULT_GRAPPLING_SPEED
 from api.utils.Console import print_warning
 
 
@@ -77,7 +77,7 @@ class Character(Entity):
             if cooldown is None: cooldown = 500
             if damage is None: damage = 15
             self.inventory.weapons.append(
-                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY), cooldown=cooldown, projectile_damage=damage))
+                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_GRAPPLING_SPEED, 0, DEFAULT_GRAVITY), projectile_damage=damage))
             
         else:
             print_warning(f"Failed to equip '{name}' to Character: this weapon doesn't exist.")

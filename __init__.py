@@ -15,5 +15,5 @@ API architecture:
 
 """
 
-__version__ = "beta"
+__version__ = "0.1"
 __author__ = "Galaxaris & Associates"

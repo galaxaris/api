@@ -3,7 +3,9 @@ API's Player utilities
 """
 from api.entity.Character import Character
 from api.physics.Collision import get_collided_objects
-from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY
+from api.utils.Console import print_info, print_warning, print_error
+from api.utils.Constants import MIN_SHOT_SPEED, MAX_SHOT_SPEED, DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, \
+    DEFAULT_GRAPPLING_SPEED
 from api.utils import Debug, InputManager
 
 from api.utils.InputManager import get_inputs, get_once_inputs, onKeyDown, onKeyPress, onKeyPress, onKeyUp
@@ -63,7 +65,7 @@ class Player(Character):
 
                 self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
-                if "mouse_scroll" in InputManager.get_once_inputs():
+                if InputManager.MOUSE_SCROLL != 0 and self.equipped_weapon.name != "grappling gun":
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
 
                 if InputManager.is_controller_connected() and (mouse == (0, -1000) or mouse == (0,0)):
@@ -87,10 +89,37 @@ class Player(Character):
                     self.equipped_weapon.is_aiming = True
 
 
+
             else:
+                self.is_aiming = False
                 self.speed_malus = 0
-                self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
+                if self.equipped_weapon.name != "grappling gun":
+                    self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
+                else:
+                    self.equipped_weapon.trajectory.ini_speed = DEFAULT_GRAPPLING_SPEED
+
                 self.equipped_weapon.is_aiming = False
+
+            if self.equipped_weapon.name == "grappling gun" :
+                projectile = self.equipped_weapon.projectile
+                if projectile :
+                    if "anchored" in projectile.tags and not projectile.to_kill:
+
+                        player_center = self.pos + self.size / 2
+                        grapple_pos = projectile.pos + projectile.size / 2
+
+                        direction = grapple_pos - player_center
+                        distance = direction.length()
+
+                        if distance < 40:
+                            self.vel = pg.Vector2(0, 0)
+                            projectile.to_kill = True
+
+                        else:
+
+                            grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                            normalized = direction.normalize()
+                            self.vel = normalized * grappling_speed
 
 
             if onKeyPress("right") and scene.global_state["player_control"]:
