@@ -94,7 +94,6 @@ class GrapplingPistol:
         self.projectile_damage = projectile_damage
         self.trajectory = trajectory
         self.is_aiming = False
-        self.gravity = 0.5
         self.projectile = None
         self.current_trajectory_ini_speed = 0
         self.current_trajectory_angle_radians = 0
@@ -102,7 +101,7 @@ class GrapplingPistol:
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
 
         if not self.projectile:
-            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
+            projectile = Projectile(shoot_pos, 0, self.trajectory.ini_speed, self.trajectory.angle_radians,
                                     damage=self.projectile_damage, colour = "green", effect = "grappling")
 
             self.current_trajectory_ini_speed = self.trajectory.ini_speed

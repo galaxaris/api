@@ -50,8 +50,11 @@ class Projectile(Entity):
                 for collided_obj in self.collided_objs:
                     if "anchor" in collided_obj[0].tags:
                         self.gravity = 0
-                        self.vel.y = 0
+                        self.vel = pg.Vector2(0,0)
                         self.add_tag("anchored")
+
+                    elif "grappable" in collided_obj[0].tags:
+                        pass
 
                     else:
                         self.on_impact()

@@ -10,6 +10,9 @@ def free_fall(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: floa
     """Free fall trajectory preview utility."""
     return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y + 0.5 * gravity * t**2 - math.sin(angle) * ini_speed * t)
 
+def linear_trajectory(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: float, t: float) -> pg.Vector2:
+    """Linear trajectory preview utility. To be used for the grappling hook projectile"""
+    return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y - math.sin(angle) * ini_speed * t)
 
 def calculate_required_speed_from_freefall(gravity, target_range, angle_rad, delta_y):
     """
