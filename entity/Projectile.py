@@ -6,7 +6,21 @@ from api.physics.Collision import get_collided_objects
 
 
 class Projectile(Entity):
-    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float, effect : str = "damage",  target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white"):
+    def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float,
+                 effect : str = "damage",  target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white"):
+
+        """
+        :param pos: the projectile position
+        :param gravity: the projectile gravity, the greater it is, the faster the projectile falls
+        :param shot_speed: projectile speed
+        :param angle_radians: projectile angle
+        :param effect: currently ineffective, tags are used instead
+        :param target: currently ineffective
+        :param size: projectile size
+        :param damage: damage dealt to the collided objects
+        :param colour: projectile colour
+        """
+
         super().__init__(pos, size)
         self.pos = pg.Vector2(pos) - self.size/2
         self.add_tag("projectile")
@@ -46,15 +60,31 @@ class Projectile(Entity):
             if "bouncy" in self.tags:
                 pass
 
-            if "grappling" in self.tags:
+            if "grappling" in self.tags: # projectile of grappling hook
                 for collided_obj in self.collided_objs:
-                    if "anchor" in collided_obj[0].tags:
+
+                    if "anchor" in collided_obj[0].tags: # a block that the player can grapple to move towards it
                         self.gravity = 0
                         self.vel = pg.Vector2(0,0)
                         self.add_tag("anchored")
 
-                    elif "grappable" in collided_obj[0].tags:
-                        pass
+                    elif "grappable" in collided_obj[0].tags: # a block that the player can grapple to move it towards themself
+
+                        block_center = collided_obj[0].pos + collided_obj[0].size / 2
+                        grapple_pos = self.pos + self.size / 2
+
+                        direction = grapple_pos - block_center
+                        distance = direction.length()
+
+                        if distance < 40:
+                            self.vel = pg.Vector2(0, 0)
+                            self.to_kill = True
+
+                        """else:
+
+                            grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                            normalized = direction.normalize()
+                            self.vel = normalized * grappling_speed"""
 
                     else:
                         self.on_impact()

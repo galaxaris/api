@@ -113,7 +113,7 @@ class Player(Character):
 
                         if distance < 40:
                             self.vel = pg.Vector2(0, 0)
-                            projectile.to_kill = True
+                            projectile.to_kill = Truez
 
                         else:
 

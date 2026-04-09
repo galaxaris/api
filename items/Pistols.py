@@ -88,7 +88,7 @@ class EarthPistol:
 
 
 class GrapplingPistol:
-    """Base class for a pistol that acts as a grappling hook."""
+    """Base class for a grappling hook."""
 
     def __init__(self, trajectory: Trajectory, projectile_damage = 0):
         self.name = "grappling gun"
@@ -96,12 +96,14 @@ class GrapplingPistol:
         self.projectile_damage = projectile_damage
         self.trajectory = trajectory
         self.is_aiming = False
-        self.projectile = None
+        self.projectile = None # no list, instead only one projectile can be shot at once
         self.current_trajectory_ini_speed = 0
         self.current_trajectory_angle_radians = 0
         self.max_points = 5
+        self.range = 10 # max distance to be traveled before deletion
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
+        # no cooldown contrary to other guns, max distance is used instead
 
         if not self.projectile:
             projectile = Projectile(shoot_pos, 0, self.trajectory.ini_speed, self.trajectory.angle_radians,
