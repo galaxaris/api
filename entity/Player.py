@@ -76,10 +76,10 @@ class Player(Character):
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
-                    haveShooted = self.equipped_weapon.shoot(self.pos + self.size//2)
+                    is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
                     #self.equipped_weapon.is_aiming = False
                     #SFX
-                    if self.sfx_list and haveShooted:
+                    if self.sfx_list and is_shot:
                         if "fire" in self.sfx_list:
                             audio_manager = scene.audio_manager
                             if audio_manager:

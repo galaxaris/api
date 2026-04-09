@@ -68,8 +68,7 @@ class Trajectory:
     def get_pos(self, t: float | int) -> pg.Vector2:
         return self.kinematic_equation(self.ini_pos, self.ini_speed, self.angle_radians, self.gravity, t)
 
-    def draw(self, surface: pg.Surface, scene, player_pos: pg.Vector2 = (0, 0)) -> None :
-        max_points = 300
+    def draw(self, surface: pg.Surface, scene, max_points: int, player_pos: pg.Vector2 = (0, 0)) -> None :
         time_step = 3 #sec
         step = 0
         collided = False

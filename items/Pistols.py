@@ -19,6 +19,7 @@ class WaterPistol:
         self.Time = None
         self.last = - self.cooldown
         self.projectile_damage = projectile_damage
+        self.max_points = 300
 
     def shoot(self, shoot_pos: pg.Vector2)->bool:
         game_projectiles = self.projectiles
@@ -59,6 +60,7 @@ class EarthPistol:
         self.Time = None
         self.last = - self.cooldown
         self.projectile_damage = projectile_damage
+        self.max_points = 300
 
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
@@ -97,6 +99,7 @@ class GrapplingPistol:
         self.projectile = None
         self.current_trajectory_ini_speed = 0
         self.current_trajectory_angle_radians = 0
+        self.max_points = 5
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
 
