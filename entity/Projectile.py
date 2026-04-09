@@ -53,6 +53,10 @@ class Projectile(Entity):
                         self.vel.y = 0
                         self.add_tag("anchored")
 
+                    else:
+                        self.on_impact()
+
+
 
 
 
