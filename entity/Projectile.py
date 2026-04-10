@@ -7,7 +7,7 @@ from api.physics.Collision import get_collided_objects
 
 class Projectile(Entity):
     def __init__(self, pos: tuple[int, int] | pg.Vector2, gravity: float, shot_speed: float, angle_radians: float,
-                 effect : str = "damage",  target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white"):
+                 effect : str = "damage",  target: str="enemy", size: tuple[int, int] | pg.Vector2 = (8,8), damage: int = 10, projectile_speed: int = 0.8, colour = "white", range : int = 1):
 
         """
         :param pos: the projectile position
@@ -28,6 +28,7 @@ class Projectile(Entity):
         self.colour = colour
         self.image.fill(self.colour)
         self.rect = self.image.get_rect(topleft=pos)
+        self.range = range
 
         self.fall = True
         self.to_kill = False
@@ -61,6 +62,7 @@ class Projectile(Entity):
                 pass
 
             if "grappling" in self.tags: # projectile of grappling hook
+
                 for collided_obj in self.collided_objs:
 
                     if "anchor" in collided_obj[0].tags: # a block that the player can grapple to move towards it

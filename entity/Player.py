@@ -101,25 +101,44 @@ class Player(Character):
                 self.equipped_weapon.is_aiming = False
 
             if self.equipped_weapon.name == "grappling gun" :
+
                 projectile = self.equipped_weapon.projectile
+
                 if projectile :
+
+                    scene.global_state["player_control"] = False
+
+                    player_center = self.pos + self.size / 2
+                    grapple_pos = projectile.pos + projectile.size / 2
+
+                    direction = grapple_pos - player_center
+                    distance = int(direction.length())
+
                     if "anchored" in projectile.tags and not projectile.to_kill:
-
-                        player_center = self.pos + self.size / 2
-                        grapple_pos = projectile.pos + projectile.size / 2
-
-                        direction = grapple_pos - player_center
-                        distance = direction.length()
 
                         if distance < 40:
                             self.vel = pg.Vector2(0, 0)
-                            projectile.to_kill = Truez
+                            projectile.to_kill = True
 
                         else:
 
                             grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
                             normalized = direction.normalize()
                             self.vel = normalized * grappling_speed
+
+                    if distance > self.equipped_weapon.range:
+
+                        grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                        normalized = direction.normalize()
+                        self.equipped_weapon.projectile.vel = - normalized * grappling_speed
+
+                        self.equipped_weapon.range_reached = True
+
+                    if distance < 40 and self.equipped_weapon.range_reached :
+                        self.equipped_weapon.projectile.on_impact()
+
+                    print(self.equipped_weapon.projectile)
+
 
 
             if onKeyPress("right") and scene.global_state["player_control"]:
