@@ -70,16 +70,7 @@ class Projectile(Entity):
                         self.gravity = 0
                         self.vel = pg.Vector2(0, 0)
                         self.add_tag("anchored")
-                    elif "grappable" in collided_obj[0].tags:  # a block that the player can grapple to move it towards themself
-                        block_center = collided_obj[0].pos + collided_obj[0].size / 2
-                        grapple_pos = self.pos + self.size / 2
-                        direction = grapple_pos - block_center
-                        distance = direction.length()
-                        if distance < 40:
-                            self.vel = pg.Vector2(0, 0)
-                            self.to_kill = True
-                    elif self.range_reached:
-                        self.on_impact()
+
                     else:
                         self.on_impact()
             else:
