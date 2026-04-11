@@ -10,6 +10,9 @@ def free_fall(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: floa
     """Free fall trajectory preview utility."""
     return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y + 0.5 * gravity * t**2 - math.sin(angle) * ini_speed * t)
 
+def linear_trajectory(ini_pos: pg.Vector2, ini_speed: float, angle: float, gravity: float, t: float) -> pg.Vector2:
+    """Linear trajectory preview utility."""
+    return pg.Vector2(ini_pos.x + math.cos(angle) * ini_speed * t, ini_pos.y - math.sin(angle) * ini_speed * t)
 
 def calculate_required_speed_from_freefall(gravity, target_range, angle_rad, delta_y):
     """
@@ -65,8 +68,7 @@ class Trajectory:
     def get_pos(self, t: float | int) -> pg.Vector2:
         return self.kinematic_equation(self.ini_pos, self.ini_speed, self.angle_radians, self.gravity, t)
 
-    def draw(self, surface: pg.Surface, scene, player_pos: pg.Vector2 = (0, 0)) -> None :
-        max_points = 300
+    def draw(self, surface: pg.Surface, scene, max_points: int, player_pos: pg.Vector2 = (0, 0)) -> None :
         time_step = 3 #sec
         step = 0
         collided = False

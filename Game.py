@@ -5,8 +5,8 @@ This module contains the main Game class of the Omicronde API.
 
 Authors : Galaxaris & Associates
 
-v. Beta (in development) -
-03/03/2026
+v.0.1 (in development) -
+07/04/2026
 
 Copyright (c) 2026 Galaxaris & Associates. All rights reserved.
 """
