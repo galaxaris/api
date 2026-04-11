@@ -554,7 +554,17 @@ em.registerEvent(
 )
 ```
 
-### 7.8. Checklist d'implémentation propre
+### 7.8. Erreurs gérées par le manager
+L'EventManager intercepte et gère plusieurs types d'erreurs courantes pour éviter les plantages et faciliter le débugging.
+
+⚠️ Si les erreurs ne sont pas assez visibles, penser à lancer le jeu directement depuis le CMD et non pas depuis PyCharm pour voir en couleurs les erreurs grâce à la bibliothèque `Rich` intégrée.
+
+* `AttributeError` lors de l'accès à une instance non bindée: message clair indiquant quelle instance est manquante.
+* Tentative de trigger d'un évènement non enregistré: message d'erreur indiquant l'évènement manquant.
+* Et autres erreurs mais j'ai la flemme mdrr
+
+
+### 7.9. Checklist d'implémentation propre
 
 1. Centraliser les defaults API dans `DefaultEventCollection`.
 2. Centraliser les customs jeu dans `CustomEventsCollection`.
@@ -565,7 +575,7 @@ em.registerEvent(
 7. Éviter les doublons d'enregistrement au redémarrage d'une scène.
 8. Logger les évènements critiques (debug) pour faciliter le diagnostic.
 
-### 7.9. Pièges fréquents et solutions
+### 7.10. Pièges fréquents et solutions
 
 * **Condition figée**: utiliser `[False]` bloque définitivement l'évènement.
     Solution: remplacer par un callable dynamique.
@@ -579,7 +589,7 @@ em.registerEvent(
 * **Lambdas trop complexes**: logique difficile à relire.
     Solution: déplacer en fonctions nommées dans vos scripts.
 
-### 7.10. Plan de généralisation recommandé (court terme)
+### 7.11. Plan de généralisation recommandé (court terme)
 
 1. Migrer progressivement les interactions directes clavier/souris vers des `triggerEvent` sémantiques.
 2. Compléter `DefaultEventCollection` avec toutes les interactions moteur communes.
