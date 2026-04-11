@@ -7,6 +7,7 @@ from pygame.surface import Surface
 from api.GameObject import GameObject
 from api.assets.Animation import Animation
 import pygame as pg
+import math
 
 from api.assets.Texture import Texture
 from api.physics.Collision import get_collided_objects
@@ -114,6 +115,54 @@ class Entity(GameObject):
         """
         ...
 
+    def _do_we_hit_wall(self, others: list):
+        if "bouncy" in self.tags and self.collided_objs:
+            print("Wouiiiiiiiiiiiiii")
+            collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
+            print(self.vel)
+            if collided_obj[1] in ("right", "left"):
+                self.vel.x = -self.vel.x
+
+            self.vel.x *= 0.75
+            if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.5:  # if we don't really bounce anymore, we kill the object
+                self.vel.x = 0
+        else:
+            for other in others:
+                if self.rect.colliderect(other.rect):
+                    if self.vel.x > 0:
+                        self.rect.right = other.rect.left
+                        self.pos.x = self.rect.x
+                        self.vel.x = 0
+                        self.hit_wall()
+                    elif self.vel.x < 0:
+                        self.rect.left = other.rect.right
+                        self.pos.x = self.rect.x
+                        self.vel.x = 0
+                        self.hit_wall()
+
+    def _do_we_hit_ground(self, others: list[GameObject]):
+        if "bouncy" in self.tags and self.collided_objs:
+            print("Gouiiiiiiiiiiiiii")
+            collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
+            print(self.vel)
+            if collided_obj[1] in ("top", "bottom"):
+                self.vel.y = -self.vel.y
+
+            self.vel.y *= 0.75
+            if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.5:  # if we don't really bounce anymore, we kill the object
+                self.vel.y = 0
+        else:
+            for other in others:
+                if self.rect.colliderect(other.rect):
+                    if self.vel.y > 0:  # Chute (touche le sol)
+                        self.rect.bottom = other.rect.top
+                        self.pos.y = self.rect.y
+                        self.land()  # Met vel.y à 0, jump/fall à False
+                    elif self.vel.y < 0:  # Saut (touche le plafond)
+                        self.rect.top = other.rect.bottom
+                        self.pos.y = self.rect.y
+                        self.hit_head()  # Met vel.y à 0
+
     def update(self, scene=None):
         """
         Updates the entity's position, velocity, and animation.
@@ -141,34 +190,12 @@ class Entity(GameObject):
         self.pos.x += self.vel.x * Time.deltaTime
         self.rect.x = round(self.pos.x)
 
-        for other in others:
-            if self.rect.colliderect(other.rect):
-                if self.vel.x > 0:
-                    self.rect.right = other.rect.left
-                    self.pos.x = self.rect.x
-                    self.vel.x = 0
-                    self.hit_wall()
-                elif self.vel.x < 0:
-                    self.rect.left = other.rect.right
-                    self.pos.x = self.rect.x
-                    self.vel.x = 0
-                    self.hit_wall()
-
+        self._do_we_hit_wall(others)
 
         self.pos.y += self.vel.y * Time.deltaTime
         self.rect.y = round(self.pos.y)
 
-        for other in others:
-            if self.rect.colliderect(other.rect):
-                if self.vel.y > 0:  # Chute (touche le sol)
-                    self.rect.bottom = other.rect.top
-                    self.pos.y = self.rect.y
-                    self.land()  # Met vel.y à 0, jump/fall à False
-                elif self.vel.y < 0:  # Saut (touche le plafond)
-                    self.rect.top = other.rect.bottom
-                    self.pos.y = self.rect.y
-                    self.hit_head()  # Met vel.y à 0
-
+        self._do_we_hit_ground(others)
 
         self.rect.y += 1
 

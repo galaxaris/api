@@ -100,7 +100,7 @@ class Player(Character):
 
                 self.equipped_weapon.is_aiming = False
 
-            if self.equipped_weapon.name == "grappling gun" :
+            if self.equipped_weapon.name == "grappling gun":
 
                 projectile = self.equipped_weapon.projectile
 

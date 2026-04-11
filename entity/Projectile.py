@@ -61,9 +61,10 @@ class Projectile(Entity):
 
         if self.collided_objs:
             if "bouncy" in self.tags:
-                pass
+                if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.001:
+                    self.on_impact()
 
-            if "grappling" in self.tags:  # projectile of grappling hook
+            elif "grappling" in self.tags:  # projectile of grappling hook
                 for collided_obj in self.collided_objs:
                     if "anchor" in collided_obj[0].tags:  # a block that the player can grapple to move towards it
                         self.gravity = 0

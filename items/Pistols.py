@@ -28,6 +28,7 @@ class WaterPistol:
         if now - self.last >= self.cooldown:
             self.last = now
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target, damage=self.projectile_damage, colour = "blue")
+            projectile.add_tag("bouncy")
             game_projectiles.append(projectile)
             return True
         return False
