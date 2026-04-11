@@ -137,8 +137,6 @@ class Player(Character):
                     if distance < 40 and self.equipped_weapon.range_reached :
                         self.equipped_weapon.projectile.on_impact()
 
-                    print(self.equipped_weapon.projectile)
-
 
 
             if onKeyPress("right") and scene.global_state["player_control"]:

@@ -86,8 +86,6 @@ class EarthPistol:
                 scene.remove(projectiles[i], "#projectile")
                 projectiles.remove(projectiles[i])
 
-# FIXME: the grappling projectile is destroyed when it comes back to the player, however you cannot shoot another one
-
 class GrapplingPistol:
     """Base class for a grappling hook."""
 
@@ -125,6 +123,7 @@ class GrapplingPistol:
             else:
                 scene.remove(projectile, "#projectile")
                 self.projectile = None
+                self.range_reached = False
 
 
 

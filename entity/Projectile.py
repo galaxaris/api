@@ -29,6 +29,7 @@ class Projectile(Entity):
         self.image.fill(self.colour)
         self.rect = self.image.get_rect(topleft=pos)
         self.range = range
+        self.range_reached = False
 
         self.fall = True
         self.to_kill = False
@@ -47,7 +48,8 @@ class Projectile(Entity):
         self.add_tag(effect)
         self.target = target
 
-    def update(self, scene=None) :
+
+    def update(self, scene=None):
         # Update every projectile speed to reduce speed
         super().update(scene)
         enemies_collisions = get_collided_objects(self, self.target, scene.game_objects, self.vel.x, self.vel.y)
@@ -61,40 +63,24 @@ class Projectile(Entity):
             if "bouncy" in self.tags:
                 pass
 
-            if "grappling" in self.tags: # projectile of grappling hook
-
+            if "grappling" in self.tags:  # projectile of grappling hook
                 for collided_obj in self.collided_objs:
-
-                    if "anchor" in collided_obj[0].tags: # a block that the player can grapple to move towards it
+                    if "anchor" in collided_obj[0].tags:  # a block that the player can grapple to move towards it
                         self.gravity = 0
-                        self.vel = pg.Vector2(0,0)
+                        self.vel = pg.Vector2(0, 0)
                         self.add_tag("anchored")
-
-                    elif "grappable" in collided_obj[0].tags: # a block that the player can grapple to move it towards themself
-
+                    elif "grappable" in collided_obj[0].tags:  # a block that the player can grapple to move it towards themself
                         block_center = collided_obj[0].pos + collided_obj[0].size / 2
                         grapple_pos = self.pos + self.size / 2
-
                         direction = grapple_pos - block_center
                         distance = direction.length()
-
                         if distance < 40:
                             self.vel = pg.Vector2(0, 0)
                             self.to_kill = True
-
-                        """else:
-
-                            grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
-                            normalized = direction.normalize()
-                            self.vel = normalized * grappling_speed"""
-
+                    elif self.range_reached:
+                        self.on_impact()
                     else:
                         self.on_impact()
-
-
-
-
-
             else:
                 self.on_impact()
 
