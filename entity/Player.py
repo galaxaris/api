@@ -192,9 +192,18 @@ class Player(Character):
             self.inventory.player_rect = self.rect
             self.inventory.draw(surface, scene)
 
+
             if onKeyUp("select_weapon") and scene.global_state["player_control"]:
                 self.inventory.switch_weapon()
                 self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
+
+        if self.equipped_weapon.name == "grappling gun":
+            projectile = self.equipped_weapon.projectile
+            if projectile and not projectile.to_kill:
+                cam_pos = scene.camera.position
+                player_center = self.pos + self.size / 2 - cam_pos
+                projectile_center = projectile.pos + projectile.size / 2 - cam_pos
+                pg.draw.line(surface, (100, 100, 100), player_center, projectile_center, 3)
 
 
 
