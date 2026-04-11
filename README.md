@@ -284,3 +284,308 @@ my_game.scene.camera.set_offset((320, 180))
 my_game.scene.camera.set_limits(topleft=(0, 0), bottomright=(2000, 1000))
 
 ```
+
+
+### 7. Gestion des évènements via l'EventManager
+
+L'`EventManager` est le point central qui permet de connecter proprement:
+
+* les évènements bas niveau (PyGame: clavier, souris, fermeture de fenêtre),
+* les actions gameplay (saut, interaction, dégâts, pause),
+* les effets secondaires (audio, UI, VFX, logs),
+* les règles de déclenchement (conditions dépendantes de l'état du jeu).
+
+L'objectif cible du projet est de l'utiliser partout:
+
+* dans l'API, via une collection d'évènements par défaut maintenue dans `DefaultEventCollection`;
+* dans le jeu, via des évènements custom qui complètent, enrichissent, ou remplacent certains comportements.
+
+### 7.1. Philosophie du module
+
+Un évènement est identifié par un nom (`event_name`) et stocke:
+
+* une liste de callbacks;
+* une liste de conditions optionnelles.
+
+Structure interne (conceptuelle):
+
+```python
+events = {
+        "event_name": ([callback_1, callback_2, ...], [condition_1, condition_2, ...])
+}
+```
+
+Ce design permet:
+
+* d'enchaîner une action principale puis ses effets secondaires (ex: action + son + UI),
+* de centraliser les garde-fous d'exécution (ex: joueur vivant, menu fermé),
+* d'éviter de dupliquer la logique d'input dans plusieurs modules.
+
+### 7.2. API publique de EventManager
+
+Méthodes principales:
+
+* `registerDefaultEventCollection()`
+    Charge les évènements standards depuis `api/events/DefaultEventCollection.py`.
+
+* `registerEvent(event_name, callbacks, conditions=None)`
+    Ajoute un évènement, ou complète un évènement existant (append des callbacks/conditions).
+
+* `registerEventDict(events_dict)`
+    Enregistre en lot un dictionnaire d'évènements.
+
+* `triggerEvent(event_name, event=None)`
+    Exécute l'évènement si ses conditions sont validées.
+
+* `unregisterEvent(event_name)`
+    Supprime un évènement (utile pour override total d'un comportement par défaut).
+
+* `getRegisteredEvents()`
+    Retourne la liste des évènements enregistrés.
+
+### 7.3. Injection d'instances avec `EventManager.Instances`
+
+Pour permettre aux callbacks d'accéder aux objets runtime, le manager expose un conteneur `Instances`.
+
+Exemples d'instances bindées:
+
+* `game`
+* `scene`
+* `player`
+* `audio_manager`
+* `menu`
+
+Binding unitaire:
+
+```python
+event_manager.Instances.bindInstance("player", player)
+```
+
+Binding en lot:
+
+```python
+event_manager.Instances.bindInstancesDict({
+        "game": game,
+        "scene": scene,
+        "player": player,
+        "audio_manager": audio_manager,
+})
+```
+
+Bonnes pratiques:
+
+* Re-binder les instances qui changent (ex: `scene`, `menu`, entités de niveau) lors des transitions.
+* Ne binder au démarrage que les objets stables.
+* Éviter d'accéder à des objets non bindés dans les callbacks (sinon `AttributeError`, déjà interceptée par le manager avec un message explicite).
+
+### 7.4. Callbacks et conditions: règles de conception
+
+#### Callbacks
+
+Un callback est un callable recevant généralement l'évènement (`e`) ou, par défaut, le manager.
+
+Exemple:
+
+```python
+lambda e=None: manager.Instances.player.do_jump()
+```
+
+Conventions recommandées:
+
+* Callback principal en premier.
+* Effets secondaires ensuite (SFX, UI, particules, logs).
+* Si la logique devient longue, appeler une fonction nommée au lieu de tout mettre dans un `lambda`.
+
+#### Conditions
+
+Le manager accepte des booléens ou des callables.
+
+Recommandation forte: utiliser des callables pour évaluer l'état au moment du trigger.
+
+Exemple recommandé:
+
+```python
+[lambda m: m.Instances.player.health > 0,
+ lambda m: not m.Instances.scene.global_state.get("in_menu", False)]
+```
+
+Éviter les booléens fixes (`[False]`, `[True]`) sauf cas volontairement statique, car ils ne reflètent pas l'évolution de l'état du jeu.
+
+### 7.5. Architecture cible API + Jeu
+
+#### Côté API (socle réutilisable)
+
+Le fichier `api/events/DefaultEventCollection.py` doit contenir uniquement les interactions génériques, réutilisables entre projets:
+
+* fermeture (`QUIT`),
+* toggles moteur (debug, fullscreen, pause global),
+* interactions standard (interact, confirm, cancel),
+* évènements communs de gameplay de base (ex: `player_jump` si défini au niveau API).
+
+#### Côté jeu (spécifique projet)
+
+Le fichier `game/scripts/CustomEventsCollection.py` contient:
+
+* les évènements purement gameplay de Galaxaris,
+* les adaptations des defaults,
+* les comportements liés à vos scènes, UI, quêtes, boss, scripts narratifs,
+* le fonctionnement des menus et du HUD à travers les scènes (ex: `toggle_menu`, `update_health_bar`, `toggle_audio`, `load_level`, etc.).
+
+Dans `game/setup/event_manager.py`, l'initialisation recommandée est:
+
+1. Binder les instances de démarrage.
+2. Charger les defaults API.
+3. Charger les customs jeu.
+
+#### Scripts spécifiques aux scènes
+Pour chaque scène, vous pouvez également ajouter des évènements spécifiques (ex: `boss_fight_start`, `enter_secret_room`) dans un script dédié (ex: `level1.py`) et les enregistrer lors de l'initialisation de la scène (dans la def `start()` du script).
+
+Exemple 1: initialisation globale dans `game/setup/event_manager.py`
+
+```python
+def init_event_manager(game_instance):
+        em = game_instance.game_event_manager
+
+        em.Instances.bindInstancesDict({
+                "game": game_instance.game,
+                "scene": game_instance.scene,
+                "player": game_instance.player,
+                "audio_manager": game_instance.audio_manager,
+        })
+
+        em.registerDefaultEventCollection()              # API
+        em.registerEventDict(get_custom_events(em))      # Jeu
+```
+
+Exemple 2: évènement spécifique à une scène dans `level1.py`
+
+```python
+def summon_boss():
+        print("Le boss est invoqué !")
+        # Logique d'invocation du boss...
+
+
+def start(game_instance):
+        em = game_instance.game_event_manager
+
+        em.Instances.bindInstance("scene", game_instance.scene) # Re-bind si nécessaire
+
+        em.registerEvent(
+                "boss_fight_start",
+                [lambda e=None: summon_boss()],
+                [lambda m: m.Instances.scene.name == "Level1"]
+        )
+```
+
+### 7.6. Brancher EventManager sur la boucle de jeu
+
+Pour unifier les interactions, routez les entrées vers des `triggerEvent(...)`.
+
+#### A. Évènements PyGame
+
+```python
+for pg_event in pg.event.get():
+        if pg_event.type == pg.QUIT:
+                game_instance.game_event_manager.triggerEvent("QUIT", pg_event)
+
+        if pg_event.type == pg.MOUSEBUTTONDOWN and pg_event.button == 1:
+                game_instance.game_event_manager.triggerEvent("mouse_left_click", pg_event)
+```
+
+#### B. Actions sémantiques de gameplay
+
+```python
+if onKeyDown(pg.K_n):
+        game_instance.game_event_manager.triggerEvent("custom_event")
+```
+
+
+### 7.7. Exemples complets
+
+#### Exemple 1: évènement default API
+
+```python
+def get_default_events(manager):
+        return {
+                "QUIT": ([lambda e=None: manager.Instances.game.stop()], None),
+                "player_jump": (
+                        [lambda e=None: manager.Instances.player.do_jump(),
+                         lambda e=None: manager.Instances.audio_manager.play_sfx("jump")],
+                        [lambda m: m.Instances.player is not None,
+                         lambda m: m.Instances.player.is_hitting_ground]
+                ),
+        }
+```
+
+#### Exemple 2: évènement custom jeu (UI + audio)
+
+```python
+def get_custom_events(manager):
+        return {
+                "toggle_audio": (
+                        [lambda e=None: toggle_audio(
+                                manager.Instances.audio_manager,
+                                manager.Instances.scene.UI.get("menu")
+                        )],
+                        [lambda m: m.Instances.scene is not None]
+                ),
+        }
+```
+
+#### Exemple 3: enrichir un évènement existant
+
+```python
+# Si "player_jump" existe deja, ceci ajoute des callbacks supplementaires
+em.registerEvent(
+        "player_jump",
+        [lambda e=None: em.Instances.scene.UI.show("jump_hint")],
+        [lambda m: m.Instances.scene is not None]
+)
+```
+
+#### Exemple 4: remplacer totalement un évènement default
+
+```python
+em.unregisterEvent("player_jump")
+em.registerEvent(
+        "player_jump",
+        [lambda e=None: custom_jump_logic(em.Instances.player)],
+        [lambda m: m.Instances.player.stamina > 0]
+)
+```
+
+### 7.8. Checklist d'implémentation propre
+
+1. Centraliser les defaults API dans `DefaultEventCollection`.
+2. Centraliser les customs jeu dans `CustomEventsCollection`.
+3. Binder explicitement les instances nécessaires avant tout trigger.
+4. Utiliser des conditions dynamiques (`lambda manager: ...`).
+5. Garder les callbacks courts et ordonnés (action principale puis effets).
+6. Re-binder les instances lors des changements de scène/contexte.
+7. Éviter les doublons d'enregistrement au redémarrage d'une scène.
+8. Logger les évènements critiques (debug) pour faciliter le diagnostic.
+
+### 7.9. Pièges fréquents et solutions
+
+* **Condition figée**: utiliser `[False]` bloque définitivement l'évènement.
+    Solution: remplacer par un callable dynamique.
+
+* **Instance absente**: callback appelle `manager.Instances.xxx` non bindé.
+    Solution: binder avant registration/trigger, ou ajouter une condition de garde.
+
+* **Ré-enregistrement involontaire**: en rappelant plusieurs fois `registerEvent`, vous empilez les callbacks.
+    Solution: `unregisterEvent` avant remplacement, ou protéger votre init.
+
+* **Lambdas trop complexes**: logique difficile à relire.
+    Solution: déplacer en fonctions nommées dans vos scripts.
+
+### 7.10. Plan de généralisation recommandé (court terme)
+
+1. Migrer progressivement les interactions directes clavier/souris vers des `triggerEvent` sémantiques.
+2. Compléter `DefaultEventCollection` avec toutes les interactions moteur communes.
+3. Laisser le jeu surcharger/compléter proprement via `CustomEventsCollection`.
+4. Ajouter des tests simples: registration, conditions, ordre des callbacks, override.
+5. Documenter chaque nouvel évènement dans la collection correspondante.
+
+Avec cette organisation, l'EventManager devient la colonne vertébrale des interactions API + jeu: plus modulaire, plus maintenable, et beaucoup plus simple à faire évoluer.
+
