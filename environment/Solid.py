@@ -22,3 +22,18 @@ class Solid(GameObject):
         :return:
         """
         super().update(scene)
+
+    def set_state(self, state):
+        if(state):
+            self.add_tag("solid")
+        else:
+            self.remove_tag("solid")
+
+    def get_state(self):
+        return "solid" in self.tags
+
+
+    #TODO: Subscribe to event
+
+    def toggle(self):
+        self.set_state(not self.get_state())
