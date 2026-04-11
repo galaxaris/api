@@ -32,8 +32,5 @@ class Solid(GameObject):
     def get_state(self):
         return "solid" in self.tags
 
-
-    #TODO: Subscribe to event
-
     def toggle(self):
         self.set_state(not self.get_state())

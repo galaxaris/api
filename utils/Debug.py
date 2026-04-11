@@ -115,9 +115,9 @@ def register_debug_entity(self, entity):
     :return:
     """
     debug(f"Entity : {entity.__class__.__name__}", "right", debug_font, 32)
-    debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", debug_font, 32)
 
     if entity:
+        debug(f"Position : {int(entity.pos.x)} | {int(entity.pos.y)}", "right", debug_font, 32)
         debug(f"Velocity : {entity.vel.x:.1f} | {entity.vel.y:.1f}", "right", debug_font, 32)
         debug("Jump : " + ("True" if entity.jump else "False"), "right", debug_font, 16)
         debug("Fall : " + ("True" if entity.fall else "False"), "right", debug_font, 16)
@@ -134,10 +134,10 @@ def register_debug_entity(self, entity):
         if hasattr(entity, "health"):
             debug(f"Health : {entity.health}", "right", debug_font, 32)
 
-    if entity.collided_objs:
-        debug("Collisions :", "right", debug_font, 32)
-        for collision in entity.collided_objs:
-            debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", debug_font, 16)
+        if entity.collided_objs:
+            debug("Collisions :", "right", debug_font, 32)
+            for collision in entity.collided_objs:
+                debug(f"{collision[0].__class__.__name__} | {collision[1]}", "right", debug_font, 16)
 
 def launch_debug(self):
     global debug_list

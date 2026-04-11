@@ -34,6 +34,7 @@ class Scene(pg.Surface):
         self.audio_manager : AudioManager = None
         self.Time : Time = None
         self.scale_ratio = 1
+        self.name = "Scene"
         self.UI = GameUI(size)
         size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()

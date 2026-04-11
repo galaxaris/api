@@ -47,6 +47,7 @@ class Game:
     fps: int #Time
     flags: int
     window: Window
+    size: tuple[int, int]
     bound_functions: Dict[int, List[Callable]]
 
     def __init__(self, size: tuple[int, int] | pg.Vector2, render_size: tuple[int, int] | pg.Vector2, name: str, flags: int, fps: int=120, register_default_events: bool=True):
@@ -72,6 +73,8 @@ class Game:
         self.Time = Time(fps)
         self.running = True
         self.flags = flags
+        self.size = size
+        self.render_size = render_size
         self.window = Window.from_display_module()
         self.bound_functions = {}
         self.audio_manager = AudioManager()
