@@ -19,6 +19,7 @@ class WaterPistol:
         self.Time = None
         self.last = - self.cooldown
         self.projectile_damage = projectile_damage
+        self.max_points = 300
 
     def shoot(self, shoot_pos: pg.Vector2)->bool:
         game_projectiles = self.projectiles
@@ -59,6 +60,7 @@ class EarthPistol:
         self.Time = None
         self.last = - self.cooldown
         self.projectile_damage = projectile_damage
+        self.max_points = 300
 
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
@@ -84,9 +86,8 @@ class EarthPistol:
                 scene.remove(projectiles[i], "#projectile")
                 projectiles.remove(projectiles[i])
 
-
 class GrapplingPistol:
-    """Base class for a pistol that acts as a grappling hook."""
+    """Base class for a grappling hook."""
 
     def __init__(self, trajectory: Trajectory, projectile_damage = 0):
         self.name = "grappling gun"
@@ -94,16 +95,19 @@ class GrapplingPistol:
         self.projectile_damage = projectile_damage
         self.trajectory = trajectory
         self.is_aiming = False
-        self.gravity = 0.5
-        self.projectile = None
+        self.projectile = None # no list, instead only one projectile can be shot at once
         self.current_trajectory_ini_speed = 0
         self.current_trajectory_angle_radians = 0
+        self.max_points = 10
+        self.range = 500 # max distance to be traveled before deletion
+        self.range_reached = False # checks if the range is reached to delete upon comeback and not init
 
     def shoot(self, shoot_pos: pg.Vector2) -> bool:
+        # no cooldown contrary to other guns, max distance is used instead
 
         if not self.projectile:
-            projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
-                                    damage=self.projectile_damage, colour = "green", effect = "grappling")
+            projectile = Projectile(shoot_pos, 0, self.trajectory.ini_speed, self.trajectory.angle_radians,
+                                    damage=self.projectile_damage, colour = "green", effect = "grappling", range = self.range)
 
             self.current_trajectory_ini_speed = self.trajectory.ini_speed
             self.current_trajectory_angle_radians = self.trajectory.angle_radians
@@ -119,6 +123,7 @@ class GrapplingPistol:
             else:
                 scene.remove(projectile, "#projectile")
                 self.projectile = None
+                self.range_reached = False
 
 
 

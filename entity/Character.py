@@ -3,7 +3,7 @@ import pygame as pg
 
 from api.items.Pistols import WaterPistol, EarthPistol, GrapplingPistol
 from api.items.Inventory import Inventory
-from api.physics.Trajectory import Trajectory, free_fall
+from api.physics.Trajectory import Trajectory, free_fall, linear_trajectory
 from api.utils.Constants import DEFAULT_SHOT_SPEED, DEFAULT_GRAVITY, DEFAULT_GRAPPLING_SPEED
 from api.utils.Console import print_warning
 
@@ -44,7 +44,8 @@ class Character(Entity):
                 "left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14 / 2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14 / 2 else "right")
             if self.equipped_weapon.show_trajectory:
                 surface_trajectory = pg.Surface((scene.get_width(), scene.get_height()), pg.SRCALPHA).convert_alpha()
-                self.equipped_weapon.trajectory.draw(surface_trajectory, scene, self.pos)
+                max_points = self.equipped_weapon.max_points
+                self.equipped_weapon.trajectory.draw(surface_trajectory, scene, max_points, self.pos)
                 scene.add_surface(surface_trajectory, "_trajectory")
 
         if self.hit_cooldown > 0:
@@ -74,10 +75,9 @@ class Character(Entity):
                 cooldown=cooldown, projectile_damage=damage))
             
         elif name=="GrapplingPistol":
-            if cooldown is None: cooldown = 500
             if damage is None: damage = 15
             self.inventory.weapons.append(
-                GrapplingPistol(Trajectory(free_fall, self.size // 2, DEFAULT_GRAPPLING_SPEED, 0, DEFAULT_GRAVITY), projectile_damage=damage))
+                GrapplingPistol(Trajectory(linear_trajectory, self.size // 2, DEFAULT_GRAPPLING_SPEED, 0, DEFAULT_GRAVITY), projectile_damage=damage))
             
         else:
             print_warning(f"Failed to equip '{name}' to Character: this weapon doesn't exist.")
