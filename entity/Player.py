@@ -115,49 +115,51 @@ class Player(Character):
             else:
                 self.is_aiming = False
                 self.speed_malus = 0
-                if self.equipped_weapon.name != "grappling gun":
-                    self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
-                else:
-                    self.equipped_weapon.trajectory.ini_speed = DEFAULT_GRAPPLING_SPEED
+                if self.equipped_weapon:
+                    if self.equipped_weapon.name != "grappling gun":
+                        self.equipped_weapon.trajectory.ini_speed = DEFAULT_SHOT_SPEED
+                    else:
+                        self.equipped_weapon.trajectory.ini_speed = DEFAULT_GRAPPLING_SPEED
 
-                self.equipped_weapon.is_aiming = False
+                    self.equipped_weapon.is_aiming = False
 
-            if self.equipped_weapon.name == "grappling gun":
+            if self.equipped_weapon:
+                if self.equipped_weapon.name == "grappling gun":
 
-                projectile = self.equipped_weapon.projectile
+                    projectile = self.equipped_weapon.projectile
 
-                if projectile :
+                    if projectile :
 
-                    scene.global_state["player_control"] = False
+                        scene.global_state["player_control"] = False
 
-                    player_center = self.pos + self.size / 2
-                    grapple_pos = projectile.pos + projectile.size / 2
+                        player_center = self.pos + self.size / 2
+                        grapple_pos = projectile.pos + projectile.size / 2
 
-                    direction = grapple_pos - player_center
-                    distance = int(direction.length())
+                        direction = grapple_pos - player_center
+                        distance = int(direction.length())
 
-                    if "anchored" in projectile.tags and not projectile.to_kill:
+                        if "anchored" in projectile.tags and not projectile.to_kill:
 
-                        if distance < 40:
-                            self.vel = pg.Vector2(0, 0)
-                            projectile.to_kill = True
+                            if distance < 40:
+                                self.vel = pg.Vector2(0, 0)
+                                projectile.to_kill = True
 
-                        else:
+                            else:
+
+                                grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                                normalized = direction.normalize()
+                                self.vel = normalized * grappling_speed
+
+                        if distance > self.equipped_weapon.range:
 
                             grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
                             normalized = direction.normalize()
-                            self.vel = normalized * grappling_speed
+                            self.equipped_weapon.projectile.vel = - normalized * grappling_speed
 
-                    if distance > self.equipped_weapon.range:
+                            self.equipped_weapon.range_reached = True
 
-                        grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
-                        normalized = direction.normalize()
-                        self.equipped_weapon.projectile.vel = - normalized * grappling_speed
-
-                        self.equipped_weapon.range_reached = True
-
-                    if distance < 40 and self.equipped_weapon.range_reached :
-                        self.equipped_weapon.projectile.on_impact()
+                        if distance < 40 and self.equipped_weapon.range_reached :
+                            self.equipped_weapon.projectile.on_impact()
 
 
 
@@ -219,13 +221,14 @@ class Player(Character):
                 self.inventory.switch_weapon()
                 self.equipped_weapon = self.inventory.weapons[self.inventory.active_index]
 
-        if self.equipped_weapon.name == "grappling gun":
-            projectile = self.equipped_weapon.projectile
-            if projectile and not projectile.to_kill:
-                cam_pos = scene.camera.position
-                player_center = self.pos + self.size / 2 - cam_pos
-                projectile_center = projectile.pos + projectile.size / 2 - cam_pos
-                pg.draw.line(surface, (100, 100, 100), player_center, projectile_center, 3)
+        if self.equipped_weapon:
+            if self.equipped_weapon.name == "grappling gun":
+                projectile = self.equipped_weapon.projectile
+                if projectile and not projectile.to_kill:
+                    cam_pos = scene.camera.position
+                    player_center = self.pos + self.size / 2 - cam_pos
+                    projectile_center = projectile.pos + projectile.size / 2 - cam_pos
+                    pg.draw.line(surface, (100, 100, 100), player_center, projectile_center, 3)
 
 
 

@@ -40,15 +40,16 @@ class Character(Entity):
     def update(self, scene=None):
         super().update(scene)
 
-        self.equipped_weapon.update(scene)
-        if self.equipped_weapon.is_aiming:
-            self.set_direction(
-                "left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14 / 2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14 / 2 else "right")
-            if self.equipped_weapon.show_trajectory:
-                surface_trajectory = pg.Surface((scene.get_width(), scene.get_height()), pg.SRCALPHA).convert_alpha()
-                max_points = self.equipped_weapon.max_points
-                self.equipped_weapon.trajectory.draw(surface_trajectory, scene, max_points, self.pos)
-                scene.add_surface(surface_trajectory, "_trajectory")
+        if self.equipped_weapon:
+            self.equipped_weapon.update(scene)
+            if self.equipped_weapon.is_aiming:
+                self.set_direction(
+                    "left" if 3.14 >= self.equipped_weapon.trajectory.angle_radians >= 3.14 / 2 or -3.14 <= self.equipped_weapon.trajectory.angle_radians <= -3.14 / 2 else "right")
+                if self.equipped_weapon.show_trajectory:
+                    surface_trajectory = pg.Surface((scene.get_width(), scene.get_height()), pg.SRCALPHA).convert_alpha()
+                    max_points = self.equipped_weapon.max_points
+                    self.equipped_weapon.trajectory.draw(surface_trajectory, scene, max_points, self.pos)
+                    scene.add_surface(surface_trajectory, "_trajectory")
 
         if self.hit_cooldown > 0:
             self.hit_cooldown -= 1 * scene.Time.deltaTime

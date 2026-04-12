@@ -124,12 +124,12 @@ def register_debug_entity(self, entity):
         debug("Boost : " + ("True" if entity.boost else "False"), "right", debug_font, 16)
         debug(f"Gravity : {entity.gravity:.2f}", "right", debug_font, 16)
 
-        if hasattr(entity,
-                   "equipped_weapon") and entity.equipped_weapon.trajectory and entity.equipped_weapon.is_aiming:
-            angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0
-            ini_speed = entity.equipped_weapon.trajectory.ini_speed if entity.equipped_weapon.trajectory.ini_speed else 0
-            debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {ini_speed}", "right", debug_font,
-                       32)
+        if entity.equipped_weapon:
+            if entity.equipped_weapon.trajectory and entity.equipped_weapon.is_aiming:
+                angle = entity.equipped_weapon.trajectory.angle_radians if entity.equipped_weapon.trajectory.angle_radians else 0
+                ini_speed = entity.equipped_weapon.trajectory.ini_speed if entity.equipped_weapon.trajectory.ini_speed else 0
+                debug(f"Trajectory : Angle {round(angle, 2)} rad | Speed {ini_speed}", "right", debug_font,
+                           32)
 
         if hasattr(entity, "health"):
             debug(f"Health : {entity.health}", "right", debug_font, 32)

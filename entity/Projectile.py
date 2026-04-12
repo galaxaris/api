@@ -71,6 +71,10 @@ class Projectile(Entity):
                         self.vel = pg.Vector2(0, 0)
                         self.add_tag("anchored")
 
+                        collided_obj_of_collided_obj = get_collided_objects(collided_obj[0], "player", scene.game_objects, 0, 0)
+                        if collided_obj_of_collided_obj:
+                            self.on_impact()
+
                     else:
                         self.on_impact()
             else:
