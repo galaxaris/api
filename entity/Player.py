@@ -82,7 +82,7 @@ class Player(Character):
                         self.ammo -= 1
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
-                    if self.ammo <= 0:
+                    if self.ammo <= 0 and self.equipped_weapon.name!= "grappling gun":
                         return
                     is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
 
