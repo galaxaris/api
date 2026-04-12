@@ -75,28 +75,38 @@ class Player(Character):
                     elif onKeyPress("aim_down") and self.equipped_weapon.trajectory.ini_speed > MIN_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
-                if onKeyDown("shoot"):
-                    if self.ammo <= 0:
-                        return
-                    if( self.equipped_weapon.name!= "grappling gun"):
-                        self.ammo -= 1
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
+
+                    if(self.ammo >=0):
+                        is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
+                    else:
+                        is_shot = False
+
+                    if (is_shot and self.equipped_weapon.name!= "grappling gun" and self.ammo>=0):
+                        self.ammo -= 1
+
+                    #self.equipped_weapon.is_aiming = False
+                    #SFX
+                    if scene.audio_manager:
+                        if is_shot:
+                            scene.audio_manager.play_sfx("fire")
+                        elif self.ammo <=0:
+                            scene.audio_manager.play_sfx("empty_weapon")
+                            return
+                    """
+                    if is_shot:
+                        if "fire" in self.sfx_list:
+                            audio_manager = scene.audio_manager
+                            if audio_manager:
+                                audio_manager.play_sfx("fire")
+                                
                     if self.ammo <= 0 and self.equipped_weapon.name!= "grappling gun":
                         audio_manager = scene.audio_manager
                         if audio_manager:
                             audio_manager.play_sfx("empty_weapon")
                         return
-                    is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
-
-                    #self.equipped_weapon.is_aiming = False
-                    #SFX
-                    if self.sfx_list and is_shot:
-                        if "fire" in self.sfx_list:
-                            audio_manager = scene.audio_manager
-                            if audio_manager:
-                                audio_manager.play_sfx("fire")
-
+                    """
                 else:
                     self.equipped_weapon.is_aiming = True
 
