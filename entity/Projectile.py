@@ -61,7 +61,7 @@ class Projectile(Entity):
 
         if self.collided_objs:
             if "bouncy" in self.tags:
-                if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.001:
+                if self.bounce == 0:
                     self.on_impact()
 
             elif "grappling" in self.tags:  # projectile of grappling hook
