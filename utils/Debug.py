@@ -61,6 +61,7 @@ def register_debug(self):
     """
 
     debug("Omicronde API - Galaxaris", "left", debug_font, 36)
+    debug(self.scene.name if self.scene else "No scene", "left", debug_font, 32)
     debug(f"FPS : {int(self.Time.clock.get_fps())} | Render t : {self.Time.clock.get_rawtime()} ms", "left",
                debug_font, 32)
 
