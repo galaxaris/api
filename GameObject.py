@@ -70,6 +70,7 @@ class GameObject:
             self.image = self.repeat_texture(texture.image, self.size)
 
         self.rect = self.image.get_rect(topleft=self.pos)
+        return self
 
     def repeat_texture(self, surface: pg.Surface, size:pg.Vector2 | tuple[int, int]) -> pg.Surface:
         #Avoid division by zero
@@ -121,6 +122,7 @@ class GameObject:
         :param color: The new color (r, g, b)
         """
         self.image.fill(color)
+        return self
 
     def set_animation(self, animation: Animation):
         """
