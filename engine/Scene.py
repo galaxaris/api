@@ -36,6 +36,7 @@ class Scene(pg.Surface):
         self.scale_ratio = 1
         self.name = "Scene"
         self.UI = GameUI(size)
+        self.this = type("This", (), {})()
         size = pg.Vector2(size)
         self.default_surface = pg.Surface(size, pg.SRCALPHA).convert_alpha()
         self.global_state = {
