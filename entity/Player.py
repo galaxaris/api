@@ -75,8 +75,16 @@ class Player(Character):
                     elif onKeyPress("aim_down") and self.equipped_weapon.trajectory.ini_speed > MIN_SHOT_SPEED:
                         self.equipped_weapon.trajectory.ini_speed -= 1
 
+                if onKeyDown("shoot"):
+                    if self.ammo <= 0:
+                        return
+                    self.ammo -= 1
+
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
+                    if self.ammo <= 0:
+                        return
                     is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
+
                     #self.equipped_weapon.is_aiming = False
                     #SFX
                     if self.sfx_list and is_shot:

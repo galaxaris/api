@@ -22,6 +22,8 @@ class Character(Entity):
         self.damage_resistance = damage_resistance
         self.hit_cooldown = 0
         self.hit_cooldown_time = 20
+        self.equipped_weapon = None
+        self.ammo = 20
         self.inventory = Inventory()
 
     def take_damage(self, damage: int):

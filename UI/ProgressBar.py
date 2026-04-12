@@ -9,10 +9,11 @@ from api.utils import Fonts
 class ProgressBar(UIElement):
     """A polished, modern UI progress bar with smooth transitions."""
 
-    def __init__(self, pos: tuple[int, int]|pg.Vector2, size: tuple[int, int]|pg.Vector2, color_bg: tuple[int, int, int], color_fg: tuple[int, int, int], progress_max: int=100):
+    def __init__(self, pos: tuple[int, int]|pg.Vector2, size: tuple[int, int]|pg.Vector2, color_bg: tuple[int, int, int], color_fg: tuple[int, int, int], progress_max: int=100, vertical: bool=False):
         super().__init__(pos, size)
         self.color_bg = color_bg
         self.color_fg = color_fg
+        self.vertical = vertical
 
         self.progress_max = progress_max
         self.current_value = 0.0  # The actual value (e.g., 50/100)
@@ -47,25 +48,37 @@ class ProgressBar(UIElement):
         if color_bg: self.color_bg = color_bg
 
     def draw(self, surface: pg.Surface, scene: Scene = None):
-        # 1. Update the interpolation logic
+        # 1. Update logic
         self.update()
 
-        # 2. Draw the Shadow/Background
-        # Slightly offset to give depth
+        # 2. Draw Background
         bg_rect = pg.Rect(self.pos, self.size)
         pg.draw.rect(surface, self.color_bg, bg_rect, border_radius=self.border_radius)
 
-        # 3. Calculate and Draw Foreground (The Fill)
+        # 3. Calculate and Draw Foreground
         if self.visual_progress > 0:
             fill_ratio = self.visual_progress / self.progress_max
-            fill_width = int(self.size[0] * fill_ratio)
 
-            # Ensure the fill width doesn't look weird at very low values
-            if fill_width > 4:
+            if self.vertical:
+                # Calcul pour la verticale (remplissage du bas vers le haut)
+                fill_height = int(self.size[1] * fill_ratio)
+                # On ajuste la position Y pour que ça monte
+                fill_rect = pg.Rect(
+                    self.pos[0],
+                    self.pos[1] + (self.size[1] - fill_height),
+                    self.size[0],
+                    fill_height
+                )
+            else:
+                # Calcul pour l'horizontale (gauche vers droite)
+                fill_width = int(self.size[0] * fill_ratio)
                 fill_rect = pg.Rect(self.pos, (fill_width, self.size[1]))
+
+            # Dessin du remplissage
+            if (self.vertical and fill_rect.height > 2) or (not self.vertical and fill_rect.width > 2):
                 pg.draw.rect(surface, self.color_fg, fill_rect, border_radius=self.border_radius)
 
-        # 5. Optional: Thin Border for definition
+        # 4. Border
         pg.draw.rect(surface, (20, 20, 20), bg_rect, width=2, border_radius=self.border_radius)
 
 
