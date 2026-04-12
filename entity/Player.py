@@ -83,6 +83,9 @@ class Player(Character):
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
                     if self.ammo <= 0 and self.equipped_weapon.name!= "grappling gun":
+                        audio_manager = scene.audio_manager
+                        if audio_manager:
+                            audio_manager.play_sfx("empty_weapon")
                         return
                     is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
 
