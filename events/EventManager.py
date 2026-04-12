@@ -148,8 +148,8 @@ class EventManager:
                     count += 1
                     try:
                         callback(event if event is not None else self)
-                    except AttributeError:
-                        print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to access an non-existent instance method or an instance that is not bound to EventManager.Instances.") 
+                    #except AttributeError:
+                    #    print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to access an non-existent instance method or an instance that is not bound to EventManager.Instances.") 
                     except NameError:
                         print_error(f"Error triggering event '{event_name}'. It's {to_ordinal_number(count)} callback is trying to call a non-existent function.")
                 
