@@ -63,7 +63,7 @@ class Player(Character):
                 player_screen_pos = self.pos - cam_pos + self.size/2
                 angle_with_player = mouse / scene.scale_ratio - player_screen_pos
 
-                self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
+                if self.equipped_weapon: self.equipped_weapon.trajectory.angle_radians = math.atan2(-angle_with_player.y, angle_with_player.x)
 
                 if InputManager.MOUSE_SCROLL != 0 and self.equipped_weapon.name != "grappling gun":
                     self.equipped_weapon.trajectory.ini_speed = max(MIN_SHOT_SPEED, min(self.equipped_weapon.trajectory.ini_speed + InputManager.MOUSE_SCROLL, MAX_SHOT_SPEED))
@@ -108,7 +108,7 @@ class Player(Character):
                         return
                     """
                 else:
-                    self.equipped_weapon.is_aiming = True
+                    if self.equipped_weapon: self.equipped_weapon.is_aiming = True
 
 
 

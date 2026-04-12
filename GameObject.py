@@ -29,6 +29,7 @@ class GameObject:
     direction: str = "right"
     id: int
     interact: bool = False
+    visible: bool = True
     def __init__(self, pos: tuple[int, int] | pg.Vector2, size: tuple[int, int] | pg.Vector2):
         """
         Initializes the GameObject with given parameters.
@@ -53,6 +54,7 @@ class GameObject:
         self.offset = None
         self.interact = False
         self.destroyed = False
+        self.visible = True
         self.in_trigger_interact = False
 
     def set_texture(self, texture:Texture, rescale: bool = False):
@@ -217,7 +219,8 @@ class GameObject:
         if not self.animation and self.direction == "left":
             self.image = pg.transform.flip(self.image, True, False)
 
-        surface.blit(self.image, self.pos - offset)
+        if self.visible:
+            surface.blit(self.image, self.pos - offset)
 
         #DEBUG
         if Debug.is_enabled("colliders") and "debug" not in self.tags and "dont_debug" not in self.tags:

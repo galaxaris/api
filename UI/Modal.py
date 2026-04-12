@@ -55,7 +55,7 @@ class Modal(UIElement):
         :return:
         """
 
-        if self.buttons:
+        if self.buttons and len(self.buttons) > 0 and len(self.buttons[self.active_button_index_x]) > 0:
             actual_button = self.buttons[self.active_button_index_x][self.active_button_index_y%len(self.buttons[self.active_button_index_x])]
 
             if InputManager.is_controller_connected():
