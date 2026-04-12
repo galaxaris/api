@@ -78,7 +78,8 @@ class Player(Character):
                 if onKeyDown("shoot"):
                     if self.ammo <= 0:
                         return
-                    self.ammo -= 1
+                    if( self.equipped_weapon.name!= "grappling gun"):
+                        self.ammo -= 1
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
                     if self.ammo <= 0:
