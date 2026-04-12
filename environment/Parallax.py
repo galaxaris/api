@@ -21,16 +21,19 @@ class ParallaxLayer:
 class ParallaxBackground:
     """Collection of parallax layers rendered behind the scene."""
 
-    def __init__(self, render_size: pg.Vector2 | tuple[int, int], parallax_layers: Optional[List[ParallaxLayer]] = None, fill_color: Optional[tuple[int, int, int]] = None):
+    def __init__(self, render_size: pg.Vector2 | tuple[int, int], parallax_layers: Optional[List[ParallaxLayer]] = None, t_fill_color: Optional[tuple[int, int, int]] = None, b_fill_color: Optional[tuple[int, int, int]] = None, y_scrolling: bool = False):
         """Initialize the parallax background.
 
         :param render_size: Render target size.
         :param parallax_layers: Optional initial list of layers.
-        :param fill_color: Optional color filled before drawing layers.
+        :param t_fill_color: Optional top color filled before drawing layers.
+        :param b_fill_color: Optional bottom color filled before drawing layers.
         """
         self.layers = parallax_layers if parallax_layers else []
         self.render_size = pg.Vector2(render_size)
-        self.fill_color = fill_color
+        self.t_fill_color = t_fill_color
+        self.b_fill_color = b_fill_color
+        self.y_scrolling = y_scrolling
         self.layers.sort(key=lambda l: l.speed.x)
 
     def add_layer(self, speed: pg.Vector2, texture: Texture):
@@ -56,13 +59,14 @@ class ParallaxBackground:
         """
         camera_offset = pg.Vector2(camera_offset)
 
-        if self.fill_color:
-            scene_surface.fill(self.fill_color)
+        if self.t_fill_color:
+            pg.draw.rect(scene_surface, self.t_fill_color, (0, 0, self.render_size.x, max(0, -int(camera_offset.y))))
+            pg.draw.rect(scene_surface, self.b_fill_color, (0, min(self.render_size.y, max(0, -int(camera_offset.y))), self.render_size.x, self.render_size.y))
 
         for layer_data in self.layers:
             off_x = -int(camera_offset.x * layer_data.speed.x % layer_data.size.x)
-            off_y = -int(camera_offset.y * layer_data.speed.y % layer_data.size.y)
+            off_y = -int(camera_offset.y * layer_data.speed.y)
+            off_y = -int(camera_offset.y) if not self.y_scrolling or off_y < 0 else off_y
 
-            for y in range(off_y, int(self.render_size.y), int(layer_data.size.y)):
-                for x in range(off_x, int(self.render_size.x), int(layer_data.size.x)):
-                    scene_surface.blit(layer_data.image, (x, y))
+            for x in range(off_x, int(self.render_size.x), int(layer_data.size.x)):
+                scene_surface.blit(layer_data.image, (x, off_y))
