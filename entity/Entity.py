@@ -118,9 +118,9 @@ class Entity(GameObject):
 
     def _do_we_hit_wall(self, others: list):
         if "bouncy" in self.tags and self.collided_objs:
-            print("Wouiiiiiiiiiiiiii")
+            #print("Wouiiiiiiiiiiiiii")
             collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
-            print(self.vel)
+            #print(self.vel)
             if collided_obj[1] in ("right", "left"):
                 self.vel.x = -self.vel.x
                 self.bounce -= 1
@@ -142,9 +142,9 @@ class Entity(GameObject):
 
     def _do_we_hit_ground(self, others: list[GameObject]):
         if "bouncy" in self.tags and self.collided_objs:
-            print("Gouiiiiiiiiiiiiii")
+            #print("Gouiiiiiiiiiiiiii")
             collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
-            print(self.vel)
+            #print(self.vel)
             if collided_obj[1] in ("top", "bottom"):
                 self.vel.y = -self.vel.y
                 self.bounce -= 1
