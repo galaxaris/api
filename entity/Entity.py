@@ -52,6 +52,7 @@ class Entity(GameObject):
         self.vel = pg.Vector2(0, 0)
         self.jump = False
         self.fall = False
+        self.bounce = 10
         self.animations = {}
         self.gravity = DEFAULT_GRAVITY
         self.collided_objs = []
@@ -122,10 +123,9 @@ class Entity(GameObject):
             print(self.vel)
             if collided_obj[1] in ("right", "left"):
                 self.vel.x = -self.vel.x
+                self.bounce -= 1
 
             self.vel.x *= 0.75
-            if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.5:  # if we don't really bounce anymore, we kill the object
-                self.vel.x = 0
         else:
             for other in others:
                 if self.rect.colliderect(other.rect):
@@ -147,10 +147,9 @@ class Entity(GameObject):
             print(self.vel)
             if collided_obj[1] in ("top", "bottom"):
                 self.vel.y = -self.vel.y
+                self.bounce -= 1
 
             self.vel.y *= 0.75
-            if math.sqrt(self.vel.x ** 2 + self.vel.y ** 2) < 0.5:  # if we don't really bounce anymore, we kill the object
-                self.vel.y = 0
         else:
             for other in others:
                 if self.rect.colliderect(other.rect):
