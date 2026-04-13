@@ -21,7 +21,7 @@ class WaterPistol:
         self.projectile_damage = projectile_damage
         self.max_points = 300
 
-    def shoot(self, shoot_pos: pg.Vector2)->bool:
+    def shoot(self, shoot_pos: pg.Vector2)->(int,bool):
         game_projectiles = self.projectiles
         now = pg.time.get_ticks()
 
@@ -30,8 +30,8 @@ class WaterPistol:
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians, target=self.target, damage=self.projectile_damage, colour = "blue")
             projectile.add_tag("bouncy")
             game_projectiles.append(projectile)
-            return True
-        return False
+            return 1,True
+        return 0,False
 
     def update(self, scene=None):
         self.Time = scene.Time
@@ -64,7 +64,7 @@ class EarthPistol:
         self.max_points = 300
 
 
-    def shoot(self, shoot_pos: pg.Vector2) -> bool:
+    def shoot(self, shoot_pos: pg.Vector2) -> (int,bool):
         game_projectiles = self.projectiles
         now = pg.time.get_ticks()
 
@@ -73,8 +73,8 @@ class EarthPistol:
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
                                     target=self.target, damage=self.projectile_damage, colour = "red")
             game_projectiles.append(projectile)
-            return True
-        return False
+            return 0.03,True
+        return 0,False
 
     def update(self, scene=None):
         self.Time = scene.Time
@@ -103,7 +103,7 @@ class GrapplingPistol:
         self.range = 500 # max distance to be traveled before deletion
         self.range_reached = False # checks if the range is reached to delete upon comeback and not init
 
-    def shoot(self, shoot_pos: pg.Vector2) -> bool:
+    def shoot(self, shoot_pos: pg.Vector2) -> (int,bool):
         # no cooldown contrary to other guns, max distance is used instead
 
         if not self.projectile:
@@ -113,8 +113,8 @@ class GrapplingPistol:
             self.current_trajectory_ini_speed = self.trajectory.ini_speed
             self.current_trajectory_angle_radians = self.trajectory.angle_radians
             self.projectile = projectile
-            return True
-        return False
+            return 0,True
+        return 0,False
 
     def update(self, scene=None):
         if self.projectile:

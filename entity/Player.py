@@ -78,23 +78,17 @@ class Player(Character):
 
                 if onKeyPress("shoot") and scene.global_state["player_control"]:
 
-                    if(self.ammo >=0):
-                        is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
+                    if(self.ammo >=0 or self.equipped_weapon.name == "grappling gun"):
+                        ammo_consume, is_shot = self.equipped_weapon.shoot(self.pos + self.size//2)
                     else:
-                        is_shot = False
+                        ammo_consume, is_shot = 0, False
 
-                    if (is_shot and self.equipped_weapon.name!= "grappling gun" and self.ammo>=0):
-                        if (is_shot and self.equipped_weapon.name == "earth gun"):
-                            self.ammo -= 0.33
-                        else:
-                            self.ammo -= 1
-
-
+                    self.ammo -= ammo_consume
 
                     #self.equipped_weapon.is_aiming = False
                     #SFX
                     if scene.audio_manager:
-                        if is_shot:
+                        if is_shot :
                             scene.audio_manager.play_sfx("fire")
                         elif self.ammo <=0:
                             scene.audio_manager.play_sfx("empty_weapon")
