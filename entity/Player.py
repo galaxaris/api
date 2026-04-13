@@ -94,6 +94,7 @@ class Player(Character):
                             scene.audio_manager.play_sfx("empty_weapon")
 
 
+
                 else:
                     if self.equipped_weapon: self.equipped_weapon.is_aiming = True
 
