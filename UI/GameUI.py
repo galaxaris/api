@@ -2,7 +2,7 @@
 
 from api.GameObject import GameObject
 from api.utils import InputManager, Debug
-from api.utils.InputManager import prevent_once_key, onKeyUp
+from api.utils.InputManager import onKeyUp
 import pygame as pg
 
 class UIElement(GameObject):
@@ -115,7 +115,6 @@ class GameUI(pg.Surface):
         def close_ui(ui_key):
             self.hide(ui_key)
             scene.global_state["player_control"] = True
-            InputManager.prevent_once_key("jump")
 
         #Consumes effectively after the choice.
         def consume_confirm_release():
