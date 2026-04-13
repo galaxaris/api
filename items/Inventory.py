@@ -80,7 +80,7 @@ class Inventory(GameObject):
 
 
                 camera_offset = scene.camera.position if scene else pg.Vector2(0, 0)
-                path = ("bomb.png", "gougouttes.png", "gougouttes.png")
+                path = ("bomb.png", "gougouttes.png", "graplin.png")
                 icon = pg.image.load(path[i])
                 surface.blit(icon, circle_pos - camera_offset)
 

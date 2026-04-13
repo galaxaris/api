@@ -24,9 +24,14 @@ class Projectile(Entity):
         super().__init__(pos, size)
         self.pos = pg.Vector2(pos) - self.size/2
         self.add_tag("projectile")
-        self.image = pg.Surface((8, 8))
         self.colour = colour
-        self.image.fill(self.colour)
+        if colour == "green":
+            self.image = pg.Surface((10, 10), pg.SRCALPHA)
+            icon = pg.image.load("graplin10.png").convert_alpha()
+            self.image.blit(icon, (0, 0))
+        else:
+            self.image = pg.Surface((8, 8))
+            self.image.fill(self.colour)
         self.rect = self.image.get_rect(topleft=pos)
         self.range = range
         self.range_reached = False
