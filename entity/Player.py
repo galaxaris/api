@@ -92,7 +92,7 @@ class Player(Character):
                             scene.audio_manager.play_sfx("fire")
                         elif self.ammo <=0:
                             scene.audio_manager.play_sfx("empty_weapon")
-                            return
+
 
                 else:
                     if self.equipped_weapon: self.equipped_weapon.is_aiming = True
@@ -170,6 +170,35 @@ class Player(Character):
             self.boost = onKeyPress("boost") and scene.global_state["player_control"] and not onKeyPress("aim")
             self.interact = onKeyUp("interact") and scene.global_state["player_control"]
 
+            if self.equipped_weapon and self.equipped_weapon.name == "grappling gun":
+                projectile = self.equipped_weapon.projectile
+                if projectile:
+                    scene.global_state["player_control"] = False
+                    player_center = self.pos + self.size / 2
+                    grapple_pos = projectile.pos + projectile.size / 2
+                    direction = grapple_pos - player_center
+                    distance = int(direction.length())
+
+                    if "anchored" in projectile.tags and not projectile.to_kill:
+                        if distance < 64:
+                            projectile.to_kill = True
+                        else:
+                            grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                            normalized = direction.normalize()
+                            self.vel = normalized * grappling_speed
+
+                    if distance > self.equipped_weapon.range:
+                        grappling_speed = self.equipped_weapon.current_trajectory_ini_speed * 0.7
+                        normalized = direction.normalize()
+                        self.equipped_weapon.projectile.vel = -normalized * grappling_speed
+                        self.equipped_weapon.range_reached = True
+
+                    if distance < 40 and self.equipped_weapon.range_reached:
+                        self.equipped_weapon.projectile.on_impact()
+                else:
+                    # No more projectiles → we give back the control
+                    scene.global_state["player_control"] = True
+
         if Debug.is_enabled("freecam"):
             self.vel = pg.Vector2(0, 0)
             self.update_sprite()
@@ -216,8 +245,6 @@ class Player(Character):
                     player_center = self.pos + self.size / 2 - cam_pos
                     projectile_center = projectile.pos + projectile.size / 2 - cam_pos
                     pg.draw.line(surface, (100, 100, 100), player_center, projectile_center, 3)
-
-
 
 
 

@@ -73,7 +73,7 @@ class EarthPistol:
             projectile = Projectile(shoot_pos, self.gravity, self.trajectory.ini_speed, self.trajectory.angle_radians,
                                     target=self.target, damage=self.projectile_damage, colour = "red")
             game_projectiles.append(projectile)
-            return 0.03,True
+            return 0.3,True
         return 0,False
 
     def update(self, scene=None):
