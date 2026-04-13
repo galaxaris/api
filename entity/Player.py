@@ -140,8 +140,8 @@ class Player(Character):
 
                         if "anchored" in projectile.tags and not projectile.to_kill:
 
-                            if distance < 40:
-                                self.vel = pg.Vector2(0, 0)
+                            if distance < 64:
+                                #self.vel = pg.Vector2(0, 0)
                                 projectile.to_kill = True
 
                             else:

@@ -80,7 +80,8 @@ class Inventory(GameObject):
 
 
                 camera_offset = scene.camera.position if scene else pg.Vector2(0, 0)
-                pg.draw.circle(surface, colour, circle_pos - camera_offset, 10  )
+                icon = pg.image.load("C:\\Users\\3010a\\PycharmProjects\\Galaxaris\\game\\assets\\Images\\UI\\bomb.png")
+                surface.blit(icon, circle_pos - camera_offset)
 
 
             super().draw(surface)
