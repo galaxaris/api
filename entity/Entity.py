@@ -116,14 +116,15 @@ class Entity(GameObject):
         """
         ...
 
-    def _do_we_hit_wall(self, others: list):
-        if "bouncy" in self.tags and self.collided_objs:
-            collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
-            if collided_obj[1] in ("right", "left"):
-                self.vel.x = -self.vel.x
-                self.bounce -= 1
-
-            self.vel.x *= 0.75
+    def _do_we_hit_wall(self, others: list, collisions_x: Optional[list[tuple[GameObject, str]]] = None):
+        if "bouncy" in self.tags and collisions_x:
+            # Only react to horizontal contacts to avoid axis-mixing artifacts.
+            for _, direction in collisions_x:
+                if direction in ("right", "left"):
+                    self.vel.x = -self.vel.x
+                    self.bounce -= 1
+                    self.vel.x *= 0.75
+                    break
         else:
             for other in others:
                 if self.rect.colliderect(other.rect):
@@ -138,14 +139,15 @@ class Entity(GameObject):
                         self.vel.x = 0
                         self.hit_wall()
 
-    def _do_we_hit_ground(self, others: list[GameObject]):
-        if "bouncy" in self.tags and self.collided_objs:
-            collided_obj = self.collided_objs[0]  # we use the first collided object as we can't use more than one
-            if collided_obj[1] in ("top", "bottom"):
-                self.vel.y = -self.vel.y
-                self.bounce -= 1
-
-            self.vel.y *= 0.75
+    def _do_we_hit_ground(self, others: list[GameObject], collisions_y: Optional[list[tuple[GameObject, str]]] = None):
+        if "bouncy" in self.tags and collisions_y:
+            # Only react to vertical contacts to avoid side teleports after floor/ceiling hits.
+            for _, direction in collisions_y:
+                if direction in ("top", "bottom"):
+                    self.vel.y = -self.vel.y
+                    self.bounce -= 1
+                    self.vel.y *= 0.75
+                    break
         else:
             for other in others:
                 if self.rect.colliderect(other.rect):
@@ -173,8 +175,12 @@ class Entity(GameObject):
 
         # Récupération des objets solides
         others = [obj for obj in scene.game_objects if obj.id != self.id and "solid" in obj.tags]
-        self.collided_objs = get_collided_objects(self, "solid", others, self.vel.x * scene.Time.deltaTime, self.vel.y * scene.Time.deltaTime)
         Time = scene.Time
+        dx = self.vel.x * Time.deltaTime
+        dy = self.vel.y * Time.deltaTime
+        collisions_x = get_collided_objects(self, "solid", others, dx, 0)
+        collisions_y = get_collided_objects(self, "solid", others, 0, dy)
+        self.collided_objs = collisions_x + collisions_y
 
         if not Debug.is_enabled("freecam") and not self.is_controlled:
             if self.vel.x > 0:
@@ -185,12 +191,12 @@ class Entity(GameObject):
         self.pos.x += self.vel.x * Time.deltaTime
         self.rect.x = round(self.pos.x)
 
-        self._do_we_hit_wall(others)
+        self._do_we_hit_wall(others, collisions_x)
 
         self.pos.y += self.vel.y * Time.deltaTime
         self.rect.y = round(self.pos.y)
 
-        self._do_we_hit_ground(others)
+        self._do_we_hit_ground(others, collisions_y)
 
         self.rect.y += 1
 
