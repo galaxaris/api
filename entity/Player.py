@@ -94,19 +94,7 @@ class Player(Character):
                         elif self.ammo <=0:
                             scene.audio_manager.play_sfx("empty_weapon")
                             return
-                    """
-                    if is_shot:
-                        if "fire" in self.sfx_list:
-                            audio_manager = scene.audio_manager
-                            if audio_manager:
-                                audio_manager.play_sfx("fire")
-                                
-                    if self.ammo <= 0 and self.equipped_weapon.name!= "grappling gun":
-                        audio_manager = scene.audio_manager
-                        if audio_manager:
-                            audio_manager.play_sfx("empty_weapon")
-                        return
-                    """
+
                 else:
                     if self.equipped_weapon: self.equipped_weapon.is_aiming = True
 
