@@ -122,7 +122,7 @@ class EventManager:
         else:
             print_warning(f"Event '{event_name}' not found in EventManager! Cannot unregister.")
 
-    def triggerEvent(self, event_name: str, event=None):
+    def  triggerEvent(self, event_name: str, event=None):
         """
         Triggers an event, calling all its associated callback functions.
 

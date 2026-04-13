@@ -57,7 +57,7 @@ class EarthPistol:
         self.projectiles = []
         self.trajectory = trajectory
         self.is_aiming = False
-        self.gravity = 1
+        self.gravity = 0.5
         self.Time = None
         self.last = - self.cooldown
         self.projectile_damage = projectile_damage

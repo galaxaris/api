@@ -84,7 +84,12 @@ class Player(Character):
                         is_shot = False
 
                     if (is_shot and self.equipped_weapon.name!= "grappling gun" and self.ammo>=0):
-                        self.ammo -= 1
+                        if (is_shot and self.equipped_weapon.name == "earth gun"):
+                            self.ammo -= 0.33
+                        else:
+                            self.ammo -= 1
+
+
 
                     #self.equipped_weapon.is_aiming = False
                     #SFX
