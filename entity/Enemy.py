@@ -19,14 +19,14 @@ class Enemy(Character):
         self.mode = mode
 
         color_bar = (255, 0, 0) if self.health > self.original_health // 2 else (255, 255, 0)
-        self.enemy_progress_bar = ProgressBar((self.pos.x, self.pos.y - 10), (self.size.x, 5), (100, 100, 100), color_bar, progress_max=100)
+        self.enemy_progress_bar = ProgressBar((self.pos.x, self.pos.y - 10), (self.size.x, 5), (100, 100, 100), color_bar, progress_max=health)
         self.equipped_weapon = WaterPistol(Trajectory(free_fall, self.size // 2, DEFAULT_SHOT_SPEED, 0, DEFAULT_GRAVITY, color=(220, 10, 10)), target="player", cooldown=1000)
         self.accuracy = accuracy
         self.add_tag("enemy")
 
     def update(self, scene=None):
         super().update(scene)
-        layer = "#enemyHealthBar"
+        layer = "enemyHealthBar"
         if self.health < self.original_health:
             if self.health < self.original_health // 2:
                 self.enemy_progress_bar.set_color((255, 255, 0))
