@@ -1,6 +1,12 @@
-# 📘 Documentation Technique : API Omicronde (vBeta)
+[Readme](README.md) | [License](LICENSE.md)
 
-L'API Omicronde est un moteur de jeu orienté objet (similaire à Unity) agissant comme une surcouche de PyGame 2.6.0+ (Python 3.10+).
+----
+<img src="https://github.com/galaxaris/.github/profile/logo-galaxaris-square.png" alt="Galaxaris Logo" width="100"/>
+
+
+# 📘 Documentation Technique : API Omicronde (v1.0)
+
+L'API Omicronde est un moteur de jeu 2D orienté objet (similaire à Unity) agissant comme une surcouche de PyGame 2.6.0+ (Python 3.10+), très complet et facile à utiliser.
 
 ## 1. Architecture Globale
 
