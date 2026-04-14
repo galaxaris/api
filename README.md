@@ -1,7 +1,7 @@
 [Readme](README.md) | [License](LICENSE.md)
 
 ----
-<img src="https://github.com/galaxaris/.github/profile/logo-galaxaris-square.png" alt="Galaxaris Logo" width="100"/>
+<img src="https://github.com/galaxaris/.github/blob/main/profile/logo-Galaxaris.png" alt="Galaxaris Logo" width="100"/>
 
 
 # 📘 Documentation Technique : API Omicronde (v1.0)
