@@ -281,6 +281,7 @@ class Entity(GameObject):
         :return:
         """
         self.vel = pg.Vector2(0, 0)
+        self.jump = False
         self.set_position(self.start_pos)
 
     def kill(self):
